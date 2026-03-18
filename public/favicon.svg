@@ -1,0 +1,12 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame 64">
+<path d="M0 4C0 1.79086 1.79086 0 4 0H60C62.2091 0 64 1.79086 64 4V60C64 62.2091 62.2091 64 60 64H4C1.79086 64 0 62.2091 0 60V4Z" fill="#343A40"/>
+<g id="Group 1">
+<rect id="Rectangle 1" x="26.275" y="5.5" width="25.725" height="7.14583" rx="1.42917" fill="#12B886"/>
+<rect id="Rectangle 2" x="17.7" y="16.9333" width="34.3" height="7.14583" rx="1.42917" fill="#12B886"/>
+<rect id="Rectangle 3" x="9.125" y="28.3667" width="42.875" height="7.14583" rx="1.42917" fill="#12B886"/>
+<rect id="Rectangle 4" x="17.7" y="39.8" width="34.3" height="7.14583" rx="1.42917" fill="#12B886"/>
+<rect id="Rectangle 5" x="26.275" y="51.2334" width="25.725" height="7.14583" rx="1.42917" fill="#12B886"/>
+</g>
+</g>
+</svg>

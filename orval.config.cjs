@@ -7,6 +7,7 @@ module.exports = defineConfig({
   smetchik: {
     input: resolveFromRoot("schema.yaml"),
     output: {
+      baseUrl: "/api/v1",
       target: resolveFromRoot("src/shared/api/generated/smetchik.ts"),
       schemas: resolveFromRoot("src/shared/api/generated/schemas"),
       client: "react-query",

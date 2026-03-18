@@ -12,15 +12,15 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";
 import {
-  getGetApiV1AuthMeQueryKey,
-  useGetApiV1AuthMe,
-  usePutApiV1AdminUsersId,
+  getGetAuthMeQueryKey,
+  useGetAuthMe,
+  // usePutAdminUsersId,
 } from "../../shared/api/generated/smetchik";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { queryClient } from "../../shared/api/queryClient";
 
 const ProfileCommonPage = () => {
-  const { data: user, isLoading, isError } = useGetApiV1AuthMe({});
+  const { data: user, isLoading, isError } = useGetAuthMe({});
   const form = useForm({
     initialValues: {
       phone: "",
@@ -47,42 +47,40 @@ const ProfileCommonPage = () => {
       return;
     }
     form.setValues({
-      phone: user.phone ?? "",
-      name: user.name ?? "",
-      surname: user.surname ?? "",
-      email: user.email ?? "",
+      phone: user.user?.phone ?? "",
+      email: user.user?.email ?? "",
     });
-  }, [user?.id, user?.name, user?.surname, user?.email, user?.phone]);
+  }, [user?.user?.id, user?.user?.email, user?.user?.phone]);
 
-  const updateMutation = usePutApiV1AdminUsersId({
-    mutation: {
-      onSuccess: (response) => {
-        const updated = response.user;
-        if (updated) {
-          const queryKey = getGetApiV1AuthMeQueryKey();
-          const current = queryClient.getQueryData<typeof user | undefined>(
-            queryKey,
-          );
-          queryClient.setQueryData(queryKey, {
-            ...current,
-            ...updated,
-          });
-        }
-        notifications.show({
-          color: "teal",
-          title: "Профиль обновлён",
-          message: "Изменения сохранены.",
-        });
-      },
-      onError: (error) => {
-        notifications.show({
-          color: "red",
-          title: "Ошибка",
-          message: getErrorMessage(error),
-        });
-      },
-    },
-  });
+  // const updateMutation = usePutAdminUsersId({
+  //   mutation: {
+  //     onSuccess: (response) => {
+  //       const updated = response.user;
+  //       if (updated) {
+  //         const queryKey = getGetAuthMeQueryKey();
+  //         const current = queryClient.getQueryData<typeof user | undefined>(
+  //           queryKey,
+  //         );
+  //         queryClient.setQueryData(queryKey, {
+  //           ...current,
+  //           ...updated,
+  //         });
+  //       }
+  //       notifications.show({
+  //         color: "teal",
+  //         title: "Профиль обновлён",
+  //         message: "Изменения сохранены.",
+  //       });
+  //     },
+  //     onError: (error) => {
+  //       notifications.show({
+  //         color: "red",
+  //         title: "Ошибка",
+  //         message: getErrorMessage(error),
+  //       });
+  //     },
+  //   },
+  // });
 
   if (isLoading) {
     return (
@@ -97,7 +95,7 @@ const ProfileCommonPage = () => {
   }
 
   const handleSubmit = form.onSubmit((values) => {
-    if (!user.id) {
+    if (!user.user?.id) {
       notifications.show({
         color: "red",
         title: "Ошибка",
@@ -105,15 +103,15 @@ const ProfileCommonPage = () => {
       });
       return;
     }
-    updateMutation.mutate({
-      id: user.id,
-      data: {
-        phone: values.phone.trim(),
-        name: values.name.trim(),
-        surname: values.surname.trim() || undefined,
-        email: values.email.trim() || undefined,
-      },
-    });
+    // updateMutation.mutate({
+    //   id: user.user.id,
+    //   data: {
+    //     phone: values.phone.trim(),
+    //     name: values.name.trim(),
+    //     surname: values.surname.trim() || undefined,
+    //     email: values.email.trim() || undefined,
+    //   },
+    // });
   });
 
   return (
@@ -154,9 +152,8 @@ const ProfileCommonPage = () => {
               autoComplete="email"
               {...form.getInputProps("email")}
             />
-            <Button type="submit" loading={updateMutation.isPending}>
-              Сохранить
-            </Button>
+            {/* <Button type="submit" loading={updateMutation.isPending}> */}
+            <Button type="submit">Сохранить</Button>
           </Stack>
         </form>
       </Stack>

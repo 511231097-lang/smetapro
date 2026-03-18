@@ -14,13 +14,13 @@ import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import {
-  getGetApiV1WorkspacesIdQueryKey,
-  getGetApiV1WorkspacesQueryKey,
-  useDeleteApiV1WorkspacesId,
-  useGetApiV1WorkspacesId,
-  usePutApiV1WorkspacesId,
+  getGetWorkspacesWorkspaceIdQueryKey,
+  getGetWorkspacesQueryKey,
+  useDeleteWorkspacesWorkspaceId,
+  useGetWorkspacesWorkspaceId,
+  usePutWorkspacesWorkspaceId,
 } from "../../shared/api/generated/smetchik";
-import type { GetApiV1WorkspacesId200 } from "../../shared/api/generated/schemas";
+import type { WorkspacesWorkspaceResponse } from "../../shared/api/generated/schemas";
 import type { WorkspacesListResponse } from "../../shared/api/generated/schemas/workspacesListResponse";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { ROUTES } from "../../shared/constants/routes";
@@ -42,7 +42,7 @@ const WorkspaceProfilePage = () => {
     },
   });
 
-  const { data, isLoading, isError } = useGetApiV1WorkspacesId(
+  const { data, isLoading, isError } = useGetWorkspacesWorkspaceId(
     workspaceId ?? "",
     {
       query: {
@@ -60,7 +60,7 @@ const WorkspaceProfilePage = () => {
     form.setValues({ name: workspace.name ?? "" });
   }, [workspace?.id, workspace?.name]);
 
-  const updateMutation = usePutApiV1WorkspacesId({
+  const updateMutation = usePutWorkspacesWorkspaceId({
     mutation: {
       onSuccess: (response) => {
         const updated = response.workspace;
@@ -71,8 +71,8 @@ const WorkspaceProfilePage = () => {
         });
 
         if (updated && workspaceId) {
-          const listKey = getGetApiV1WorkspacesQueryKey();
-          const detailKey = getGetApiV1WorkspacesIdQueryKey(workspaceId);
+          const listKey = getGetWorkspacesQueryKey();
+          const detailKey = getGetWorkspacesWorkspaceIdQueryKey(workspaceId);
           const current = queryClient.getQueryData<
             WorkspacesListResponse | undefined
           >(listKey);
@@ -89,9 +89,9 @@ const WorkspaceProfilePage = () => {
             );
           }
 
-          queryClient.setQueryData<GetApiV1WorkspacesId200 | undefined>(
+          queryClient.setQueryData<WorkspacesWorkspaceResponse | undefined>(
             detailKey,
-            { workspace: updated },
+            updated,
           );
         }
       },
@@ -105,10 +105,10 @@ const WorkspaceProfilePage = () => {
     },
   });
 
-  const deleteMutation = useDeleteApiV1WorkspacesId({
+  const deleteMutation = useDeleteWorkspacesWorkspaceId({
     mutation: {
       onSuccess: () => {
-        const listKey = getGetApiV1WorkspacesQueryKey();
+        const listKey = getGetWorkspacesQueryKey();
         const current = queryClient.getQueryData<
           WorkspacesListResponse | undefined
         >(listKey);
@@ -119,16 +119,19 @@ const WorkspaceProfilePage = () => {
             current.total === undefined
               ? remaining.length
               : Math.max(current.total - 1, remaining.length);
-          queryClient.setQueryData<WorkspacesListResponse | undefined>(listKey, {
-            ...current,
-            workspaces: remaining,
-            total: nextTotal,
-          });
+          queryClient.setQueryData<WorkspacesListResponse | undefined>(
+            listKey,
+            {
+              ...current,
+              workspaces: remaining,
+              total: nextTotal,
+            },
+          );
         }
 
         if (workspaceId) {
           queryClient.removeQueries({
-            queryKey: getGetApiV1WorkspacesIdQueryKey(workspaceId),
+            queryKey: getGetWorkspacesWorkspaceIdQueryKey(workspaceId),
           });
         }
 
@@ -137,12 +140,6 @@ const WorkspaceProfilePage = () => {
           const nextId = remaining[0]?.id ?? null;
           setStoredWorkspaceId(nextId);
         }
-
-        notifications.show({
-          color: "teal",
-          title: "Пространство удалено",
-          message: "Пространство больше недоступно.",
-        });
 
         if (remaining.length === 0) {
           navigate(ROUTES.WORKSPACE_CREATE, { replace: true });
@@ -183,7 +180,7 @@ const WorkspaceProfilePage = () => {
 
   const handleSubmit = form.onSubmit((values) => {
     updateMutation.mutate({
-      id: workspaceId,
+      workspaceId,
       data: {
         name: values.name.trim(),
       },
@@ -200,7 +197,7 @@ const WorkspaceProfilePage = () => {
     if (!confirmed) {
       return;
     }
-    deleteMutation.mutate({ id: workspaceId });
+    deleteMutation.mutate({ workspaceId });
   };
 
   return (

@@ -19,8 +19,7 @@ const WorkspacePage = () => {
     ":workspaceId",
     workspaceId ?? "",
   );
-  const activeTab =
-    location.pathname === membersPath ? "members" : "profile";
+  const activeTab = location.pathname === membersPath ? "members" : "profile";
 
   return (
     <Stack gap="lg">

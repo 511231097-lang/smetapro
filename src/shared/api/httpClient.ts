@@ -20,17 +20,17 @@ export const setAuthHandlers = (handlers: {
 const isAuthEndpoint = (url: string) => {
   // важно: чтобы refresh запрос НЕ пытался сам себя рефрешить
   return (
-    url.includes('/api/v1/auth/refresh') ||
-    url.includes('/api/v1/auth/login') ||
-    url.includes('/api/v1/auth/register') ||
-    url.includes('/api/v1/auth/logout') ||
-    url.includes('/api/v1/auth/logout-all')
+    url.includes("/api/v1/auth/refresh") ||
+    url.includes("/api/v1/auth/login") ||
+    url.includes("/api/v1/auth/register") ||
+    url.includes("/api/v1/auth/logout") ||
+    url.includes("/api/v1/auth/logout-all")
   );
 };
 
 const runSingleFlightRefresh = async () => {
   if (!refreshFn) {
-    throw new Error('refresh handler is not set (setAuthHandlers).');
+    throw new Error("refresh handler is not set (setAuthHandlers).");
   }
 
   if (!refreshInFlight) {
@@ -49,11 +49,14 @@ const runSingleFlightRefresh = async () => {
 
 const readEnvBaseUrl = () => {
   console.log(import.meta.env.BASE_API_URL);
-  if (typeof import.meta !== 'undefined' && typeof import.meta.env === 'object') {
+  if (
+    typeof import.meta !== "undefined" &&
+    typeof import.meta.env === "object"
+  ) {
     return import.meta.env.BASE_API_URL;
   }
 
-  if (typeof process !== 'undefined' && typeof process.env === 'object') {
+  if (typeof process !== "undefined" && typeof process.env === "object") {
     return process.env.BASE_API_URL;
   }
 
@@ -64,7 +67,9 @@ const resolveBaseUrl = (baseUrl?: string) => {
   const resolved = baseUrl ?? readEnvBaseUrl();
 
   if (!resolved) {
-    throw new Error('BASE_API_URL is not defined. Please set it in your env file.');
+    throw new Error(
+      "BASE_API_URL is not defined. Please set it in your env file.",
+    );
   }
 
   return resolved;
@@ -103,7 +108,7 @@ const isBodyInit = (value: unknown): value is BodyInit => {
   }
 
   if (
-    typeof value === 'string' ||
+    typeof value === "string" ||
     value instanceof Blob ||
     value instanceof FormData ||
     value instanceof URLSearchParams
@@ -111,7 +116,7 @@ const isBodyInit = (value: unknown): value is BodyInit => {
     return true;
   }
 
-  if (typeof ArrayBuffer !== 'undefined') {
+  if (typeof ArrayBuffer !== "undefined") {
     if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
       return true;
     }
@@ -125,17 +130,17 @@ const parseBody = async (response: Response) => {
     return undefined;
   }
 
-  const contentLength = response.headers.get('content-length');
-  if (contentLength === '0') {
+  const contentLength = response.headers.get("content-length");
+  if (contentLength === "0") {
     return undefined;
   }
 
-  const contentType = response.headers.get('content-type');
-  if (contentType?.includes('application/json')) {
+  const contentType = response.headers.get("content-type");
+  if (contentType?.includes("application/json")) {
     return response.json();
   }
 
-  if (contentType?.includes('text/')) {
+  if (contentType?.includes("text/")) {
     return response.text();
   }
 
@@ -149,7 +154,7 @@ export class HttpClientError<TData = unknown> extends Error {
 
   constructor(response: Response, data: TData) {
     super(`Request failed with status ${response.status}`);
-    this.name = 'HttpClientError';
+    this.name = "HttpClientError";
     this.status = response.status;
     this.data = data;
   }
@@ -165,6 +170,10 @@ export type HttpClientConfig<TBody> = {
   signal?: AbortSignal;
 };
 
+export type HttpClientOptions = {
+  skipRefresh?: boolean;
+};
+
 // Вынесем "сырой" fetch, чтобы можно было повторять
 const rawRequest = async <TResponse, TBody = unknown>(
   config: HttpClientConfig<TBody>,
@@ -176,7 +185,7 @@ const rawRequest = async <TResponse, TBody = unknown>(
   const init: RequestInit = {
     method,
     signal,
-    credentials: 'include',
+    credentials: "include",
     headers: requestHeaders,
   };
 
@@ -185,8 +194,8 @@ const rawRequest = async <TResponse, TBody = unknown>(
       init.body = data;
     } else {
       init.body = JSON.stringify(data);
-      if (!requestHeaders.has('content-type')) {
-        requestHeaders.set('content-type', 'application/json');
+      if (!requestHeaders.has("content-type")) {
+        requestHeaders.set("content-type", "application/json");
       }
     }
   }
@@ -203,6 +212,7 @@ const rawRequest = async <TResponse, TBody = unknown>(
 
 export const httpClient = async <TResponse, TBody = unknown>(
   config: HttpClientConfig<TBody>,
+  options?: HttpClientOptions,
 ): Promise<TResponse> => {
   try {
     return await rawRequest<TResponse, TBody>(config);
@@ -211,6 +221,7 @@ export const httpClient = async <TResponse, TBody = unknown>(
     if (
       error instanceof HttpClientError &&
       error.status === 401 &&
+      !options?.skipRefresh &&
       !isAuthEndpoint(config.url)
     ) {
       // 1) запускаем/ждем refresh (single-flight)
@@ -218,7 +229,7 @@ export const httpClient = async <TResponse, TBody = unknown>(
         await runSingleFlightRefresh();
       } catch (refreshError) {
         // 2) если refresh не удался — logout (кроме проверки /me), иначе пробрасываем ошибку
-        if (!config.url.includes('/api/v1/auth/me')) {
+        if (!config.url.includes("/api/v1/auth/me")) {
           logoutFn?.();
         }
         throw refreshError;

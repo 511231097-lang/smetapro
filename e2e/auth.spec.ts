@@ -7,7 +7,7 @@ test("unauthorized user is redirected to /login from /projects", async ({
   await setupApiMock(page, { refresh: { status: 401 } });
   await page.goto("/projects");
   await expect(
-    page.getByRole("heading", { name: "Вход в кабинет" }),
+    page.getByRole("heading", { name: "Вход в Сметчик ПРО" }),
   ).toBeVisible();
 });
 
@@ -81,7 +81,7 @@ test("logout redirects to /login", async ({ page }) => {
   await setupApiMock(page, { initialUser: mockUser, refresh: { status: 401 } });
   await page.goto("/logout");
   await expect(
-    page.getByRole("heading", { name: "Вход в кабинет" }),
+    page.getByRole("heading", { name: "Вход в Сметчик ПРО" }),
   ).toBeVisible();
 });
 
@@ -91,6 +91,6 @@ test("logout via UI redirects to /login", async ({ page }) => {
   await page.getByLabel("Открыть профиль").click();
   await page.getByRole("menuitem", { name: "Выйти" }).click();
   await expect(
-    page.getByRole("heading", { name: "Вход в кабинет" }),
+    page.getByRole("heading", { name: "Вход в Сметчик ПРО" }),
   ).toBeVisible();
 });

@@ -157,6 +157,6 @@ test("refresh fails for business request and redirects to /login", async ({
   await page.goto("/projects");
   await refreshRequest;
   await expect(
-    page.getByRole("heading", { name: "Вход в кабинет" }),
+    page.getByRole("heading", { name: "Вход в Сметчик ПРО" }),
   ).toBeVisible();
 });

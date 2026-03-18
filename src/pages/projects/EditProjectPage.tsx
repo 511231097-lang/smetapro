@@ -16,9 +16,9 @@ import { notifications } from "@mantine/notifications";
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import {
-  useDeleteApiV1ProjectsId,
-  useGetApiV1ProjectsId,
-  usePutApiV1ProjectsId,
+  useDeleteWorkspacesWorkspaceId,
+  useGetWorkspacesWorkspaceId,
+  usePutWorkspacesWorkspaceId,
 } from "../../shared/api/generated/smetchik";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { ROUTES } from "../../shared/constants/routes";
@@ -52,7 +52,7 @@ const EditProjectPage = () => {
     },
   });
 
-  const { data, isLoading, isError } = useGetApiV1ProjectsId(
+  const { data, isLoading, isError } = useGetWorkspacesWorkspaceId(
     projectId ?? "",
     {
       query: {
@@ -60,7 +60,7 @@ const EditProjectPage = () => {
       },
     },
   );
-  const project = data?.project;
+  const project = data?.workspace;
 
   useEffect(() => {
     if (!project || initialized) {
@@ -68,13 +68,13 @@ const EditProjectPage = () => {
     }
     form.setValues({
       name: project.name ?? "",
-      address: project.address ?? "",
-      comment: project.comment ?? "",
+      // address: project.address ?? "",
+      // comment: project.comment ?? "",
     });
     setInitialized(true);
   }, [form, initialized, project]);
 
-  const workspaceId = useMemo(() => project?.workspace_id ?? null, [project]);
+  const workspaceId = useMemo(() => project?.id ?? null, [project]);
 
   const removeProjectQueries = (targetWorkspaceId?: string | null) => {
     if (targetWorkspaceId) {
@@ -94,7 +94,7 @@ const EditProjectPage = () => {
     }
   };
 
-  const updateMutation = usePutApiV1ProjectsId({
+  const updateMutation = usePutWorkspacesWorkspaceId({
     mutation: {
       onSuccess: () => {
         notifications.show({
@@ -115,7 +115,7 @@ const EditProjectPage = () => {
     },
   });
 
-  const deleteMutation = useDeleteApiV1ProjectsId({
+  const deleteMutation = useDeleteWorkspacesWorkspaceId({
     mutation: {
       onSuccess: () => {
         notifications.show({
@@ -159,11 +159,11 @@ const EditProjectPage = () => {
 
   const handleSubmit = form.onSubmit((values) => {
     updateMutation.mutate({
-      id: projectId,
+      workspaceId: projectId,
       data: {
         name: values.name.trim(),
-        address: values.address.trim() || undefined,
-        comment: values.comment.trim() || undefined,
+        // address: values.address.trim() || undefined,
+        // comment: values.comment.trim() || undefined,
       },
     });
   });
@@ -178,7 +178,7 @@ const EditProjectPage = () => {
     if (!confirmed) {
       return;
     }
-    deleteMutation.mutate({ id: projectId });
+    deleteMutation.mutate({ workspaceId: projectId });
   };
 
   return (

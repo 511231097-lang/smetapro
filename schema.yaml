@@ -1,1204 +1,1652 @@
-openapi: 3.0.3
+basePath: /api/v1
+definitions:
+  auth.ForgotPasswordRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+    required:
+      - email
+    type: object
+  auth.LoginRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      password:
+        type: string
+    required:
+      - email
+      - password
+    type: object
+  auth.MessageResponse:
+    properties:
+      email:
+        type: string
+      message:
+        type: string
+      pin:
+        type: string
+    type: object
+  auth.RegisterRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      password:
+        maxLength: 72
+        minLength: 8
+        type: string
+      phone:
+        maxLength: 64
+        type: string
+    required:
+      - email
+      - password
+      - phone
+    type: object
+  auth.ResetPasswordRequest:
+    properties:
+      code:
+        type: string
+      email:
+        maxLength: 255
+        type: string
+      new_password:
+        maxLength: 72
+        minLength: 8
+        type: string
+    required:
+      - code
+      - email
+      - new_password
+    type: object
+  auth.SuccessResponse:
+    properties:
+      user:
+        $ref: "#/definitions/auth.UserResponse"
+    type: object
+  auth.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+      phone:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+    type: object
+  auth.VerifyRequest:
+    properties:
+      code:
+        type: string
+      email:
+        maxLength: 255
+        type: string
+    required:
+      - code
+      - email
+    type: object
+  tools.ErrorResponse:
+    properties:
+      code:
+        type: string
+      error:
+        type: string
+    type: object
+  workspaces.CreateInviteRequest:
+    properties:
+      role_code:
+        maxLength: 50
+        type: string
+    required:
+      - role_code
+    type: object
+  workspaces.CreateRequest:
+    properties:
+      description:
+        maxLength: 5000
+        type: string
+      name:
+        maxLength: 255
+        type: string
+    required:
+      - name
+    type: object
+  workspaces.CreateRoleRequest:
+    properties:
+      code:
+        maxLength: 50
+        type: string
+      description:
+        maxLength: 5000
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+    required:
+      - code
+      - name
+    type: object
+  workspaces.InvitePreviewResponse:
+    properties:
+      expires_at:
+        type: string
+      member_count:
+        type: integer
+      role:
+        $ref: "#/definitions/workspaces.MemberRoleResponse"
+      workspace_description:
+        type: string
+      workspace_name:
+        type: string
+    type: object
+  workspaces.InviteResponse:
+    properties:
+      created_at:
+        type: string
+      expires_at:
+        type: string
+      role:
+        $ref: "#/definitions/workspaces.MemberRoleResponse"
+      token:
+        type: string
+      use_count:
+        type: integer
+    type: object
+  workspaces.ListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+      workspaces:
+        items:
+          $ref: "#/definitions/workspaces.WorkspaceResponse"
+        type: array
+    type: object
+  workspaces.MemberResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      position:
+        type: string
+      role:
+        $ref: "#/definitions/workspaces.MemberRoleResponse"
+      surname:
+        type: string
+      telegram:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      workspace_id:
+        type: string
+    type: object
+  workspaces.MemberRoleResponse:
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      is_system:
+        type: boolean
+      name:
+        type: string
+    type: object
+  workspaces.MembersListResponse:
+    properties:
+      limit:
+        type: integer
+      members:
+        items:
+          $ref: "#/definitions/workspaces.MemberResponse"
+        type: array
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  workspaces.PermissionResponse:
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  workspaces.PermissionsListResponse:
+    properties:
+      permissions:
+        items:
+          $ref: "#/definitions/workspaces.PermissionResponse"
+        type: array
+    type: object
+  workspaces.RoleResponse:
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      is_system:
+        type: boolean
+      members_count:
+        type: integer
+      name:
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+    type: object
+  workspaces.RolesListResponse:
+    properties:
+      roles:
+        items:
+          $ref: "#/definitions/workspaces.RoleResponse"
+        type: array
+    type: object
+  workspaces.SetRolePermissionsRequest:
+    properties:
+      permissions:
+        items:
+          type: string
+        type: array
+    type: object
+  workspaces.SingleInvitePreviewResponse:
+    properties:
+      invite:
+        $ref: "#/definitions/workspaces.InvitePreviewResponse"
+    type: object
+  workspaces.SingleInviteResponse:
+    properties:
+      invite:
+        $ref: "#/definitions/workspaces.InviteResponse"
+    type: object
+  workspaces.SingleMemberResponse:
+    properties:
+      member:
+        $ref: "#/definitions/workspaces.MemberResponse"
+    type: object
+  workspaces.SingleRoleResponse:
+    properties:
+      role:
+        $ref: "#/definitions/workspaces.RoleResponse"
+    type: object
+  workspaces.SingleWorkspaceResponse:
+    properties:
+      workspace:
+        $ref: "#/definitions/workspaces.WorkspaceResponse"
+    type: object
+  workspaces.UpdateMemberProfileRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      phone:
+        maxLength: 20
+        type: string
+      position:
+        maxLength: 200
+        type: string
+      surname:
+        maxLength: 100
+        type: string
+      telegram:
+        type: string
+    type: object
+  workspaces.UpdateMemberRoleRequest:
+    properties:
+      role_code:
+        maxLength: 50
+        type: string
+      role_id:
+        type: integer
+    type: object
+  workspaces.UpdateRequest:
+    properties:
+      description:
+        maxLength: 5000
+        type: string
+      name:
+        maxLength: 255
+        type: string
+    required:
+      - name
+    type: object
+  workspaces.UpdateRoleRequest:
+    properties:
+      description:
+        maxLength: 5000
+        type: string
+      name:
+        maxLength: 100
+        type: string
+    type: object
+  workspaces.WorkspaceResponse:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:8888
 info:
-  title: Smetchik API
-  description: Smetchik service API documentation
-  version: 1.0.0
-  contact:
-    name: API Support
-
-servers:
-  - url: http://localhost:8888
-    description: Local development
-  - url: https://dev.smetchik.pro
-    description: Development
-  - url: https://app.smetchik.pro
-    description: Production
-
-tags:
-  - name: Auth
-    description: Authentication and session management
-  - name: Workspaces
-    description: Workspace management
-  - name: Projects
-    description: Project management within workspaces
-  - name: Admin
-    description: Admin panel endpoints (requires admin role)
-  - name: Health
-    description: Health check endpoints
-
+  contact: {}
+  description: HTTP API сервиса smethick-pro.
+  title: Smetchik Pro API
+  version: "1.0"
 paths:
-  /health:
-    get:
-      tags: [Health]
-      summary: Health check
-      responses:
-        "200":
-          description: Service is healthy
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: ok
-
-  /api/v1/auth/register:
+  /auth/forgot-password:
     post:
-      tags: [Auth]
-      summary: Register new user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RegisterRequest"
-      responses:
-        "201":
-          description: User registered successfully
-          headers:
-            Set-Cookie:
-              description: Authentication cookies (access_token, refresh_token)
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "409":
-          description: User already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  /api/v1/auth/login:
-    post:
-      tags: [Auth]
-      summary: Login user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
-      responses:
-        "200":
-          description: Login successful
-          headers:
-            Set-Cookie:
-              description: Authentication cookies (access_token, refresh_token)
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        "401":
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  /api/v1/auth/refresh:
-    post:
-      tags: [Auth]
-      summary: Refresh access token
-      description: Uses refresh_token cookie to issue new tokens
-      responses:
-        "200":
-          description: Tokens refreshed
-          headers:
-            Set-Cookie:
-              description: New authentication cookies
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        "401":
-          description: Invalid or expired refresh token
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  /api/v1/auth/logout:
-    post:
-      tags: [Auth]
-      summary: Logout current session
-      security:
-        - cookieAuth: []
-      responses:
-        "200":
-          description: Logged out successfully
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-
-  /api/v1/auth/logout-all:
-    post:
-      tags: [Auth]
-      summary: Logout from all devices
-      security:
-        - cookieAuth: []
-      responses:
-        "200":
-          description: Logged out from all devices
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-
-  /api/v1/auth/sessions:
-    get:
-      tags: [Auth]
-      summary: Get active sessions
-      security:
-        - cookieAuth: []
-      responses:
-        "200":
-          description: List of active sessions
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  sessions:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Session"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-
-  /api/v1/auth/sessions/{id}:
-    delete:
-      tags: [Auth]
-      summary: Revoke specific session
-      security:
-        - cookieAuth: []
+      consumes:
+        - application/json
+      description: Requests password reset code. Always returns generic success message.
       parameters:
-        - name: id
-          in: path
+        - description: Forgot password payload
+          in: body
+          name: request
           required: true
           schema:
-            type: string
-            format: uuid
+            $ref: "#/definitions/auth.ForgotPasswordRequest"
+      produces:
+        - application/json
       responses:
         "200":
-          description: Session revoked
+          description: OK
+          schema:
+            $ref: "#/definitions/auth.MessageResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      summary: Forgot password (step 1)
+      tags:
+        - Auth
+  /auth/login:
+    post:
+      consumes:
+        - application/json
+      description:
+        Authenticates user and sets access_token + refresh_token cookies
+        on success.
+      parameters:
+        - description: Login payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/auth.LoginRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/auth.SuccessResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          description: Session not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  /api/v1/auth/me:
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      summary: Login with email/password
+      tags:
+        - Auth
+  /auth/logout:
+    post:
+      consumes:
+        - application/json
+      description: Revokes current refresh token and clears auth cookies.
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/auth.MessageResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+        - RefreshCookieAuth: []
+      summary: Logout
+      tags:
+        - Auth
+  /auth/logout-all:
+    post:
+      consumes:
+        - application/json
+      description: Revokes all refresh tokens for current user and clears auth cookies.
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/auth.MessageResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Logout from all sessions
+      tags:
+        - Auth
+  /auth/me:
     get:
-      tags: [Auth]
+      consumes:
+        - application/json
+      description: Returns current authenticated user profile.
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/auth.SuccessResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
       summary: Get current user
-      security:
-        - cookieAuth: []
+      tags:
+        - Auth
+  /auth/refresh:
+    post:
+      consumes:
+        - application/json
+      description: Rotates refresh token and returns new auth cookies.
+      produces:
+        - application/json
       responses:
         "200":
-          description: Current user info
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
+          description: OK
+          schema:
+            $ref: "#/definitions/auth.SuccessResponse"
         "401":
-          $ref: "#/components/responses/Unauthorized"
-
-  # Workspaces
-  /api/v1/workspaces:
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - RefreshCookieAuth: []
+      summary: Refresh tokens
+      tags:
+        - Auth
+  /auth/register:
+    post:
+      consumes:
+        - application/json
+      description:
+        Sends verification code to email. In local/dev mode response includes
+        pin.
+      parameters:
+        - description: Register payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/auth.RegisterRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/auth.MessageResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      summary: Register (step 1)
+      tags:
+        - Auth
+  /auth/register/verify:
+    post:
+      consumes:
+        - application/json
+      description: Verifies code, creates account, and signs user in.
+      parameters:
+        - description: Verification payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/auth.VerifyRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/auth.SuccessResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      summary: Register verification (step 2)
+      tags:
+        - Auth
+  /auth/reset-password:
+    post:
+      consumes:
+        - application/json
+      description: Resets password by verification code and signs user in.
+      parameters:
+        - description: Reset password payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/auth.ResetPasswordRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/auth.SuccessResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      summary: Reset password (step 2)
+      tags:
+        - Auth
+  /invite/{token}:
     get:
-      tags: [Workspaces]
+      description: Returns workspace preview for invite token.
+      parameters:
+        - description: Invite token
+          in: path
+          name: token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleInvitePreviewResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "410":
+          description: Gone
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Preview invite
+      tags:
+        - Workspaces
+    post:
+      description: Adds current user to workspace by invite token.
+      parameters:
+        - description: Invite token
+          in: path
+          name: token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleMemberResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "410":
+          description: Gone
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Accept invite
+      tags:
+        - Workspaces
+  /workspaces:
+    get:
+      consumes:
+        - application/json
+      description: Returns paginated list of workspaces available for current user.
+      parameters:
+        - description: Page size
+          in: query
+          name: limit
+          type: integer
+        - description: Page offset
+          in: query
+          name: offset
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.ListResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
       summary: List workspaces
-      description: Returns paginated list of workspaces where user is a member, sorted alphabetically by name
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: limit
-          in: query
-          description: Number of workspaces to return (default 50, max 100)
-          schema:
-            type: integer
-            default: 50
-            minimum: 1
-            maximum: 100
-        - name: offset
-          in: query
-          description: Number of workspaces to skip
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
-      responses:
-        "200":
-          description: List of workspaces
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/WorkspacesListResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
+      tags:
+        - Workspaces
     post:
-      tags: [Workspaces]
+      consumes:
+        - application/json
+      description: Creates a workspace and assigns current user as owner.
+      parameters:
+        - description: Create workspace payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/workspaces.CreateRequest"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/workspaces.SingleWorkspaceResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
       summary: Create workspace
-      description: Creates a new workspace and adds the creator as a member
-      security:
-        - cookieAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateWorkspaceRequest"
-      responses:
-        "201":
-          description: Workspace created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  workspace:
-                    $ref: "#/components/schemas/Workspace"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-
-  /api/v1/workspaces/{id}:
-    get:
-      tags: [Workspaces]
-      summary: Get workspace
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: Workspace details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  workspace:
-                    $ref: "#/components/schemas/Workspace"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          description: Workspace not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    put:
-      tags: [Workspaces]
-      summary: Update workspace
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateWorkspaceRequest"
-      responses:
-        "200":
-          description: Workspace updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  workspace:
-                    $ref: "#/components/schemas/Workspace"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          description: Workspace not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+      tags:
+        - Workspaces
+  /workspaces/{workspace_id}:
     delete:
-      tags: [Workspaces]
+      consumes:
+        - application/json
+      description: Soft-deletes workspace for current member.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
       summary: Delete workspace
-      description: Soft-deletes a workspace
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "204":
-          description: Workspace deleted
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          description: Workspace not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  # Projects
-  /api/v1/workspaces/{workspace_id}/projects:
+      tags:
+        - Workspaces
     get:
-      tags: [Projects]
-      summary: List projects in workspace
-      description: Returns paginated list of projects, sorted by updated_at DESC
-      security:
-        - cookieAuth: []
+      consumes:
+        - application/json
+      description: Returns workspace by id for current member.
       parameters:
-        - name: workspace_id
+        - description: Workspace ID
           in: path
+          name: workspace_id
           required: true
-          schema:
-            type: string
-            format: uuid
-        - name: limit
-          in: query
-          description: Number of projects to return (default 50, max 100)
-          schema:
-            type: integer
-            default: 50
-            minimum: 1
-            maximum: 100
-        - name: offset
-          in: query
-          description: Number of projects to skip
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
+          type: string
+      produces:
+        - application/json
       responses:
         "200":
-          description: List of projects
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProjectsListResponse"
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleWorkspaceResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "403":
-          $ref: "#/components/responses/Forbidden"
-    post:
-      tags: [Projects]
-      summary: Create a project
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
       security:
-        - cookieAuth: []
+        - AccessCookieAuth: []
+      summary: Get workspace
+      tags:
+        - Workspaces
+    put:
+      consumes:
+        - application/json
+      description: Updates workspace fields for current member.
       parameters:
-        - name: workspace_id
+        - description: Workspace ID
           in: path
+          name: workspace_id
+          required: true
+          type: string
+        - description: Update workspace payload
+          in: body
+          name: request
           required: true
           schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateProjectRequest"
+            $ref: "#/definitions/workspaces.UpdateRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleWorkspaceResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Update workspace
+      tags:
+        - Workspaces
+  /workspaces/{workspace_id}/invite:
+    delete:
+      description: Soft-deletes current workspace invite.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Delete workspace invite
+      tags:
+        - Workspaces
+    get:
+      description: Returns active workspace invite or null.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleInviteResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Get workspace invite
+      tags:
+        - Workspaces
+    post:
+      consumes:
+        - application/json
+      description: Creates or recreates invite link for workspace.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+        - description: Create invite payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/workspaces.CreateInviteRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleInviteResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Create workspace invite
+      tags:
+        - Workspaces
+  /workspaces/{workspace_id}/members:
+    get:
+      consumes:
+        - application/json
+      description: Returns paginated list of workspace members.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+        - description: Page size
+          in: query
+          name: limit
+          type: integer
+        - description: Page offset
+          in: query
+          name: offset
+          type: integer
+        - description: "Sort field: full_name, phone, email, telegram, position, role"
+          in: query
+          name: sort_by
+          type: string
+        - description: "Sort direction: asc, desc"
+          in: query
+          name: sort_dir
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.MembersListResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: List workspace members
+      tags:
+        - Workspaces
+  /workspaces/{workspace_id}/members/{member_id}:
+    delete:
+      consumes:
+        - application/json
+      description: Soft-deletes workspace member.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+        - description: Member ID
+          in: path
+          name: member_id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Delete workspace member
+      tags:
+        - Workspaces
+    patch:
+      consumes:
+        - application/json
+      description: Updates profile fields of workspace member.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+        - description: Member ID
+          in: path
+          name: member_id
+          required: true
+          type: string
+        - description: Update member profile payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/workspaces.UpdateMemberProfileRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleMemberResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Update workspace member profile
+      tags:
+        - Workspaces
+  /workspaces/{workspace_id}/members/{member_id}/role:
+    patch:
+      consumes:
+        - application/json
+      description: Changes role of workspace member.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+        - description: Member ID
+          in: path
+          name: member_id
+          required: true
+          type: string
+        - description: Update member role payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/workspaces.UpdateMemberRoleRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleMemberResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Update workspace member role
+      tags:
+        - Workspaces
+  /workspaces/{workspace_id}/permissions:
+    get:
+      consumes:
+        - application/json
+      description: Returns workspace permissions dictionary.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.PermissionsListResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: List workspace permissions
+      tags:
+        - Workspaces
+  /workspaces/{workspace_id}/roles:
+    get:
+      consumes:
+        - application/json
+      description: Returns system and custom roles available in the workspace.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.RolesListResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: List workspace roles
+      tags:
+        - Workspaces
+    post:
+      consumes:
+        - application/json
+      description: Creates a custom workspace role with the provided permissions.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+        - description: Create role payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/workspaces.CreateRoleRequest"
+      produces:
+        - application/json
       responses:
         "201":
-          description: Project created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  project:
-                    $ref: "#/components/schemas/Project"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-
-  /api/v1/projects/{id}:
-    get:
-      tags: [Projects]
-      summary: Get a project
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
+          description: Created
           schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: Project details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  project:
-                    $ref: "#/components/schemas/Project"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          description: Project not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    put:
-      tags: [Projects]
-      summary: Update a project
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateProjectRequest"
-      responses:
-        "200":
-          description: Project updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  project:
-                    $ref: "#/components/schemas/Project"
+            $ref: "#/definitions/workspaces.SingleRoleResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "403":
-          $ref: "#/components/responses/Forbidden"
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "404":
-          description: Project not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Create workspace role
+      tags:
+        - Workspaces
+  /workspaces/{workspace_id}/roles/{role_id}:
     delete:
-      tags: [Projects]
-      summary: Delete a project
-      description: Soft-deletes a project
-      security:
-        - cookieAuth: []
+      consumes:
+        - application/json
+      description: Deletes a custom workspace role when it has no assigned members.
       parameters:
-        - name: id
+        - description: Workspace ID
           in: path
+          name: workspace_id
           required: true
-          schema:
-            type: string
-            format: uuid
+          type: string
+        - description: Role ID
+          in: path
+          name: role_id
+          required: true
+          type: integer
+      produces:
+        - application/json
       responses:
         "204":
-          description: Project deleted
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          description: Project not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  # Admin Users
-  /api/v1/admin/users:
-    get:
-      tags: [Admin]
-      summary: List all users (admin)
-      description: Returns paginated list of all users, sorted by updated_at DESC
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: limit
-          in: query
-          description: Number of users to return (default 20, max 50)
-          schema:
-            type: integer
-            default: 20
-            minimum: 1
-            maximum: 50
-        - name: offset
-          in: query
-          description: Number of users to skip
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
-        - name: search
-          in: query
-          description: Search by phone, name, or surname
-          schema:
-            type: string
-      responses:
-        "200":
-          description: List of users
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AdminUsersListResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-
-  /api/v1/admin/users/{id}:
-    get:
-      tags: [Admin]
-      summary: Get user (admin)
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: User details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  user:
-                    $ref: "#/components/schemas/AdminUser"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    put:
-      tags: [Admin]
-      summary: Update user (admin)
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AdminUpdateUserRequest"
-      responses:
-        "200":
-          description: User updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  user:
-                    $ref: "#/components/schemas/AdminUser"
+          description: No Content
         "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    delete:
-      tags: [Admin]
-      summary: Delete user (admin)
-      description: Soft-deletes a user
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
+          description: Bad Request
           schema:
-            type: string
-            format: uuid
-      responses:
-        "204":
-          description: User deleted
+            $ref: "#/definitions/tools.ErrorResponse"
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "403":
-          $ref: "#/components/responses/Forbidden"
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "404":
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  # Admin Workspaces
-  /api/v1/admin/workspaces:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Delete workspace role
+      tags:
+        - Workspaces
     get:
-      tags: [Admin]
-      summary: List all workspaces (admin)
-      description: Returns paginated list of all workspaces, sorted by updated_at DESC
-      security:
-        - cookieAuth: []
+      consumes:
+        - application/json
+      description: Returns workspace role details with permissions and member count.
       parameters:
-        - name: limit
-          in: query
-          description: Number of workspaces to return (default 20, max 50)
-          schema:
-            type: integer
-            default: 20
-            minimum: 1
-            maximum: 50
-        - name: offset
-          in: query
-          description: Number of workspaces to skip
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
-        - name: search
-          in: query
-          description: Search by name
-          schema:
-            type: string
-      responses:
-        "200":
-          description: List of workspaces
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AdminWorkspacesListResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-
-  /api/v1/admin/workspaces/{id}:
-    get:
-      tags: [Admin]
-      summary: Get workspace (admin)
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
+        - description: Workspace ID
           in: path
+          name: workspace_id
           required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: Workspace details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  workspace:
-                    $ref: "#/components/schemas/Workspace"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          description: Workspace not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    put:
-      tags: [Admin]
-      summary: Update workspace (admin)
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
+          type: string
+        - description: Role ID
           in: path
+          name: role_id
           required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateWorkspaceRequest"
+          type: integer
+      produces:
+        - application/json
       responses:
         "200":
-          description: Workspace updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  workspace:
-                    $ref: "#/components/schemas/Workspace"
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleRoleResponse"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "403":
-          $ref: "#/components/responses/Forbidden"
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "404":
-          description: Workspace not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    delete:
-      tags: [Admin]
-      summary: Delete workspace (admin)
-      description: Soft-deletes a workspace
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
       security:
-        - cookieAuth: []
+        - AccessCookieAuth: []
+      summary: Get workspace role
+      tags:
+        - Workspaces
+    put:
+      consumes:
+        - application/json
+      description: Updates mutable fields of a custom workspace role.
       parameters:
-        - name: id
+        - description: Workspace ID
           in: path
+          name: workspace_id
+          required: true
+          type: string
+        - description: Role ID
+          in: path
+          name: role_id
+          required: true
+          type: integer
+        - description: Update role payload
+          in: body
+          name: request
           required: true
           schema:
-            type: string
-            format: uuid
+            $ref: "#/definitions/workspaces.UpdateRoleRequest"
+      produces:
+        - application/json
       responses:
-        "204":
-          description: Workspace deleted
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleRoleResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "401":
-          $ref: "#/components/responses/Unauthorized"
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "403":
-          $ref: "#/components/responses/Forbidden"
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
         "404":
-          description: Workspace not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: access_token
-      description: JWT access token in httpOnly cookie
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: JWT token in Authorization header (for mobile clients)
-
-  schemas:
-    RegisterRequest:
-      type: object
-      required:
-        - phone
-        - password
-        - name
-      properties:
-        phone:
-          type: string
-          description: Phone number in clean format
-          example: "79001234567"
-        password:
-          type: string
-          minLength: 6
-          example: "secret123"
-        name:
-          type: string
-          example: "Иван"
-        surname:
-          type: string
-          example: "Петров"
-        email:
-          type: string
-          format: email
-          example: "ivan@example.com"
-
-    LoginRequest:
-      type: object
-      required:
-        - phone
-        - password
-      properties:
-        phone:
-          type: string
-          example: "79001234567"
-        password:
-          type: string
-          example: "secret123"
-
-    AuthResponse:
-      type: object
-      properties:
-        user:
-          $ref: "#/components/schemas/User"
-
-    User:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        phone:
-          type: string
-          example: "79001234567"
-        email:
-          type: string
-          format: email
-          nullable: true
-        name:
-          type: string
-          example: "Иван"
-        surname:
-          type: string
-          nullable: true
-          example: "Петров"
-        roles:
-          type: array
-          items:
-            type: string
-          example: ["user"]
-        permissions:
-          type: array
-          items:
-            type: string
-          example: ["client_access"]
-        created_at:
-          type: string
-          format: date-time
-
-    Session:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        user_agent:
-          type: string
-          example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120"
-        ip_address:
-          type: string
-          example: "192.168.1.100"
-        created_at:
-          type: string
-          format: date-time
-        is_current:
-          type: boolean
-          description: Whether this is the current session
-
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-          description: Error message
-        code:
-          type: string
-          description: Error code
-
-    # Workspace schemas
-    Workspace:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          example: "Моя компания"
-        created_by:
-          type: string
-          format: uuid
-          nullable: true
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-
-    WorkspacesListResponse:
-      type: object
-      properties:
-        workspaces:
-          type: array
-          items:
-            $ref: "#/components/schemas/Workspace"
-        total:
-          type: integer
-          description: Total number of workspaces
-          example: 42
-        limit:
-          type: integer
-          example: 50
-        offset:
-          type: integer
-          example: 0
-
-    CreateWorkspaceRequest:
-      type: object
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-          example: "Новое пространство"
-
-    UpdateWorkspaceRequest:
-      type: object
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-          example: "Обновленное название"
-
-    # Project schemas
-    Project:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        workspace_id:
-          type: string
-          format: uuid
-        status_id:
-          type: integer
-          example: 1
-          description: "1=draft, 2=active, 3=paused, 4=completed, 5=archived"
-        name:
-          type: string
-          example: "Строительство дома"
-        address:
-          type: string
-          nullable: true
-          example: "ул. Примерная, д. 1"
-        comment:
-          type: string
-          nullable: true
-          example: "Заметка о проекте"
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-
-    ProjectsListResponse:
-      type: object
-      properties:
-        projects:
-          type: array
-          items:
-            $ref: "#/components/schemas/Project"
-        total:
-          type: integer
-          example: 25
-        limit:
-          type: integer
-          example: 50
-        offset:
-          type: integer
-          example: 0
-
-    CreateProjectRequest:
-      type: object
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-          example: "Новый проект"
-        address:
-          type: string
-          maxLength: 1000
-          example: "ул. Примерная, д. 1"
-        comment:
-          type: string
-          maxLength: 5000
-          example: "Заметка о проекте"
-
-    UpdateProjectRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-          example: "Обновлённое название"
-        status_id:
-          type: integer
-          minimum: 1
-          maximum: 5
-          example: 2
-        address:
-          type: string
-          maxLength: 1000
-          example: "Новый адрес"
-        comment:
-          type: string
-          maxLength: 5000
-          example: "Обновленная заметка"
-
-    # Admin schemas
-    AdminUser:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        phone:
-          type: string
-          example: "79001234567"
-        email:
-          type: string
-          format: email
-          nullable: true
-        name:
-          type: string
-          example: "Иван"
-        surname:
-          type: string
-          nullable: true
-          example: "Петров"
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-
-    AdminUsersListResponse:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: "#/components/schemas/AdminUser"
-        total:
-          type: integer
-          example: 100
-        limit:
-          type: integer
-          example: 20
-        offset:
-          type: integer
-          example: 0
-
-    AdminUpdateUserRequest:
-      type: object
-      properties:
-        phone:
-          type: string
-          example: "79001234567"
-        email:
-          type: string
-          format: email
-          example: "user@example.com"
-        name:
-          type: string
-          example: "Иван"
-        surname:
-          type: string
-          example: "Петров"
-
-    AdminWorkspacesListResponse:
-      type: object
-      properties:
-        workspaces:
-          type: array
-          items:
-            $ref: "#/components/schemas/Workspace"
-        total:
-          type: integer
-          example: 50
-        limit:
-          type: integer
-          example: 20
-        offset:
-          type: integer
-          example: 0
-
-  responses:
-    BadRequest:
-      description: Invalid request body
-      content:
-        application/json:
+          description: Not Found
           schema:
-            $ref: "#/components/schemas/Error"
-    Unauthorized:
-      description: Not authenticated
-      content:
-        application/json:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "409":
+          description: Conflict
           schema:
-            $ref: "#/components/schemas/Error"
-    Forbidden:
-      description: Insufficient permissions
-      content:
-        application/json:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Update workspace role
+      tags:
+        - Workspaces
+  /workspaces/{workspace_id}/roles/{role_id}/permissions:
+    put:
+      consumes:
+        - application/json
+      description: Replaces the full permission set of a custom workspace role.
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          type: string
+        - description: Role ID
+          in: path
+          name: role_id
+          required: true
+          type: integer
+        - description: Set permissions payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/workspaces.SetRolePermissionsRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/workspaces.SingleRoleResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/tools.ErrorResponse"
+      security:
+        - AccessCookieAuth: []
+      summary: Set workspace role permissions
+      tags:
+        - Workspaces
+securityDefinitions:
+  AccessCookieAuth:
+    in: cookie
+    name: access_token
+    type: apiKey
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  RefreshCookieAuth:
+    in: cookie
+    name: refresh_token
+    type: apiKey
+swagger: "2.0"

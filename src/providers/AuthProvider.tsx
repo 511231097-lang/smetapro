@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { postApiV1AuthRefresh } from "../shared/api/generated/smetchik";
+import { postAuthRefresh } from "../shared/api/generated/smetchik";
 import { setAuthHandlers } from "../shared/api/httpClient";
 import { ROUTES } from "../shared/constants/routes";
 
@@ -17,7 +17,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const handlers = useMemo(
     () => ({
       refresh: async () => {
-        await postApiV1AuthRefresh();
+        await postAuthRefresh();
       },
       logout: () => {
         queryClient.clear();

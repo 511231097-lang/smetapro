@@ -1,11 +1,11 @@
 import { Center, Loader, Stack } from "@mantine/core";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useGetApiV1AuthMe } from "../shared/api/generated/smetchik";
+import { useGetAuthMe } from "../shared/api/generated/smetchik";
 import { ROUTES } from "../shared/constants/routes";
 
 const RequireAuth = () => {
   const location = useLocation();
-  const { data: user, isLoading, isError } = useGetApiV1AuthMe({});
+  const { data: user, isLoading, isError } = useGetAuthMe({});
 
   if (isLoading) {
     return (

@@ -12,7 +12,7 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useWorkspace } from "../../providers/WorkspaceProvider";
-import { usePostApiV1WorkspacesWorkspaceIdProjects } from "../../shared/api/generated/smetchik";
+import { usePostWorkspaces } from "../../shared/api/generated/smetchik";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { ROUTES } from "../../shared/constants/routes";
 import { queryClient } from "../../shared/api/queryClient";
@@ -44,7 +44,7 @@ const CreateProjectPage = () => {
     },
   });
 
-  const createMutation = usePostApiV1WorkspacesWorkspaceIdProjects({
+  const createMutation = usePostWorkspaces({
     mutation: {
       onSuccess: () => {
         notifications.show({
@@ -64,7 +64,7 @@ const CreateProjectPage = () => {
 
         navigate(ROUTES.PROJECTS, { replace: true });
       },
-      onError: (error) => {
+      onError: (error: unknown) => {
         notifications.show({
           color: "red",
           title: "Ошибка",
@@ -80,11 +80,11 @@ const CreateProjectPage = () => {
 
   const handleSubmit = form.onSubmit((values) => {
     createMutation.mutate({
-      workspaceId: activeWorkspace.id,
+      // id: activeWorkspace.id,
       data: {
         name: values.name.trim(),
-        address: values.address.trim() || undefined,
-        comment: values.comment.trim() || undefined,
+        // address: values.address.trim() || undefined,
+        // comment: values.comment.trim() || undefined,
       },
     });
   });

@@ -1,10 +1,10 @@
 import { Center, Loader, Stack } from "@mantine/core";
 import { Navigate, Outlet } from "react-router-dom";
-import { useGetApiV1AuthMe } from "../shared/api/generated/smetchik";
+import { useGetAuthMe } from "../shared/api/generated/smetchik";
 import { ROUTES } from "../shared/constants/routes";
 
 const RequireGuest = () => {
-  const { data: user, isLoading, isError } = useGetApiV1AuthMe({});
+  const { data: user, isLoading, isError } = useGetAuthMe({});
 
   if (isLoading) {
     return (
@@ -16,9 +16,9 @@ const RequireGuest = () => {
     );
   }
 
-  if (!isError && user) {
-    return <Navigate to={ROUTES.PROJECTS} replace />;
-  }
+  // if (!isError && user) {
+  //   return <Navigate to={ROUTES.PROJECTS} replace />;
+  // }
 
   return <Outlet />;
 };

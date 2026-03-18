@@ -14,8 +14,54 @@ const basic = Buffer.from(`${user}:${pass}`).toString("base64");
 // Docs: https://rsbuild.rs/config/
 export default defineConfig({
   plugins: [pluginReact(), ...(isDev ? [pluginBasicSsl()] : [])],
+  html: {
+    title: "Сметчик ПРО",
+    favicon: "./public/favicon.ico",
+    tags: [
+      {
+        tag: "link",
+        attrs: {
+          rel: "icon",
+          type: "image/svg+xml",
+          href: "/favicon.svg",
+        },
+        head: true,
+        append: true,
+      },
+      {
+        tag: "link",
+        attrs: {
+          rel: "mask-icon",
+          href: "/safari-pinned-tab.svg",
+          color: "#12B886",
+        },
+        head: true,
+        append: true,
+      },
+    ],
+    appIcon: {
+      name: "Сметчик ПРО",
+      icons: [
+        {
+          src: "./src/assets/app-icons/apple-touch-icon.png",
+          size: 180,
+          target: "apple-touch-icon",
+        },
+        {
+          src: "./src/assets/app-icons/icon-192.png",
+          size: 192,
+          target: "web-app-manifest",
+        },
+        {
+          src: "./src/assets/app-icons/icon-512.png",
+          size: 512,
+          target: "web-app-manifest",
+        },
+      ],
+    },
+  },
   server: {
-    host: "local.smetchik.pro",
+    host: "local.dev.smetchik.pro",
     port: 4000,
     https: {
       key: fs.readFileSync("./cert/cert.key"),

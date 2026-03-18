@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePostApiV1AuthLogout } from "../../shared/api/generated/smetchik";
+import { usePostAuthLogout } from "../../shared/api/generated/smetchik";
 import { Center, Loader, Stack } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../shared/constants/routes";
 
 const LogoutPage = () => {
-  const { mutateAsync } = usePostApiV1AuthLogout();
+  const { mutateAsync } = usePostAuthLogout();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const ref = useRef(false);

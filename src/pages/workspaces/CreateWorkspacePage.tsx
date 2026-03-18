@@ -1,6 +1,7 @@
+import { useState } from "react";
 import {
+  Alert,
   Button,
-  Container,
   Paper,
   Stack,
   Text,
@@ -9,55 +10,54 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { IconAlertCircle, IconCube3dSphere } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import {
-  getGetApiV1WorkspacesQueryKey,
-  getGetApiV1WorkspacesQueryOptions,
-  usePostApiV1Workspaces,
+  getGetWorkspacesQueryKey,
+  getGetWorkspacesQueryOptions,
+  usePostWorkspaces,
 } from "../../shared/api/generated/smetchik";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { ROUTES } from "../../shared/constants/routes";
 import { queryClient } from "../../shared/api/queryClient";
 import type { WorkspacesListResponse } from "../../shared/api/generated/schemas";
 import { setStoredWorkspaceId } from "../../providers/WorkspaceProvider";
+import {
+  AuthFormWrapper,
+  AuthPageLayout,
+  authLayoutClasses as classes,
+} from "../auth/shared/AuthLayout";
+
+const MAX_NAME = 60;
 
 const getErrorMessage = (error: unknown) => {
   if (error instanceof HttpClientError) {
     const data = error.data as { error?: string } | undefined;
     return data?.error ?? "Не удалось создать пространство";
   }
-
-  if (error instanceof Error) {
-    return error.message;
-  }
-
+  if (error instanceof Error) return error.message;
   return "Не удалось создать пространство. Попробуйте еще раз.";
 };
 
 const CreateWorkspacePage = () => {
   const navigate = useNavigate();
+  const [createError, setCreateError] = useState<string | null>(null);
   const form = useForm({
-    initialValues: {
-      name: "",
-    },
+    initialValues: { name: "" },
     validate: {
       name: (value) => (value.trim().length === 0 ? "Введите название" : null),
     },
   });
 
-  const createMutation = usePostApiV1Workspaces({
+  const nameLength = form.values.name.length;
+
+  const createMutation = usePostWorkspaces({
     mutation: {
       onSuccess: async (response) => {
-        notifications.show({
-          color: "teal",
-          title: "Пространство создано",
-          message: "Можно приступать к работе.",
-        });
-
         const createdWorkspace = response.workspace;
         if (createdWorkspace) {
           setStoredWorkspaceId(createdWorkspace.id ?? null);
-          const queryKey = getGetApiV1WorkspacesQueryKey();
+          const queryKey = getGetWorkspacesQueryKey();
           const current = queryClient.getQueryData<
             WorkspacesListResponse | undefined
           >(queryKey);
@@ -79,7 +79,7 @@ const CreateWorkspacePage = () => {
             );
           } else {
             try {
-              const { queryFn } = getGetApiV1WorkspacesQueryOptions();
+              const { queryFn } = getGetWorkspacesQueryOptions();
               const fetched = await queryClient.fetchQuery({
                 queryKey,
                 queryFn,
@@ -106,57 +106,96 @@ const CreateWorkspacePage = () => {
           }
         } else {
           queryClient.invalidateQueries({
-            queryKey: getGetApiV1WorkspacesQueryKey(),
+            queryKey: getGetWorkspacesQueryKey(),
           });
         }
 
         navigate(ROUTES.PROJECTS, { replace: true });
       },
       onError: (error) => {
-        notifications.show({
-          color: "red",
-          title: "Ошибка",
-          message: getErrorMessage(error),
-        });
+        setCreateError(getErrorMessage(error));
       },
     },
   });
 
   const handleSubmit = form.onSubmit((values) => {
-    createMutation.mutate({
-      data: {
-        name: values.name.trim(),
-      },
-    });
+    setCreateError(null);
+    createMutation.mutate({ data: { name: values.name.trim() } });
   });
 
   return (
-    <div className="auth-page">
-      <Container size={460} my="xl">
-        <Title order={2} ta="center" className="auth-title">
-          Создание пространства
-        </Title>
-        <Text c="dimmed" size="sm" ta="center" mt={6}>
-          Укажите название, чтобы продолжить работу.
-        </Text>
+    <AuthPageLayout>
+      <AuthFormWrapper>
+        {createError && (
+          <Alert
+            color="red"
+            icon={<IconAlertCircle size={16} />}
+            withCloseButton
+            onClose={() => setCreateError(null)}
+          >
+            {createError}
+          </Alert>
+        )}
+        <Paper
+          component="form"
+          onSubmit={handleSubmit}
+          noValidate
+          className={classes.formCard}
+          bg="white"
+        >
+          <Stack gap="lg">
+            <IconCube3dSphere
+              size={32}
+              color="var(--mantine-color-teal-6)"
+              stroke={1.5}
+            />
 
-        <Paper withBorder shadow="md" p="lg" mt="lg" radius="md">
-          <form onSubmit={handleSubmit} noValidate>
-            <Stack gap="md">
+            <div>
+              <Title order={3} mb={6}>
+                Добро пожаловать!
+                <br />
+                Давайте создадим первое пространство
+              </Title>
+              <Text size="sm" c="dimmed">
+                Пространство — это как виртуальный офис: здесь ты будешь вести
+                проекты, работать со сметами и приглашать коллег.
+              </Text>
+            </div>
+
+            <Stack gap={4}>
               <TextInput
-                label="Название"
-                placeholder="Моя команда"
+                size="sm"
+                placeholder="Например: РемГрупп или СтройСила"
                 autoComplete="off"
+                maxLength={MAX_NAME}
+                styles={{
+                  input: {
+                    borderColor:
+                      nameLength > 0
+                        ? "var(--mantine-color-teal-6)"
+                        : undefined,
+                  },
+                }}
                 {...form.getInputProps("name")}
               />
-              <Button type="submit" loading={createMutation.isPending}>
-                Создать пространство
-              </Button>
+              <Text size="xs" c="dimmed" ta="right">
+                {nameLength}/{MAX_NAME}
+              </Text>
             </Stack>
-          </form>
+
+            <Button
+              type="submit"
+              loading={createMutation.isPending}
+              disabled={nameLength === 0}
+              size="sm"
+              fullWidth
+            >
+              Создать пространство
+            </Button>
+          </Stack>
         </Paper>
-      </Container>
-    </div>
+      </AuthFormWrapper>
+    </AuthPageLayout>
   );
 };
 

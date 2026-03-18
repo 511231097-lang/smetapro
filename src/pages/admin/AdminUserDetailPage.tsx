@@ -39,8 +39,7 @@ const AdminUserDetailPage = () => {
       email: "",
     },
     validate: {
-      phone: (value) =>
-        value.trim().length === 0 ? "Введите телефон" : null,
+      phone: (value) => (value.trim().length === 0 ? "Введите телефон" : null),
       name: (value) => (value.trim().length === 0 ? "Введите имя" : null),
       email: (value) => {
         if (value.trim().length === 0) {
@@ -53,14 +52,11 @@ const AdminUserDetailPage = () => {
     },
   });
 
-  const { data, isLoading, isError } = useGetApiV1AdminUsersId(
-    userId ?? "",
-    {
-      query: {
-        enabled: !!userId,
-      },
+  const { data, isLoading, isError } = useGetApiV1AdminUsersId(userId ?? "", {
+    query: {
+      enabled: !!userId,
     },
-  );
+  });
 
   const user = data?.user;
 
