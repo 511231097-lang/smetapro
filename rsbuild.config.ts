@@ -1,11 +1,7 @@
 import { defineConfig, loadEnv } from "@rsbuild/core";
-import { pluginBasicSsl } from "@rsbuild/plugin-basic-ssl";
 import { pluginReact } from "@rsbuild/plugin-react";
-import fs from "fs";
 
 const { publicVars } = loadEnv({ prefixes: ["BASE_", "PUBLIC_"] });
-const isTest = process.env.PW_TEST === "1";
-const isDev = process.env.NODE_ENV === "development" && !isTest;
 
 const user = process.env.BASE_USER ?? "";
 const pass = process.env.BASE_PASS ?? "";
@@ -13,7 +9,7 @@ const basic = Buffer.from(`${user}:${pass}`).toString("base64");
 
 // Docs: https://rsbuild.rs/config/
 export default defineConfig({
-  plugins: [pluginReact(), ...(isDev ? [pluginBasicSsl()] : [])],
+  plugins: [pluginReact()],
   html: {
     title: "Сметчик ПРО",
     favicon: "./public/favicon.ico",
@@ -61,12 +57,8 @@ export default defineConfig({
     },
   },
   server: {
-    host: "local.dev.smetchik.pro",
+    host: "localhost",
     port: 4000,
-    https: {
-      key: fs.readFileSync("./cert/cert.key"),
-      cert: fs.readFileSync("./cert/cert.pem"),
-    },
     cors: false,
     headers: { "Access-Control-Allow-Origin": "*" },
     printUrls: true,
@@ -74,10 +66,22 @@ export default defineConfig({
       "/api": {
         target: "https://dev.smetchik.pro",
         changeOrigin: true,
+        cookieDomainRewrite: { "*": "" },
         headers: {
           Authorization: `Basic ${basic}`,
+          Origin: "https://local.dev.smetchik.pro:4000",
         },
         secure: true,
+        on: {
+          proxyRes: (proxyRes: {
+            headers: Record<string, string | undefined>;
+          }) => {
+            if (proxyRes.headers["access-control-allow-origin"]) {
+              proxyRes.headers["access-control-allow-origin"] =
+                "http://localhost:4000";
+            }
+          },
+        },
       },
     },
   },
