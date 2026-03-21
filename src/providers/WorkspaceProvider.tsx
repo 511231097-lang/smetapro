@@ -1,13 +1,20 @@
 import type { ReactNode } from "react";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import type { Workspace } from "../shared/api/generated/schemas";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import type { WorkspacesWorkspaceResponse } from "../shared/api/generated/schemas";
 
 const WORKSPACE_STORAGE_KEY = "active_workspace_id";
 
 type WorkspaceContextValue = {
-  workspaceList: Workspace[];
+  workspaceList: WorkspacesWorkspaceResponse[];
   activeWorkspaceId: string | null;
-  activeWorkspace?: Workspace;
+  activeWorkspace?: WorkspacesWorkspaceResponse;
   setActiveWorkspaceId: (id: string | null) => void;
 };
 
@@ -42,13 +49,16 @@ const setStoredWorkspaceId = (value: string | null) => {
 
 type WorkspaceProviderProps = {
   children: ReactNode;
-  workspaces: Workspace[];
+  workspaces: WorkspacesWorkspaceResponse[];
 };
 
-const WorkspaceProvider = ({ children, workspaces }: WorkspaceProviderProps) => {
-  const [activeWorkspaceId, setActiveWorkspaceIdState] = useState<string | null>(
-    () => getStoredWorkspaceId(),
-  );
+const WorkspaceProvider = ({
+  children,
+  workspaces,
+}: WorkspaceProviderProps) => {
+  const [activeWorkspaceId, setActiveWorkspaceIdState] = useState<
+    string | null
+  >(() => getStoredWorkspaceId());
 
   const setActiveWorkspaceId = useCallback((id: string | null) => {
     setActiveWorkspaceIdState(id);
@@ -109,4 +119,9 @@ const useWorkspace = () => {
   return ctx;
 };
 
-export { WorkspaceProvider, useWorkspace, getStoredWorkspaceId, setStoredWorkspaceId };
+export {
+  WorkspaceProvider,
+  useWorkspace,
+  getStoredWorkspaceId,
+  setStoredWorkspaceId,
+};

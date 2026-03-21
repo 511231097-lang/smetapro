@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from "@rsbuild/core";
 import { pluginReact } from "@rsbuild/plugin-react";
+import { pluginSvgr } from "@rsbuild/plugin-svgr";
 
 const { publicVars } = loadEnv({ prefixes: ["BASE_", "PUBLIC_"] });
 
@@ -9,7 +10,7 @@ const basic = Buffer.from(`${user}:${pass}`).toString("base64");
 
 // Docs: https://rsbuild.rs/config/
 export default defineConfig({
-  plugins: [pluginReact()],
+  plugins: [pluginReact(), pluginSvgr()],
   html: {
     title: "Сметчик ПРО",
     favicon: "./public/favicon.ico",
