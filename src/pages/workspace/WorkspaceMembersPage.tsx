@@ -227,6 +227,16 @@ const WorkspaceMembersPage = () => {
     createMutation.mutate({ workspaceId, data: { role_code: selectedRole } });
   };
 
+  const handleRoleChange = (roleCode: string | null) => {
+    setSelectedRole(roleCode);
+
+    // If invite widget is visible, regenerate link immediately for new role.
+    if (!workspaceId || !roleCode || roleCode === selectedRole || !invite)
+      return;
+
+    createMutation.mutate({ workspaceId, data: { role_code: roleCode } });
+  };
+
   const handleCopy = async () => {
     await navigator.clipboard.writeText(inviteUrl);
     notifications.show({ color: "teal", message: "Ссылка скопирована" });
@@ -464,7 +474,7 @@ const WorkspaceMembersPage = () => {
                 />
                 <Select
                   value={selectedRole}
-                  onChange={setSelectedRole}
+                  onChange={handleRoleChange}
                   data={roleOptions}
                   miw={190}
                   size="sm"
@@ -529,7 +539,7 @@ const WorkspaceMembersPage = () => {
                 <Group gap={8} wrap="nowrap" align="center">
                   <Select
                     value={selectedRole}
-                    onChange={setSelectedRole}
+                    onChange={handleRoleChange}
                     data={roleOptions}
                     style={{ flex: 1 }}
                     size="sm"
