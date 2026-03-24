@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Avatar,
   Button,
   Drawer,
   Group,
-  Modal,
   ScrollArea,
   Select,
   Stack,
@@ -16,7 +15,6 @@ import { notifications } from "@mantine/notifications";
 import { IconTrash, IconUpload } from "@tabler/icons-react";
 import {
   getGetWorkspacesWorkspaceIdMembersQueryKey,
-  useDeleteWorkspacesWorkspaceIdMembersMemberId,
   useGetWorkspacesWorkspaceIdRoles,
   usePatchWorkspacesWorkspaceIdMembersMemberId,
   usePatchWorkspacesWorkspaceIdMembersMemberIdRole,
@@ -30,6 +28,7 @@ type Props = {
   member: WorkspacesMemberResponse | null;
   workspaceId: string;
   onClose: () => void;
+  onDelete: (member: WorkspacesMemberResponse) => void;
 };
 
 const getErrorMessage = (error: unknown) => {
@@ -40,9 +39,7 @@ const getErrorMessage = (error: unknown) => {
   return "Не удалось выполнить действие";
 };
 
-const MemberDrawer = ({ member, workspaceId, onClose }: Props) => {
-  const [deleteOpened, setDeleteOpened] = useState(false);
-
+const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
   const { data: rolesData } = useGetWorkspacesWorkspaceIdRoles(workspaceId, {
     query: { enabled: !!workspaceId },
   });
@@ -94,20 +91,6 @@ const MemberDrawer = ({ member, workspaceId, onClose }: Props) => {
 
   const patchRole = usePatchWorkspacesWorkspaceIdMembersMemberIdRole({
     mutation: {
-      onError: (error) => {
-        notifications.show({ color: "red", message: getErrorMessage(error) });
-      },
-    },
-  });
-
-  const deleteMember = useDeleteWorkspacesWorkspaceIdMembersMemberId({
-    mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: membersQueryKey });
-        notifications.show({ color: "teal", message: "Сотрудник удалён" });
-        setDeleteOpened(false);
-        onClose();
-      },
       onError: (error) => {
         notifications.show({ color: "red", message: getErrorMessage(error) });
       },
@@ -252,7 +235,7 @@ const MemberDrawer = ({ member, workspaceId, onClose }: Props) => {
               color="red"
               leftSection={<IconTrash size={16} />}
               style={{ alignSelf: "flex-start" }}
-              onClick={() => setDeleteOpened(true)}
+              onClick={() => member && onDelete(member)}
               type="button"
             >
               Удалить сотрудника
@@ -288,42 +271,6 @@ const MemberDrawer = ({ member, workspaceId, onClose }: Props) => {
           </Group>
         </form>
       </Drawer>
-
-      {/* Delete confirmation modal */}
-      <Modal
-        opened={deleteOpened}
-        onClose={() => setDeleteOpened(false)}
-        title={<Text fw={600}>Удаление сотрудника</Text>}
-        size="sm"
-        centered
-      >
-        <Stack gap="lg">
-          <Text size="sm">
-            Вы уверены что хотите удалить сотрудника из пространства?
-          </Text>
-          <Group justify="flex-end" gap="sm">
-            <Button
-              variant="outline"
-              color="gray"
-              onClick={() => setDeleteOpened(false)}
-            >
-              Отменить
-            </Button>
-            <Button
-              color="red"
-              leftSection={<IconTrash size={16} />}
-              loading={deleteMember.isPending}
-              onClick={() => {
-                if (member?.id) {
-                  deleteMember.mutate({ workspaceId, memberId: member.id });
-                }
-              }}
-            >
-              Удалить сотрудника
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
     </>
   );
 };

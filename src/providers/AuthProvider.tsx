@@ -20,8 +20,13 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         await postAuthRefresh();
       },
       logout: () => {
+        const from = window.location.pathname;
         queryClient.clear();
-        navigate(ROUTES.LOGIN, { replace: true });
+        navigate(ROUTES.LOGIN, {
+          replace: true,
+          state:
+            from !== ROUTES.LOGIN ? { from: { pathname: from } } : undefined,
+        });
       },
     }),
     [navigate, queryClient],

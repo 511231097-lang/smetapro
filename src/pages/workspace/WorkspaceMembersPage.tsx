@@ -7,12 +7,14 @@ import {
   Badge,
   Button,
   Center,
+  Checkbox,
   Divider,
   Group,
   Loader,
   Menu,
   Modal,
   Paper,
+  Popover,
   Select,
   Stack,
   Table,
@@ -38,6 +40,7 @@ import {
   IconSortAscendingLetters,
   IconSortDescendingLetters,
   IconTrash,
+  IconX,
 } from "@tabler/icons-react";
 import {
   getGetWorkspacesWorkspaceIdInviteQueryKey,
@@ -105,6 +108,10 @@ const WorkspaceMembersPage = () => {
     member: WorkspacesMemberResponse;
     isLeave: boolean;
   } | null>(null);
+
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [draftRoleCodes, setDraftRoleCodes] = useState<string[]>([]);
+  const [filterRoleCodes, setFilterRoleCodes] = useState<string[]>([]);
 
   const inviteQueryKey = getGetWorkspacesWorkspaceIdInviteQueryKey(workspaceId);
   const membersQueryKey =
@@ -198,7 +205,16 @@ const WorkspaceMembersPage = () => {
     rolesData?.roles?.map((r) => ({
       value: r.code ?? "",
       label: `Роль: ${r.name ?? r.code}`,
+      name: r.name ?? r.code ?? "",
     })) ?? [];
+
+  const allRoles = rolesData?.roles ?? [];
+  const isFilterActive = filterRoleCodes.length > 0;
+  const filteredMembers = (membersData?.members ?? []).filter(
+    (m) =>
+      filterRoleCodes.length === 0 ||
+      (m.role?.code != null && filterRoleCodes.includes(m.role.code)),
+  );
 
   const inviteUrl = invite?.token
     ? `${window.location.origin}/invite/${invite.token}`
@@ -266,9 +282,145 @@ const WorkspaceMembersPage = () => {
             Добавить сотрудника
           </Button>
 
-          <ActionIcon variant="outline" color="teal" size={32}>
-            <IconFilter size={16} />
-          </ActionIcon>
+          <Popover
+            opened={filterOpen}
+            onClose={() => setFilterOpen(false)}
+            position="bottom-end"
+            shadow="md"
+            withinPortal
+            withArrow={false}
+          >
+            <Popover.Target>
+              <ActionIcon
+                variant={isFilterActive ? "filled" : "outline"}
+                color="teal"
+                size={32}
+                onClick={() => {
+                  if (!filterOpen) {
+                    const allCodes = allRoles
+                      .map((r) => r.code ?? "")
+                      .filter(Boolean);
+                    setDraftRoleCodes(
+                      filterRoleCodes.length === 0 ? allCodes : filterRoleCodes,
+                    );
+                  }
+                  setFilterOpen((o) => !o);
+                }}
+              >
+                <IconFilter size={16} />
+              </ActionIcon>
+            </Popover.Target>
+            <Popover.Dropdown p={0} style={{ minWidth: 280 }}>
+              {/* Header */}
+              <Group
+                justify="space-between"
+                px={16}
+                style={{
+                  height: 44,
+                  borderBottom: "1px solid var(--mantine-color-gray-2)",
+                }}
+              >
+                <Group gap={8}>
+                  <IconFilter size={16} />
+                  <Text fw={700} size="md">
+                    Фильтры
+                  </Text>
+                </Group>
+                <ActionIcon
+                  variant="subtle"
+                  color="gray"
+                  onClick={() => setFilterOpen(false)}
+                >
+                  <IconX size={16} />
+                </ActionIcon>
+              </Group>
+              {/* Body */}
+              <Stack gap={0} px={16} pt={12} pb={4}>
+                <Text
+                  size="xs"
+                  fw={600}
+                  c="dimmed"
+                  tt="uppercase"
+                  mb={8}
+                  style={{ letterSpacing: "0.04em" }}
+                >
+                  Роль
+                </Text>
+                <Stack gap={0}>
+                  <Checkbox
+                    py={4}
+                    color="teal"
+                    label={
+                      <Text size="sm" fw={600}>
+                        Все роли
+                      </Text>
+                    }
+                    checked={
+                      draftRoleCodes.length === allRoles.length &&
+                      allRoles.length > 0
+                    }
+                    indeterminate={
+                      draftRoleCodes.length > 0 &&
+                      draftRoleCodes.length < allRoles.length
+                    }
+                    onChange={(e) => {
+                      if (e.currentTarget.checked)
+                        setDraftRoleCodes(
+                          allRoles.map((r) => r.code ?? "").filter(Boolean),
+                        );
+                      else setDraftRoleCodes([]);
+                    }}
+                  />
+                  {allRoles.map((role) => (
+                    <Checkbox
+                      key={role.id}
+                      py={4}
+                      color="teal"
+                      label={role.name ?? role.code}
+                      checked={draftRoleCodes.includes(role.code ?? "")}
+                      onChange={(e) => {
+                        const code = role.code ?? "";
+                        if (e.currentTarget.checked)
+                          setDraftRoleCodes((prev) => [...prev, code]);
+                        else
+                          setDraftRoleCodes((prev) =>
+                            prev.filter((c) => c !== code),
+                          );
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </Stack>
+              {/* Footer */}
+              <Group px={16} pb={16} pt={8} gap={8}>
+                <Button
+                  color="teal"
+                  style={{ flex: 1 }}
+                  onClick={() => {
+                    setFilterRoleCodes(
+                      draftRoleCodes.length === allRoles.length
+                        ? []
+                        : draftRoleCodes,
+                    );
+                    setFilterOpen(false);
+                  }}
+                >
+                  Применить
+                </Button>
+                <Button
+                  variant="default"
+                  style={{ flex: 1 }}
+                  onClick={() => {
+                    setDraftRoleCodes([]);
+                    setFilterRoleCodes([]);
+                    setFilterOpen(false);
+                  }}
+                >
+                  Сбросить
+                </Button>
+              </Group>
+            </Popover.Dropdown>
+          </Popover>
         </Group>
       </Paper>
 
@@ -300,6 +452,7 @@ const WorkspaceMembersPage = () => {
                 <TextInput
                   value={inviteUrl}
                   readOnly
+                  variant="filled"
                   style={{ flex: 1 }}
                   rightSection={
                     <ActionIcon
@@ -316,9 +469,13 @@ const WorkspaceMembersPage = () => {
                   value={selectedRole}
                   onChange={setSelectedRole}
                   data={roleOptions}
-                  w={184}
+                  miw={190}
                   size="sm"
+                  variant="filled"
                   allowDeselect={false}
+                  renderOption={({ option }) => (
+                    <span>{(option as (typeof roleOptions)[number]).name}</span>
+                  )}
                 />
                 <Tooltip
                   label="При обновлении текущая ссылка перестанет работать"
@@ -345,8 +502,8 @@ const WorkspaceMembersPage = () => {
                   withArrow
                 >
                   <Group gap={4} style={{ cursor: "default", flexShrink: 0 }}>
-                    <IconClock size={16} color="var(--mantine-color-gray-6)" />
-                    <Text size="sm" c="dimmed" style={{ userSelect: "none" }}>
+                    <IconClock size={16} />
+                    <Text size="sm" style={{ userSelect: "none" }}>
                       {remaining !== null ? formatDuration(remaining) : "—"}
                     </Text>
                   </Group>
@@ -360,6 +517,7 @@ const WorkspaceMembersPage = () => {
                 <TextInput
                   value={inviteUrl}
                   readOnly
+                  variant="filled"
                   rightSection={
                     <ActionIcon
                       variant="subtle"
@@ -378,6 +536,7 @@ const WorkspaceMembersPage = () => {
                     data={roleOptions}
                     style={{ flex: 1 }}
                     size="sm"
+                    variant="filled"
                     allowDeselect={false}
                   />
                   <Tooltip
@@ -405,11 +564,8 @@ const WorkspaceMembersPage = () => {
                     withArrow
                   >
                     <Group gap={4} style={{ cursor: "default", flexShrink: 0 }}>
-                      <IconClock
-                        size={16}
-                        color="var(--mantine-color-gray-6)"
-                      />
-                      <Text size="sm" c="dimmed" style={{ userSelect: "none" }}>
+                      <IconClock size={16} />
+                      <Text size="sm" style={{ userSelect: "none" }}>
                         {remaining !== null ? formatDuration(remaining) : "—"}
                       </Text>
                     </Group>
@@ -459,7 +615,7 @@ const WorkspaceMembersPage = () => {
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {(membersData?.members ?? []).length === 0 ? (
+                {filteredMembers.length === 0 ? (
                   <Table.Tr>
                     <Table.Td colSpan={COLUMNS.length + 1}>
                       <Center py={32}>
@@ -470,17 +626,29 @@ const WorkspaceMembersPage = () => {
                     </Table.Td>
                   </Table.Tr>
                 ) : (
-                  (membersData?.members ?? []).map((m) => (
-                    <Table.Tr key={m.id}>
+                  filteredMembers.map((m) => (
+                    <Table.Tr
+                      key={m.id}
+                      onClick={() => setSelectedMember(m)}
+                      style={{ cursor: "pointer" }}
+                    >
                       <Table.Td>
                         <Group gap="sm" wrap="nowrap">
                           <Avatar size={32} radius="xl" color="teal">
                             {getInitials(m.name, m.surname)}
                           </Avatar>
-                          <Text size="sm" fw={500}>
-                            {[m.name, m.surname].filter(Boolean).join(" ") ||
-                              m.email ||
-                              "—"}
+                          <Text size="sm">
+                            <Text
+                              component="span"
+                              style={{
+                                textDecoration: "underline",
+                                textDecorationColor: "#ced4da",
+                              }}
+                            >
+                              {[m.name, m.surname].filter(Boolean).join(" ") ||
+                                m.email ||
+                                "—"}
+                            </Text>
                             {isMe(m) && (
                               <Text component="span" c="dimmed">
                                 {" "}
@@ -506,13 +674,29 @@ const WorkspaceMembersPage = () => {
                         <Text size="sm">{m.role?.name || "—"}</Text>
                       </Table.Td>
                       <Table.Td>
-                        <Menu withinPortal position="bottom-end" shadow="sm">
+                        <Menu
+                          withinPortal
+                          position="bottom-end"
+                          shadow="sm"
+                          styles={{
+                            item: {
+                              padding: "8px 12px",
+                              fontSize: "12px",
+                              lineHeight: "16px",
+                            },
+                          }}
+                        >
                           <Menu.Target>
-                            <ActionIcon variant="subtle" color="gray" size={28}>
+                            <ActionIcon
+                              variant="subtle"
+                              color="gray"
+                              size={28}
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <IconDotsVertical size={16} />
                             </ActionIcon>
                           </Menu.Target>
-                          <Menu.Dropdown>
+                          <Menu.Dropdown p={4}>
                             <Menu.Item
                               leftSection={<IconPencil size={12} />}
                               onClick={() => setSelectedMember(m)}
@@ -561,7 +745,7 @@ const WorkspaceMembersPage = () => {
           <Center py={40}>
             <Loader size="sm" />
           </Center>
-        ) : (membersData?.members ?? []).length === 0 ? (
+        ) : filteredMembers.length === 0 ? (
           <Center py={32}>
             <Text c="dimmed" size="sm">
               Сотрудников пока нет
@@ -569,14 +753,21 @@ const WorkspaceMembersPage = () => {
           </Center>
         ) : (
           <Stack gap={8}>
-            {(membersData?.members ?? []).map((m) => {
+            {filteredMembers.map((m) => {
               const fullName =
                 [m.name, m.surname].filter(Boolean).join(" ") || m.email || "—";
               const subtitle = [m.position, m.role?.name]
                 .filter(Boolean)
                 .join(" · ");
               return (
-                <Paper key={m.id} withBorder radius="md" p={12}>
+                <Paper
+                  key={m.id}
+                  withBorder
+                  radius="md"
+                  p={12}
+                  onClick={() => setSelectedMember(m)}
+                  style={{ cursor: "pointer" }}
+                >
                   <Stack gap={10}>
                     {/* Header row: avatar + name + menu */}
                     <Group gap={8} wrap="nowrap" align="center">
@@ -589,10 +780,18 @@ const WorkspaceMembersPage = () => {
                         {getInitials(m.name, m.surname)}
                       </Avatar>
                       <Stack gap={0} style={{ flex: 1, minWidth: 0 }}>
-                        <Text size="sm" fw={600} truncate>
-                          {fullName}
+                        <Text size="sm" truncate>
+                          <Text
+                            component="span"
+                            style={{
+                              textDecoration: "underline",
+                              textDecorationColor: "#ced4da",
+                            }}
+                          >
+                            {fullName}
+                          </Text>
                           {isMe(m) && (
-                            <Text component="span" c="dimmed" fw={400}>
+                            <Text component="span" c="dimmed">
                               {" "}
                               (Вы)
                             </Text>
@@ -604,18 +803,30 @@ const WorkspaceMembersPage = () => {
                           </Text>
                         )}
                       </Stack>
-                      <Menu withinPortal position="bottom-end" shadow="sm">
+                      <Menu
+                        withinPortal
+                        position="bottom-end"
+                        shadow="sm"
+                        styles={{
+                          item: {
+                            padding: "8px 12px",
+                            fontSize: "12px",
+                            lineHeight: "16px",
+                          },
+                        }}
+                      >
                         <Menu.Target>
                           <ActionIcon
                             variant="subtle"
                             color="gray"
                             size={28}
                             style={{ flexShrink: 0 }}
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <IconDotsVertical size={16} />
                           </ActionIcon>
                         </Menu.Target>
-                        <Menu.Dropdown>
+                        <Menu.Dropdown p={4}>
                           <Menu.Item
                             leftSection={<IconPencil size={12} />}
                             onClick={() => setSelectedMember(m)}
@@ -647,6 +858,7 @@ const WorkspaceMembersPage = () => {
                       </Menu>
                     </Group>
 
+                    <Divider />
                     <Group gap={12} pl={44} align="flex-start">
                       <Stack gap={6}>
                         <Text size="xs" c="dimmed">
@@ -728,6 +940,10 @@ const WorkspaceMembersPage = () => {
         member={selectedMember}
         workspaceId={workspaceId ?? ""}
         onClose={() => setSelectedMember(null)}
+        onDelete={(m) => {
+          setSelectedMember(null);
+          setConfirmAction({ member: m, isLeave: false });
+        }}
       />
     </Stack>
   );
