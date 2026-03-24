@@ -24,12 +24,14 @@ type WorkspaceMenuProps = {
   activeWorkspace?: WorkspacesWorkspaceResponse;
   workspaceList: WorkspacesWorkspaceResponse[];
   onWorkspaceSelect: (id: string | null) => void;
+  mobile?: boolean;
 };
 
 const WorkspaceMenu = ({
   activeWorkspace,
   workspaceList,
   onWorkspaceSelect,
+  mobile = false,
 }: WorkspaceMenuProps) => {
   const { primaryColor } = usePrimaryColor();
   const colorScheme = useComputedColorScheme("light", {
@@ -44,7 +46,7 @@ const WorkspaceMenu = ({
     <Menu
       opened={opened}
       onChange={setOpened}
-      position="bottom-end"
+      position={mobile ? "bottom-start" : "bottom-end"}
       withinPortal
       withArrow
       arrowOffset={12}
@@ -52,11 +54,12 @@ const WorkspaceMenu = ({
     >
       <Menu.Target>
         <UnstyledButton
-          visibleFrom="sm"
-          p="0 12px 0 0"
+          visibleFrom={mobile ? undefined : "sm"}
+          p={mobile ? "0" : "0 12px 0 0"}
           bdrs={4}
-          ml={63}
-          miw={176}
+          ml={mobile ? 0 : 63}
+          miw={mobile ? undefined : 176}
+          style={mobile ? { width: "100%" } : undefined}
         >
           <Group gap={8} wrap="nowrap">
             <Avatar

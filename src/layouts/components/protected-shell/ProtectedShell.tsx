@@ -20,8 +20,6 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
   const [mobileMenuOpened, { open: openMobileMenu, close: closeMobileMenu }] =
     useDisclosure(false);
   const [sidebarCollapsed, { toggle: toggleSidebar }] = useDisclosure(false);
-  const [searchOpen, { toggle: toggleSearch, close: closeSearch }] =
-    useDisclosure(false);
   const { activeWorkspace, workspaceList, setActiveWorkspaceId } =
     useWorkspace();
 
@@ -46,12 +44,9 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
         <ProtectedHeader
           email={email}
           initials={initials}
-          searchOpen={searchOpen}
           activeWorkspace={activeWorkspace}
           workspaceList={workspaceList}
           onOpenMobileMenu={openMobileMenu}
-          onToggleSearch={toggleSearch}
-          onCloseSearch={closeSearch}
           onWorkspaceSelect={setActiveWorkspaceId}
           onGoToProfile={() =>
             navigate(

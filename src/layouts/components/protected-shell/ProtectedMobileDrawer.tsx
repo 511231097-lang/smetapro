@@ -1,6 +1,5 @@
 import {
   ArrowRight01Icon,
-  Building01Icon,
   Cancel01Icon,
   HelpCircleIcon,
 } from "@hugeicons/core-free-icons";
@@ -12,7 +11,6 @@ import {
   Divider,
   Drawer,
   Group,
-  Menu,
   NavLink,
   Stack,
   Text,
@@ -24,6 +22,7 @@ import { usePrimaryColor } from "../../../providers/PrimaryColorProvider";
 import type { WorkspacesWorkspaceResponse } from "../../../shared/api/generated/schemas";
 import { ROUTES, buildRoute } from "../../../shared/constants/routes";
 import { getNavItems } from "./constants";
+import WorkspaceMenu from "./WorkspaceMenu";
 
 type ProtectedMobileDrawerProps = {
   opened: boolean;
@@ -110,37 +109,12 @@ const ProtectedMobileDrawer = ({
           >
             Пространство
           </Text>
-          <Menu position="bottom" width={240} withinPortal>
-            <Menu.Target>
-              <UnstyledButton style={{ width: "100%" }}>
-                <Group justify="space-between" align="center">
-                  <Group gap={8}>
-                    <Avatar
-                      size={24}
-                      radius="sm"
-                      color={primaryColor}
-                      variant="light"
-                    >
-                      <HugeiconsIcon icon={Building01Icon} size={12} />
-                    </Avatar>
-                    <Text size="sm">{activeWorkspace?.name ?? "—"}</Text>
-                  </Group>
-                  <HugeiconsIcon icon={ArrowRight01Icon} size={16} />
-                </Group>
-              </UnstyledButton>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Label>Выберите пространство</Menu.Label>
-              {workspaceList.map((workspace) => (
-                <Menu.Item
-                  key={workspace.id}
-                  onClick={() => onWorkspaceSelect(workspace.id ?? null)}
-                >
-                  {workspace.name}
-                </Menu.Item>
-              ))}
-            </Menu.Dropdown>
-          </Menu>
+          <WorkspaceMenu
+            mobile
+            activeWorkspace={activeWorkspace}
+            workspaceList={workspaceList}
+            onWorkspaceSelect={onWorkspaceSelect}
+          />
         </Box>
 
         <Divider />
