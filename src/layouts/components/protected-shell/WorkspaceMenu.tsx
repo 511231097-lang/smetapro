@@ -11,14 +11,14 @@ import {
   UnstyledButton,
   useComputedColorScheme,
 } from '@mantine/core';
+import { IconCube3dSphere } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePrimaryColor } from '../../../providers/PrimaryColorProvider';
-import ChevronIcon from './assets/ChevronIcon.svg?react';
 import type { WorkspacesWorkspaceResponse } from '../../../shared/api/generated/schemas';
-import { ROUTES, buildRoute } from '../../../shared/constants/routes';
+import { buildRoute, ROUTES } from '../../../shared/constants/routes';
+import ChevronIcon from './assets/ChevronIcon.svg?react';
 import { wsInitials } from './constants';
-import { IconCube3dSphere } from '@tabler/icons-react';
 
 type WorkspaceMenuProps = {
   activeWorkspace?: WorkspacesWorkspaceResponse;

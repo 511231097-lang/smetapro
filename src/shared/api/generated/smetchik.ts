@@ -5,7 +5,7 @@
  * HTTP API сервиса smethick-pro.
  * OpenAPI spec version: 1.0
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
+
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,7 +20,8 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
-
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { httpClient } from '../httpClient';
 import type {
   AuthForgotPasswordRequest,
   AuthLoginRequest,
@@ -50,8 +51,6 @@ import type {
   WorkspacesUpdateRequest,
   WorkspacesUpdateRoleRequest,
 } from './schemas';
-
-import { httpClient } from '../httpClient';
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 

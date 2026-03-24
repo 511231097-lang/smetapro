@@ -10,6 +10,10 @@ import {
   Text,
 } from '@mantine/core';
 import {
+  IconLayoutSidebarLeftExpand,
+  IconLayoutSidebarRightExpand,
+} from '@tabler/icons-react';
+import {
   cloneElement,
   isValidElement,
   useEffect,
@@ -17,13 +21,8 @@ import {
   useState,
 } from 'react';
 import { Link } from 'react-router-dom';
-
 import { useWorkspace } from '../../../providers/WorkspaceProvider';
 import { getNavItems } from './constants';
-import {
-  IconLayoutSidebarLeftExpand,
-  IconLayoutSidebarRightExpand,
-} from '@tabler/icons-react';
 
 type ProtectedSidebarProps = {
   pathname: string;
@@ -42,6 +41,7 @@ const ProtectedSidebar = ({
 }: ProtectedSidebarProps) => {
   const [hovered, setHovered] = useState(false);
   const collapseTimeoutRef = useRef<number | null>(null);
+  const previousPathnameRef = useRef(pathname);
   const { activeWorkspaceId } = useWorkspace();
   const navItems = getNavItems(activeWorkspaceId ?? '');
   const isHoverExpanded = collapsed && hovered;
@@ -51,7 +51,16 @@ const ProtectedSidebar = ({
     if (collapsed) {
       setHovered(false);
     }
-  }, [pathname, collapsed]);
+  }, [collapsed]);
+
+  useEffect(() => {
+    const hasPathChanged = previousPathnameRef.current !== pathname;
+    previousPathnameRef.current = pathname;
+
+    if (collapsed && hasPathChanged) {
+      setHovered(false);
+    }
+  }, [collapsed, pathname]);
 
   useEffect(() => {
     return () => {

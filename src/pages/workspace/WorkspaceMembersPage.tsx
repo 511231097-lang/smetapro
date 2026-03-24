@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import {
   ActionIcon,
   Avatar,
@@ -33,6 +31,13 @@ import {
   IconTrash,
   IconX,
 } from '@tabler/icons-react';
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
+import type {
+  WorkspacesMemberResponse,
+  WorkspacesSingleInviteResponse,
+} from '../../shared/api/generated/schemas';
 import {
   getGetWorkspacesWorkspaceIdInviteQueryKey,
   getGetWorkspacesWorkspaceIdMembersQueryKey,
@@ -43,11 +48,6 @@ import {
   useGetWorkspacesWorkspaceIdRoles,
   usePostWorkspacesWorkspaceIdInvite,
 } from '../../shared/api/generated/smetchik';
-import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
-import type {
-  WorkspacesMemberResponse,
-  WorkspacesSingleInviteResponse,
-} from '../../shared/api/generated/schemas';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { queryClient } from '../../shared/api/queryClient';
 import { getInitials } from '../../shared/utils/getInitials';

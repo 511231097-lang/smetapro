@@ -1,7 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL =
-  process.env.PW_BASE_URL ?? 'https://local.dev.smetchik.pro:4000';
+const baseURL = process.env.PW_BASE_URL ?? 'http://127.0.0.1:4000';
 
 export default defineConfig({
   testDir: './e2e',
@@ -21,7 +20,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev:test',
+    command: 'npm run dev:test -- --host 127.0.0.1 --port 4000',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

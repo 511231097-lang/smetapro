@@ -2,7 +2,7 @@ import { Box, Stack, Title } from '@mantine/core';
 import { IconBrush, IconUser } from '@tabler/icons-react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { Tabs } from '../../shared/components/Tabs';
-import { ROUTES, buildRoute } from '../../shared/constants/routes';
+import { buildRoute, ROUTES } from '../../shared/constants/routes';
 
 const ProfilePage = () => {
   const location = useLocation();

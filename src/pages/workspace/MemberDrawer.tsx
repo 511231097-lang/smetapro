@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import {
   Avatar,
   Button,
@@ -13,14 +12,15 @@ import {
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconTrash, IconUpload } from '@tabler/icons-react';
+import { useEffect } from 'react';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
+import type { WorkspacesMemberResponse } from '../../shared/api/generated/schemas';
 import {
   getGetWorkspacesWorkspaceIdMembersQueryKey,
   useGetWorkspacesWorkspaceIdRoles,
   usePatchWorkspacesWorkspaceIdMembersMemberId,
   usePatchWorkspacesWorkspaceIdMembersMemberIdRole,
 } from '../../shared/api/generated/smetchik';
-import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
-import type { WorkspacesMemberResponse } from '../../shared/api/generated/schemas';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { queryClient } from '../../shared/api/queryClient';
 import { getInitials } from '../../shared/utils/getInitials';
@@ -42,6 +42,14 @@ const getErrorMessage = (error: unknown) => {
 
 const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
   const { primaryColor } = usePrimaryColor();
+  const memberId = member?.id ?? '';
+  const memberName = member?.name ?? '';
+  const memberSurname = member?.surname ?? '';
+  const memberPhone = member?.phone ?? '';
+  const memberEmail = member?.email ?? '';
+  const memberTelegram = member?.telegram ?? '';
+  const memberPosition = member?.position ?? '';
+  const memberRoleCode = member?.role?.code ?? '';
   const { data: rolesData } = useGetWorkspacesWorkspaceIdRoles(workspaceId, {
     query: { enabled: !!workspaceId },
   });
@@ -63,22 +71,32 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
       role_code: '',
     },
   });
+  const { setValues } = form;
 
   // Sync form when member changes
   useEffect(() => {
-    if (member) {
-      form.setValues({
-        name: member.name ?? '',
-        surname: member.surname ?? '',
-        phone: member.phone ?? '',
-        email: member.email ?? '',
-        telegram: member.telegram ?? '',
-        position: member.position ?? '',
-        role_code: member.role?.code ?? '',
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [member?.id]);
+    if (!memberId) return;
+
+    setValues({
+      name: memberName,
+      surname: memberSurname,
+      phone: memberPhone,
+      email: memberEmail,
+      telegram: memberTelegram,
+      position: memberPosition,
+      role_code: memberRoleCode,
+    });
+  }, [
+    setValues,
+    memberId,
+    memberName,
+    memberSurname,
+    memberPhone,
+    memberEmail,
+    memberTelegram,
+    memberPosition,
+    memberRoleCode,
+  ]);
 
   const membersQueryKey =
     getGetWorkspacesWorkspaceIdMembersQueryKey(workspaceId);

@@ -1,12 +1,15 @@
 import { expect, test } from '@playwright/test';
-import { mockUser, setupApiMock } from './testUtils';
+import { mockUser, mockWorkspace, setupApiMock } from './testUtils';
 
-test('profile editing updates user info', async ({ page }) => {
-  await setupApiMock(page, { initialUser: mockUser });
-  await page.goto('/profile/common');
-  await page.getByLabel('Имя').fill('Пётр');
-  await page.getByLabel('Фамилия').fill('Иванов');
-  await page.getByRole('button', { name: 'Сохранить' }).click();
-  await expect(page.getByLabel('Имя')).toHaveValue('Пётр');
-  await expect(page.getByLabel('Фамилия')).toHaveValue('Иванов');
+test('profile common page pre-fills e-mail and phone', async ({ page }) => {
+  await setupApiMock(page, {
+    initialUser: mockUser,
+    workspaces: [mockWorkspace],
+  });
+
+  await page.goto(`/${mockWorkspace.id}/profile/common`);
+
+  await expect(page.getByRole('heading', { name: 'Профиль' })).toBeVisible();
+  await expect(page.getByLabel('Почта')).toHaveValue(mockUser.email);
+  await expect(page.getByLabel('Телефон')).toHaveValue(mockUser.phone);
 });

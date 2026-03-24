@@ -1,3 +1,4 @@
+import type { MantineColor } from '@mantine/core';
 import {
   Box,
   Button,
@@ -7,9 +8,8 @@ import {
   Text,
   Title,
   UnstyledButton,
+  useMantineColorScheme,
 } from '@mantine/core';
-import { useMantineColorScheme } from '@mantine/core';
-import type { MantineColor } from '@mantine/core';
 import { IconCheck, IconMoon, IconSun } from '@tabler/icons-react';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 

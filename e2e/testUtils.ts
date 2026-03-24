@@ -92,7 +92,7 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
       });
     if (url.pathname === '/api/v1/auth/me' && method === 'GET') {
       if (state.user) {
-        return json(200, state.user);
+        return json(200, { user: state.user });
       }
       return json(401, { error: 'Not authenticated' });
     }
@@ -115,6 +115,11 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
       }
       state.user = state.register.user ?? mockUser;
       return json(201, { user: state.user });
+    }
+
+    if (url.pathname === '/api/v1/auth/register/verify' && method === 'POST') {
+      state.user = state.user ?? mockUser;
+      return json(200, { user: state.user });
     }
 
     if (url.pathname === '/api/v1/auth/refresh' && method === 'POST') {

@@ -29,14 +29,15 @@ const isAuthEndpoint = (url: string) => {
 };
 
 const runSingleFlightRefresh = async () => {
-  if (!refreshFn) {
+  const currentRefreshFn = refreshFn;
+  if (!currentRefreshFn) {
     throw new Error('refresh handler is not set (setAuthHandlers).');
   }
 
   if (!refreshInFlight) {
     refreshInFlight = (async () => {
       try {
-        await refreshFn!();
+        await currentRefreshFn();
       } finally {
         // важно: сбросить, даже если refresh упал
         refreshInFlight = null;
@@ -48,7 +49,6 @@ const runSingleFlightRefresh = async () => {
 };
 
 const readEnvBaseUrl = () => {
-  console.log(import.meta.env.BASE_API_URL);
   if (
     typeof import.meta !== 'undefined' &&
     typeof import.meta.env === 'object'

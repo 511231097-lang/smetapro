@@ -7,7 +7,7 @@ import {
   useGetAuthMe,
   useGetWorkspaces,
 } from '../shared/api/generated/smetchik';
-import { ROUTES, buildRoute } from '../shared/constants/routes';
+import { buildRoute, ROUTES } from '../shared/constants/routes';
 import ProtectedShell from './components/protected-shell/ProtectedShell';
 
 const ProtectedLayout = () => {

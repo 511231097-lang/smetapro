@@ -2,7 +2,7 @@ import { Box, Stack, Title } from '@mantine/core';
 import { IconBriefcase, IconId, IconUsers } from '@tabler/icons-react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { Tabs } from '../../shared/components/Tabs';
-import { ROUTES, buildRoute } from '../../shared/constants/routes';
+import { buildRoute, ROUTES } from '../../shared/constants/routes';
 
 const WorkspacePage = () => {
   const { workspaceId } = useParams();

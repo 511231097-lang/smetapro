@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Alert,
   Button,
@@ -11,22 +10,23 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconAlertCircle, IconCube3dSphere } from '@tabler/icons-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
+import type { WorkspacesListResponse } from '../../shared/api/generated/schemas';
 import {
   getGetWorkspacesQueryKey,
   getGetWorkspacesQueryOptions,
   usePostWorkspaces,
 } from '../../shared/api/generated/smetchik';
 import { HttpClientError } from '../../shared/api/httpClient';
-import { ROUTES, buildRoute } from '../../shared/constants/routes';
 import { queryClient } from '../../shared/api/queryClient';
-import type { WorkspacesListResponse } from '../../shared/api/generated/schemas';
+import { buildRoute, ROUTES } from '../../shared/constants/routes';
 import {
   AuthFormWrapper,
   AuthPageLayout,
   authLayoutClasses as classes,
 } from '../auth/shared/AuthLayout';
-import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 
 const MAX_NAME = 60;
 
