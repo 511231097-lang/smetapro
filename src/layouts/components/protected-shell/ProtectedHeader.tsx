@@ -12,9 +12,16 @@ import {
   Box,
   Group,
   Menu,
+  Text,
   TextInput,
   UnstyledButton,
 } from "@mantine/core";
+import {
+  IconInfoCircle,
+  IconLogout,
+  IconMoon,
+  IconUser,
+} from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
 import type { WorkspacesWorkspaceResponse } from "../../../shared/api/generated/schemas";
@@ -136,7 +143,25 @@ const ProtectedHeader = ({
             <HugeiconsIcon icon={Notification01FreeIcons} size={20} />
           </ActionIcon>
 
-          <Menu position="bottom-end" width={200} withinPortal>
+          <Menu
+            position="bottom-end"
+            width={200}
+            withinPortal
+            styles={{
+              dropdown: {
+                padding: 4,
+                border: "1px solid #e9ecef",
+                borderRadius: 4,
+              },
+              item: {
+                padding: "8px 12px",
+                fontSize: 12,
+                gap: 8,
+                borderRadius: 4,
+              },
+              divider: { margin: "4px 0" },
+            }}
+          >
             <Menu.Target>
               <UnstyledButton aria-label="Профиль" style={{ marginLeft: 4 }}>
                 <Avatar color="teal" variant="filled" radius="xl" size={34}>
@@ -145,10 +170,31 @@ const ProtectedHeader = ({
               </UnstyledButton>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Label>{email || "Профиль"}</Menu.Label>
-              <Menu.Item onClick={onGoToProfile}>Мой профиль</Menu.Item>
+              {/* User info header */}
+              <Box px={12} pt={8} pb={4}>
+                <Text fw={700} fz={12} lh="16px">
+                  {email}
+                </Text>
+              </Box>
               <Menu.Divider />
-              <Menu.Item color="red" onClick={onLogout}>
+              <Menu.Item
+                leftSection={<IconUser size={12} />}
+                onClick={onGoToProfile}
+              >
+                Профиль
+              </Menu.Item>
+              <Menu.Item leftSection={<IconInfoCircle size={12} />}>
+                Справочник
+              </Menu.Item>
+              <Menu.Item leftSection={<IconMoon size={12} />}>
+                Темная тема
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item
+                leftSection={<IconLogout size={12} />}
+                color="red"
+                onClick={onLogout}
+              >
                 Выйти
               </Menu.Item>
             </Menu.Dropdown>
