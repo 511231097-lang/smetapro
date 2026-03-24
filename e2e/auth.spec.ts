@@ -61,6 +61,16 @@ test('login shows error on invalid credentials', async ({ page }) => {
   await expect(page.getByText('Неверный e-mail или пароль')).toBeVisible();
 });
 
+test('forgot password link keeps typed e-mail', async ({ page }) => {
+  await setupApiMock(page, { refresh: { status: 401 } });
+  await page.goto('/login');
+  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.getByRole('link', { name: 'Забыли пароль?' }).click();
+
+  await expect(page).toHaveURL(/\/forgot-password$/);
+  await expect(page.getByLabel('E-mail')).toHaveValue('maria@example.com');
+});
+
 test('register switches to e-mail verification step', async ({ page }) => {
   await setupApiMock(page, {
     refresh: { status: 401 },

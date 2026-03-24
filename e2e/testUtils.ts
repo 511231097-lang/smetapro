@@ -1,5 +1,54 @@
 import type { Page } from '@playwright/test';
 
+type WorkspaceRole = {
+  code?: string;
+  description?: string;
+  id?: number;
+  is_system?: boolean;
+  members_count?: number;
+  name?: string;
+  permissions?: string[];
+};
+
+type MemberRole = {
+  code?: string;
+  description?: string;
+  id?: number;
+  is_system?: boolean;
+  name?: string;
+};
+
+type WorkspaceMember = {
+  created_at?: string;
+  email?: string;
+  id?: string;
+  name?: string;
+  phone?: string;
+  position?: string;
+  role?: MemberRole;
+  surname?: string;
+  telegram?: string;
+  updated_at?: string;
+  user_id?: string;
+  workspace_id?: string;
+};
+
+type WorkspaceInvite = {
+  created_at?: string;
+  expires_at?: string;
+  role?: MemberRole;
+  token?: string;
+  use_count?: number;
+};
+
+type InvitePreview = {
+  expires_at?: string;
+  member_count?: number;
+  role?: MemberRole;
+  workspace_description?: string;
+  workspace_name?: string;
+};
+
 const mockUser = {
   id: '11111111-1111-4111-8111-111111111111',
   phone: '79001234567',
@@ -19,77 +68,98 @@ const mockWorkspace = {
   updated_at: '2024-01-01T00:00:00.000Z',
 };
 
-type Project = {
-  id: string;
-  workspace_id: string;
-  status_id: number;
-  name: string;
-  address: string | null;
-  comment: string | null;
-  created_at: string;
-  updated_at: string;
+const defaultRole: WorkspaceRole = {
+  id: 1,
+  code: 'owner',
+  name: 'Владелец',
+  description: 'Полный доступ',
+  is_system: true,
 };
 
-const mockProject = {
-  id: '99999999-9999-4999-8999-999999999999',
-  workspace_id: mockWorkspace.id,
-  status_id: 2,
-  name: 'Тестовый проект',
-  address: 'ул. Примерная, д. 1',
-  comment: 'Заметка о проекте',
-  created_at: '2024-01-01T00:00:00.000Z',
-  updated_at: '2024-01-01T00:00:00.000Z',
-};
+const defaultInviteExpiry = '2035-01-01T00:00:00.000Z';
 
 type MockOptions = {
+  forgotPassword?: { error?: string; status: number };
   initialUser?: typeof mockUser | null;
+  inviteAcceptByToken?: Record<
+    string,
+    { error?: string; status: number; workspaceId?: string }
+  >;
+  invitePreviewByToken?: Record<string, InvitePreview | null>;
+  login?: { error?: string; status: number; user?: typeof mockUser };
+  membersByWorkspace?: Record<string, WorkspaceMember[]>;
+  refresh?: { error?: string; status: number; user?: typeof mockUser };
+  register?: { error?: string; status: number; user?: typeof mockUser };
+  resetPassword?: { error?: string; status: number; user?: typeof mockUser };
+  rolesByWorkspace?: Record<string, WorkspaceRole[]>;
+  workspaceInvitesByWorkspace?: Record<string, WorkspaceInvite | null>;
   workspaces?: (typeof mockWorkspace)[];
-  projectsByWorkspace?: Record<string, Project[]>;
-  login?: { status: number; error?: string; user?: typeof mockUser };
-  register?: { status: number; error?: string; user?: typeof mockUser };
-  refresh?: { status: number; error?: string; user?: typeof mockUser };
   workspacesStatus?: number;
 };
 
 const setupApiMock = async (page: Page, options: MockOptions = {}) => {
+  const nowIso = () => new Date().toISOString();
   const defaultWorkspaceId = options.workspaces?.[0]?.id ?? mockWorkspace.id;
+
   const state = {
-    user: options.initialUser ?? null,
-    workspaces: options.workspaces ?? [mockWorkspace],
-    projectsByWorkspace: options.projectsByWorkspace ?? {
-      [defaultWorkspaceId]: [mockProject],
-    },
+    forgotPassword: options.forgotPassword ?? { status: 200 },
+    inviteAcceptByToken: options.inviteAcceptByToken ?? {},
+    invitePreviewByToken: options.invitePreviewByToken ?? {},
     login: options.login ?? { status: 200, user: mockUser },
-    register: options.register ?? { status: 201, user: mockUser },
+    membersByWorkspace: options.membersByWorkspace ?? {
+      [defaultWorkspaceId]: [],
+    },
     refresh: options.refresh ?? { status: 401, error: 'Not authenticated' },
+    register: options.register ?? { status: 201, user: mockUser },
+    resetPassword: options.resetPassword ?? { status: 200, user: mockUser },
+    rolesByWorkspace: options.rolesByWorkspace ?? {
+      [defaultWorkspaceId]: [defaultRole],
+    },
+    user: options.initialUser ?? null,
+    workspaceInvitesByWorkspace: options.workspaceInvitesByWorkspace ?? {},
+    workspaces: options.workspaces ?? [mockWorkspace],
     workspacesStatus: options.workspacesStatus,
   };
-  let projectCounter = 1;
 
-  const findProject = (projectId: string) => {
-    for (const projects of Object.values(state.projectsByWorkspace)) {
-      const match = projects.find((project) => project.id === projectId);
-      if (match) {
-        return match;
-      }
+  const ensureWorkspaceDefaults = (workspaceId: string) => {
+    if (!state.rolesByWorkspace[workspaceId]) {
+      state.rolesByWorkspace[workspaceId] = [defaultRole];
     }
-    return null;
+    if (!state.membersByWorkspace[workspaceId]) {
+      state.membersByWorkspace[workspaceId] = [];
+    }
   };
+
+  state.workspaces.forEach((workspace) => {
+    if (workspace.id) {
+      ensureWorkspaceDefaults(workspace.id);
+    }
+  });
 
   await page.route('**/api/v1/**', async (route) => {
     const request = route.request();
     const url = new URL(request.url());
     const method = request.method();
+    const segments = url.pathname.split('/').filter(Boolean);
+
+    const parseRequestBody = <T>() => {
+      try {
+        return request.postDataJSON() as T;
+      } catch {
+        return null;
+      }
+    };
 
     const json = (status: number, body?: unknown) =>
       route.fulfill({
-        status,
+        body: body === undefined ? undefined : JSON.stringify(body),
         headers:
           body === undefined
             ? undefined
             : { 'content-type': 'application/json' },
-        body: body === undefined ? undefined : JSON.stringify(body),
+        status,
       });
+
     if (url.pathname === '/api/v1/auth/me' && method === 'GET') {
       if (state.user) {
         return json(200, { user: state.user });
@@ -100,7 +170,7 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
     if (url.pathname === '/api/v1/auth/login' && method === 'POST') {
       if (state.login.status >= 400) {
         return json(state.login.status, {
-          error: state.login.error ?? 'Неверный телефон или пароль',
+          error: state.login.error ?? 'Неверный e-mail или пароль',
         });
       }
       state.user = state.login.user ?? mockUser;
@@ -122,6 +192,25 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
       return json(200, { user: state.user });
     }
 
+    if (url.pathname === '/api/v1/auth/forgot-password' && method === 'POST') {
+      if (state.forgotPassword.status >= 400) {
+        return json(state.forgotPassword.status, {
+          error: state.forgotPassword.error ?? 'Не удалось отправить код',
+        });
+      }
+      return json(200, { message: 'Если e-mail существует, код отправлен' });
+    }
+
+    if (url.pathname === '/api/v1/auth/reset-password' && method === 'POST') {
+      if (state.resetPassword.status >= 400) {
+        return json(state.resetPassword.status, {
+          error: state.resetPassword.error ?? 'Не удалось сбросить пароль',
+        });
+      }
+      state.user = state.resetPassword.user ?? mockUser;
+      return json(200, { user: state.user });
+    }
+
     if (url.pathname === '/api/v1/auth/refresh' && method === 'POST') {
       if (state.refresh.status >= 400) {
         state.user = null;
@@ -135,7 +224,115 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
 
     if (url.pathname === '/api/v1/auth/logout' && method === 'POST') {
       state.user = null;
-      return json(200);
+      return json(200, { message: 'Logged out' });
+    }
+
+    if (
+      segments[0] === 'api' &&
+      segments[1] === 'v1' &&
+      segments[2] === 'invite'
+    ) {
+      const token = segments[3];
+      if (!token) {
+        return json(400, { error: 'Invite token is required' });
+      }
+
+      if (method === 'GET') {
+        const configuredPreview = state.invitePreviewByToken[token];
+        if (configuredPreview) {
+          return json(200, { invite: configuredPreview });
+        }
+
+        const workspaceWithInvite = Object.entries(
+          state.workspaceInvitesByWorkspace,
+        ).find(([, invite]) => invite?.token === token);
+
+        if (workspaceWithInvite) {
+          const [workspaceId, invite] = workspaceWithInvite;
+          const workspace = state.workspaces.find(
+            (item) => item.id === workspaceId,
+          );
+          const members = state.membersByWorkspace[workspaceId] ?? [];
+          return json(200, {
+            invite: {
+              expires_at: invite?.expires_at,
+              member_count: members.length,
+              role: invite?.role,
+              workspace_description: workspace
+                ? `Описание: ${workspace.name}`
+                : '',
+              workspace_name: workspace?.name ?? 'Пространство',
+            },
+          });
+        }
+
+        return json(404, { error: 'Invite not found' });
+      }
+
+      if (method === 'POST') {
+        if (!state.user) {
+          return json(401, { error: 'Not authenticated' });
+        }
+
+        const configuredAccept = state.inviteAcceptByToken[token];
+        if (configuredAccept?.status && configuredAccept.status >= 400) {
+          return json(configuredAccept.status, {
+            error:
+              configuredAccept.error ?? 'Не удалось вступить в пространство',
+          });
+        }
+
+        const fromConfigured = configuredAccept?.workspaceId;
+        const fromInvite = Object.entries(
+          state.workspaceInvitesByWorkspace,
+        ).find(([, invite]) => invite?.token === token)?.[0];
+
+        const workspaceId = fromConfigured ?? fromInvite ?? defaultWorkspaceId;
+        if (!workspaceId) {
+          return json(404, { error: 'Workspace not found for invite' });
+        }
+
+        if (
+          !state.workspaces.some((workspace) => workspace.id === workspaceId)
+        ) {
+          state.workspaces.unshift({
+            id: workspaceId,
+            name: 'Приглашенное пространство',
+            created_at: nowIso(),
+            updated_at: nowIso(),
+            created_by: state.user.id,
+          });
+        }
+
+        ensureWorkspaceDefaults(workspaceId);
+        const role = state.rolesByWorkspace[workspaceId]?.[0]
+          ? {
+              code: state.rolesByWorkspace[workspaceId][0].code,
+              description: state.rolesByWorkspace[workspaceId][0].description,
+              id: state.rolesByWorkspace[workspaceId][0].id,
+              is_system: state.rolesByWorkspace[workspaceId][0].is_system,
+              name: state.rolesByWorkspace[workspaceId][0].name,
+            }
+          : undefined;
+
+        const member: WorkspaceMember = {
+          email: state.user.email,
+          id: `member-${workspaceId}-${state.user.id}`,
+          name: state.user.name,
+          phone: state.user.phone,
+          role,
+          surname: state.user.surname,
+          user_id: state.user.id,
+          workspace_id: workspaceId,
+        };
+
+        const members = state.membersByWorkspace[workspaceId] ?? [];
+        if (!members.some((item) => item.user_id === state.user?.id)) {
+          state.membersByWorkspace[workspaceId] = [member, ...members];
+        }
+
+        return json(200, { member });
+      }
     }
 
     if (url.pathname === '/api/v1/workspaces' && method === 'GET') {
@@ -146,10 +343,10 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
         return json(401, { error: 'Not authenticated' });
       }
       return json(200, {
-        workspaces: state.workspaces,
-        total: state.workspaces.length,
         limit: 50,
         offset: 0,
+        total: state.workspaces.length,
+        workspaces: state.workspaces,
       });
     }
 
@@ -157,179 +354,238 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
       if (!state.user) {
         return json(401, { error: 'Not authenticated' });
       }
-      const payload = request.postDataJSON?.() as { name?: string } | null;
+
+      const payload = parseRequestBody<{ name?: string }>();
       const created = {
+        created_at: nowIso(),
+        created_by: state.user.id,
         id: '33333333-3333-4333-8333-333333333333',
         name: payload?.name ?? 'Новое пространство',
-        created_by: state.user.id,
-        created_at: '2024-01-02T00:00:00.000Z',
-        updated_at: '2024-01-02T00:00:00.000Z',
+        updated_at: nowIso(),
       };
+
       state.workspaces = [created, ...state.workspaces];
-      if (!state.projectsByWorkspace[created.id]) {
-        state.projectsByWorkspace[created.id] = [];
-      }
+      ensureWorkspaceDefaults(created.id);
       return json(201, { workspace: created });
     }
 
     if (
-      url.pathname.startsWith('/api/v1/workspaces/') &&
-      !url.pathname.endsWith('/projects')
+      segments[0] === 'api' &&
+      segments[1] === 'v1' &&
+      segments[2] === 'workspaces'
     ) {
-      const parts = url.pathname.split('/');
-      const workspaceId = parts[4];
+      const workspaceId = segments[3];
+      const tail = segments.slice(4);
+
       if (!workspaceId) {
         return json(400, { error: 'Workspace id is required' });
       }
+
       if (!state.user) {
         return json(401, { error: 'Not authenticated' });
       }
 
-      if (method === 'GET') {
-        const workspace = state.workspaces.find(
-          (entry) => entry.id === workspaceId,
-        );
-        if (!workspace) {
-          return json(404, { error: 'Workspace not found' });
+      if (tail.length === 0) {
+        if (method === 'GET') {
+          const workspace = state.workspaces.find(
+            (item) => item.id === workspaceId,
+          );
+          if (!workspace) {
+            return json(404, { error: 'Workspace not found' });
+          }
+          return json(200, { workspace });
         }
-        return json(200, { workspace });
-      }
 
-      if (method === 'PUT') {
-        const workspaceIndex = state.workspaces.findIndex(
-          (entry) => entry.id === workspaceId,
-        );
-        if (workspaceIndex === -1) {
-          return json(404, { error: 'Workspace not found' });
+        if (method === 'PUT') {
+          const workspaceIndex = state.workspaces.findIndex(
+            (item) => item.id === workspaceId,
+          );
+          if (workspaceIndex === -1) {
+            return json(404, { error: 'Workspace not found' });
+          }
+
+          const payload = parseRequestBody<{
+            description?: string;
+            name?: string;
+          }>();
+          const previous = state.workspaces[workspaceIndex];
+          const updated = {
+            ...previous,
+            description:
+              payload?.description === undefined
+                ? (previous as { description?: string }).description
+                : payload.description,
+            name: payload?.name ?? previous.name,
+            updated_at: nowIso(),
+          };
+
+          state.workspaces = state.workspaces.map((item) =>
+            item.id === workspaceId ? updated : item,
+          );
+          return json(200, { workspace: updated });
         }
-        const payload = request.postDataJSON?.() as { name?: string } | null;
-        const updated = {
-          ...state.workspaces[workspaceIndex],
-          name: payload?.name ?? state.workspaces[workspaceIndex].name,
-          updated_at: new Date().toISOString(),
-        };
-        state.workspaces = state.workspaces.map((entry) =>
-          entry.id === workspaceId ? updated : entry,
-        );
-        return json(200, { workspace: updated });
-      }
 
-      if (method === 'DELETE') {
-        const exists = state.workspaces.some(
-          (entry) => entry.id === workspaceId,
-        );
-        if (!exists) {
-          return json(404, { error: 'Workspace not found' });
+        if (method === 'DELETE') {
+          const exists = state.workspaces.some(
+            (item) => item.id === workspaceId,
+          );
+          if (!exists) {
+            return json(404, { error: 'Workspace not found' });
+          }
+
+          state.workspaces = state.workspaces.filter(
+            (item) => item.id !== workspaceId,
+          );
+          delete state.rolesByWorkspace[workspaceId];
+          delete state.membersByWorkspace[workspaceId];
+          delete state.workspaceInvitesByWorkspace[workspaceId];
+          return json(200, { message: 'Workspace deleted' });
         }
-        state.workspaces = state.workspaces.filter(
-          (entry) => entry.id !== workspaceId,
-        );
-        delete state.projectsByWorkspace[workspaceId];
-        return json(200);
-      }
-    }
-
-    if (
-      url.pathname.startsWith('/api/v1/workspaces/') &&
-      url.pathname.endsWith('/projects')
-    ) {
-      const parts = url.pathname.split('/');
-      const workspaceId = parts[4];
-      if (!workspaceId) {
-        return json(400, { error: 'Workspace id is required' });
-      }
-      if (!state.user) {
-        return json(401, { error: 'Not authenticated' });
       }
 
-      if (method === 'GET') {
-        const limit = Number(url.searchParams.get('limit') ?? '50');
-        const offset = Number(url.searchParams.get('offset') ?? '0');
-        const projects = state.projectsByWorkspace[workspaceId] ?? [];
-        const paged = projects.slice(offset, offset + limit);
+      if (tail.length === 1 && tail[0] === 'invite') {
+        if (method === 'GET') {
+          return json(200, {
+            invite: state.workspaceInvitesByWorkspace[workspaceId] ?? undefined,
+          });
+        }
+
+        if (method === 'POST') {
+          const payload = parseRequestBody<{ role_code?: string }>();
+          ensureWorkspaceDefaults(workspaceId);
+
+          const selectedRole = state.rolesByWorkspace[workspaceId].find(
+            (item) => item.code === payload?.role_code,
+          );
+
+          const role: MemberRole | undefined = selectedRole
+            ? {
+                code: selectedRole.code,
+                description: selectedRole.description,
+                id: selectedRole.id,
+                is_system: selectedRole.is_system,
+                name: selectedRole.name,
+              }
+            : undefined;
+
+          const invite: WorkspaceInvite = {
+            created_at: nowIso(),
+            expires_at: defaultInviteExpiry,
+            role,
+            token: `invite-${workspaceId}`,
+            use_count: 0,
+          };
+
+          state.workspaceInvitesByWorkspace[workspaceId] = invite;
+          return json(201, { invite });
+        }
+
+        if (method === 'DELETE') {
+          state.workspaceInvitesByWorkspace[workspaceId] = null;
+          return json(200, { message: 'Invite deleted' });
+        }
+      }
+
+      if (tail.length === 1 && tail[0] === 'roles' && method === 'GET') {
+        ensureWorkspaceDefaults(workspaceId);
+        return json(200, { roles: state.rolesByWorkspace[workspaceId] });
+      }
+
+      if (tail.length === 1 && tail[0] === 'members' && method === 'GET') {
+        ensureWorkspaceDefaults(workspaceId);
+
+        const members = [...(state.membersByWorkspace[workspaceId] ?? [])];
+        const sortBy = url.searchParams.get('sort_by');
+        const sortDir =
+          url.searchParams.get('sort_dir') === 'desc' ? 'desc' : 'asc';
+
+        if (sortBy) {
+          members.sort((a, b) => {
+            const av = String(
+              (a as Record<string, unknown>)[sortBy] ?? '',
+            ).toLowerCase();
+            const bv = String(
+              (b as Record<string, unknown>)[sortBy] ?? '',
+            ).toLowerCase();
+            if (av === bv) return 0;
+            if (sortDir === 'asc') return av > bv ? 1 : -1;
+            return av > bv ? -1 : 1;
+          });
+        }
+
         return json(200, {
-          projects: paged,
-          total: projects.length,
-          limit,
-          offset,
+          limit: 50,
+          members,
+          offset: 0,
+          total: members.length,
         });
       }
 
-      if (method === 'POST') {
-        const payload = request.postDataJSON?.() as {
-          name?: string;
-          address?: string;
-          comment?: string;
-        } | null;
-        const timestamp = new Date().toISOString();
-        const createdProject = {
-          id: `project-${projectCounter++}`,
-          workspace_id: workspaceId,
-          status_id: 2,
-          name: payload?.name ?? 'Новый проект',
-          address: payload?.address ?? null,
-          comment: payload?.comment ?? null,
-          created_at: timestamp,
-          updated_at: timestamp,
-        };
-        const projects = state.projectsByWorkspace[workspaceId] ?? [];
-        state.projectsByWorkspace[workspaceId] = [createdProject, ...projects];
-        return json(201, { project: createdProject });
-      }
-    }
+      if (tail.length === 2 && tail[0] === 'members') {
+        const memberId = tail[1];
+        ensureWorkspaceDefaults(workspaceId);
 
-    if (url.pathname.startsWith('/api/v1/projects/')) {
-      const parts = url.pathname.split('/');
-      const projectId = parts[4];
-      if (!projectId) {
-        return json(400, { error: 'Project id is required' });
-      }
-
-      if (method === 'GET') {
-        const project = findProject(projectId);
-        if (!project) {
-          return json(404, { error: 'Project not found' });
+        if (method === 'DELETE') {
+          state.membersByWorkspace[workspaceId] = (
+            state.membersByWorkspace[workspaceId] ?? []
+          ).filter((member) => member.id !== memberId);
+          return json(200, { message: 'Member deleted' });
         }
-        return json(200, { project });
+
+        if (method === 'PATCH') {
+          const payload = parseRequestBody<Partial<WorkspaceMember>>();
+          state.membersByWorkspace[workspaceId] = (
+            state.membersByWorkspace[workspaceId] ?? []
+          ).map((member) =>
+            member.id === memberId
+              ? { ...member, ...payload, updated_at: nowIso() }
+              : member,
+          );
+
+          const updated = (state.membersByWorkspace[workspaceId] ?? []).find(
+            (member) => member.id === memberId,
+          );
+          return json(200, { member: updated });
+        }
       }
 
-      if (method === 'PUT') {
-        const project = findProject(projectId);
-        if (!project) {
-          return json(404, { error: 'Project not found' });
-        }
-        const payload = request.postDataJSON?.() as {
-          name?: string;
-          address?: string;
-          comment?: string;
-        } | null;
-        const updated = {
-          ...project,
-          name: payload?.name ?? project.name,
-          address:
-            payload?.address === undefined ? project.address : payload.address,
-          comment:
-            payload?.comment === undefined ? project.comment : payload.comment,
-          updated_at: new Date().toISOString(),
-        };
-        const workspaceProjects =
-          state.projectsByWorkspace[project.workspace_id] ?? [];
-        state.projectsByWorkspace[project.workspace_id] = workspaceProjects.map(
-          (entry) => (entry.id === projectId ? updated : entry),
-        );
-        return json(200, { project: updated });
-      }
+      if (tail.length === 3 && tail[0] === 'members' && tail[2] === 'role') {
+        const memberId = tail[1];
+        ensureWorkspaceDefaults(workspaceId);
 
-      if (method === 'DELETE') {
-        const project = findProject(projectId);
-        if (!project) {
-          return json(404, { error: 'Project not found' });
+        if (method === 'PATCH') {
+          const payload = parseRequestBody<{ role_code?: string }>();
+          const selectedRole = state.rolesByWorkspace[workspaceId].find(
+            (role) => role.code === payload?.role_code,
+          );
+
+          const role: MemberRole | undefined = selectedRole
+            ? {
+                code: selectedRole.code,
+                description: selectedRole.description,
+                id: selectedRole.id,
+                is_system: selectedRole.is_system,
+                name: selectedRole.name,
+              }
+            : undefined;
+
+          state.membersByWorkspace[workspaceId] = (
+            state.membersByWorkspace[workspaceId] ?? []
+          ).map((member) =>
+            member.id === memberId
+              ? {
+                  ...member,
+                  role,
+                  updated_at: nowIso(),
+                }
+              : member,
+          );
+
+          const updated = (state.membersByWorkspace[workspaceId] ?? []).find(
+            (member) => member.id === memberId,
+          );
+          return json(200, { member: updated });
         }
-        const workspaceProjects =
-          state.projectsByWorkspace[project.workspace_id] ?? [];
-        state.projectsByWorkspace[project.workspace_id] =
-          workspaceProjects.filter((entry) => entry.id !== projectId);
-        return json(200);
       }
     }
 
@@ -337,5 +593,5 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
   });
 };
 
-export { mockProject, mockUser, mockWorkspace, setupApiMock };
+export { mockUser, mockWorkspace, setupApiMock };
 export type { MockOptions };
