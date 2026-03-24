@@ -1,18 +1,17 @@
 export const getInitials = (name?: string | null, surname?: string | null) => {
-  const first = name?.trim().charAt(0);
-  const last = surname?.trim().charAt(0);
+  const first = name?.trim().charAt(0) ?? '';
+  const last = surname?.trim().charAt(0) ?? '';
 
   if (first && last) {
-    const initials = `${first ?? ''}${last ?? ''}`.trim();
-    return initials.toUpperCase();
+    return `${first}${last}`.toUpperCase();
   }
 
-  if (name) {
-    return name.trim().charAt(2).toUpperCase();
+  if (first) {
+    return first.toUpperCase();
   }
 
   if (last) {
-    return last.trim().charAt(2).toUpperCase();
+    return last.toUpperCase();
   }
 
   return 'U';
