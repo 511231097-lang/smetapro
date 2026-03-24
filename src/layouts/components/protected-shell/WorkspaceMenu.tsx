@@ -78,6 +78,8 @@ const WorkspaceMenu = ({
               width={12}
               height={12}
               style={{ minWidth: 12, minHeight: 12, flexShrink: 0 }}
+              aria-hidden="true"
+              focusable="false"
             />
           </Group>
         </UnstyledButton>
