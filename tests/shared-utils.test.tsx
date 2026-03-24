@@ -32,7 +32,7 @@ describe('buildRoute', () => {
 
   test('supports routes with several dynamic params', () => {
     expect(
-      buildRoute(ROUTES.PROJECT_EDIT, {
+      buildRoute('/:workspaceId/projects/:projectId', {
         workspaceId: 'ws-1',
         projectId: 'proj-77',
       }),
