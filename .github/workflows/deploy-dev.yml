@@ -22,6 +22,8 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          BASE_API_URL: ${{ secrets.BASE_API_URL }}
 
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@7.0.1
