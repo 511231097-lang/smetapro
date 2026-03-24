@@ -13,7 +13,7 @@ import { ROUTES } from "./shared/constants/routes";
 import WorkspacePage from "./pages/workspace/WorkspacePage";
 
 import WorkspaceMembersPage from "./pages/workspace/WorkspaceMembersPage";
-import WorkspaceProfilePage from "./pages/workspace/WorkspaceProfilePage";
+import WorkspaceGeneralPage from "./pages/workspace/WorkspaceGeneralPage";
 import CreateWorkspacePage from "./pages/workspaces/CreateWorkspacePage";
 import RequireAuth from "./layouts/RequireAuth";
 import RequireGuest from "./layouts/RequireGuest";
@@ -60,9 +60,9 @@ const App = () => {
         <Route path="logout" element={<LogoutPage />} />
 
         <Route path="workspace" element={<WorkspacePage />}>
-          <Route index element={<Navigate to="profile" replace />} />
+          <Route index element={<Navigate to="general" replace />} />
 
-          <Route path="profile" element={<WorkspaceProfilePage />} />
+          <Route path="general" element={<WorkspaceGeneralPage />} />
 
           <Route path="members" element={<WorkspaceMembersPage />} />
 

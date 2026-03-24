@@ -185,7 +185,7 @@ const WorkspaceGeneralPage = () => {
 
           queryClient.setQueryData<WorkspacesWorkspaceResponse | undefined>(
             detailKey,
-            updated,
+            { workspace: updated },
           );
           form.resetDirty();
         }
@@ -291,7 +291,6 @@ const WorkspaceGeneralPage = () => {
       />
 
       <Group align="flex-start" gap={20} wrap="nowrap">
-        {/* Левая колонка: логотип + удалить */}
         <Stack gap={20} style={{ width: 372, flexShrink: 0 }}>
           <Paper
             radius="md"
@@ -313,7 +312,8 @@ const WorkspaceGeneralPage = () => {
               style={{
                 width: 140,
                 height: 140,
-                borderRadius: 64,
+                minHeight: 140,
+                borderRadius: "50%",
                 overflow: "hidden",
                 cursor: "pointer",
                 background: "#f1f3f5",

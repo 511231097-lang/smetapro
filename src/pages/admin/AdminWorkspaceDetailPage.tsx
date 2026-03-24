@@ -113,7 +113,7 @@ const AdminWorkspaceDetailPage = () => {
           message: "Изменения сохранены.",
         });
       },
-      onError: (error) => {
+      onError: (error: unknown) => {
         notifications.show({
           color: "red",
           title: "Ошибка",
@@ -155,16 +155,19 @@ const AdminWorkspaceDetailPage = () => {
           WorkspacesListResponse | undefined
         >(listKey);
         if (current?.workspaces?.length) {
-          queryClient.setQueryData<WorkspacesListResponse | undefined>(listKey, {
-            ...current,
-            workspaces: current.workspaces.filter(
-              (item) => item.id !== workspaceId,
-            ),
-            total:
-              current.total === undefined
-                ? current.workspaces.length - 1
-                : Math.max(current.total - 1, 0),
-          });
+          queryClient.setQueryData<WorkspacesListResponse | undefined>(
+            listKey,
+            {
+              ...current,
+              workspaces: current.workspaces.filter(
+                (item) => item.id !== workspaceId,
+              ),
+              total:
+                current.total === undefined
+                  ? current.workspaces.length - 1
+                  : Math.max(current.total - 1, 0),
+            },
+          );
         }
         if (workspaceId) {
           queryClient.removeQueries({

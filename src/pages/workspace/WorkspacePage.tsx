@@ -8,7 +8,7 @@ const WorkspacePage = () => {
   const { workspaceId } = useParams();
   const location = useLocation();
 
-  const profilePath = buildRoute(ROUTES.WORKSPACE_PROFILE, {
+  const profilePath = buildRoute(ROUTES.WORKSPACE_GENERAL, {
     workspaceId: workspaceId ?? "",
   });
   const membersPath = buildRoute(ROUTES.WORKSPACE_MEMBERS, {
@@ -38,7 +38,7 @@ const WorkspacePage = () => {
             to={profilePath}
             leftSection={<IconId size={12} />}
           >
-            Профиль
+            Основное
           </Tabs.Tab>
           <Tabs.Tab
             value="members"

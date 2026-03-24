@@ -94,7 +94,7 @@ const WorkspaceMenu = ({
 
           <UnstyledButton
             component={Link}
-            to={buildRoute(ROUTES.WORKSPACE_PROFILE, {
+            to={buildRoute(ROUTES.WORKSPACE_GENERAL, {
               workspaceId: activeWorkspace?.id ?? "",
             })}
             style={{

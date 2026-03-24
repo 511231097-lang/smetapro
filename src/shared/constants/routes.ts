@@ -18,7 +18,7 @@ export const ROUTES = {
   FINANCES: "/:workspaceId/finances",
   LOGOUT: "/:workspaceId/logout",
   WORKSPACE: "/:workspaceId/workspace",
-  WORKSPACE_PROFILE: "/:workspaceId/workspace/profile",
+  WORKSPACE_GENERAL: "/:workspaceId/workspace/general",
   WORKSPACE_MEMBERS: "/:workspaceId/workspace/members",
   WORKSPACE_ROLES: "/:workspaceId/workspace/roles",
   WORKSPACE_CREATE: "/workspaces/create",
