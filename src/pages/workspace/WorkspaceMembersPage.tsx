@@ -2,37 +2,52 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   ActionIcon,
+  Avatar,
   Badge,
   Button,
+  Center,
   Group,
+  Loader,
+  Menu,
   Paper,
   Select,
   Stack,
+  Table,
   Text,
   TextInput,
   Tooltip,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
+  IconArrowsSort,
   IconChevronDown,
   IconChevronUp,
   IconClock,
   IconCopy,
+  IconDotsVertical,
   IconFilter,
   IconInfoCircle,
   IconLink,
   IconPlus,
   IconRefresh,
+  IconSortAscendingLetters,
+  IconSortDescendingLetters,
 } from "@tabler/icons-react";
 import {
   getGetWorkspacesWorkspaceIdInviteQueryKey,
   useGetWorkspacesWorkspaceIdInvite,
+  useGetWorkspacesWorkspaceIdMembers,
   useGetWorkspacesWorkspaceIdRoles,
   usePostWorkspacesWorkspaceIdInvite,
 } from "../../shared/api/generated/smetchik";
-import type { WorkspacesSingleInviteResponse } from "../../shared/api/generated/schemas";
+import type {
+  WorkspacesMemberResponse,
+  WorkspacesSingleInviteResponse,
+} from "../../shared/api/generated/schemas";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { queryClient } from "../../shared/api/queryClient";
+import { getInitials } from "../../shared/utils/getInitials";
+import MemberDrawer from "./MemberDrawer";
 
 const formatDuration = (ms: number): string => {
   const s = Math.floor(ms / 1000);
@@ -58,11 +73,25 @@ const useCountdown = (expiresAt: string | undefined) => {
   return remaining;
 };
 
+const COLUMNS: { key: string; label: string }[] = [
+  { key: "full_name", label: "Сотрудник" },
+  { key: "phone", label: "Телефон" },
+  { key: "email", label: "Почта" },
+  { key: "telegram", label: "Telegram" },
+  { key: "position", label: "Должность" },
+  { key: "role", label: "Роль" },
+];
+
 const WorkspaceMembersPage = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const didAutoExpand = useRef(false);
+
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [selectedMember, setSelectedMember] =
+    useState<WorkspacesMemberResponse | null>(null);
 
   const inviteQueryKey = getGetWorkspacesWorkspaceIdInviteQueryKey(workspaceId);
 
@@ -75,6 +104,13 @@ const WorkspaceMembersPage = () => {
     workspaceId ?? "",
     { query: { enabled: !!workspaceId } },
   );
+
+  const { data: membersData, isLoading: membersLoading } =
+    useGetWorkspacesWorkspaceIdMembers(
+      workspaceId ?? "",
+      sortBy ? { sort_by: sortBy, sort_dir: sortDir } : undefined,
+      { query: { enabled: !!workspaceId } },
+    );
 
   const createMutation = usePostWorkspacesWorkspaceIdInvite({
     mutation: {
@@ -142,6 +178,28 @@ const WorkspaceMembersPage = () => {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(inviteUrl);
     notifications.show({ color: "teal", message: "Ссылка скопирована" });
+  };
+
+  const handleSort = (key: string) => {
+    if (sortBy === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(key);
+      setSortDir("asc");
+    }
+  };
+
+  const SortIcon = ({ colKey }: { colKey: string }) => {
+    if (sortBy !== colKey)
+      return <IconArrowsSort size={14} color="var(--mantine-color-gray-5)" />;
+    return sortDir === "asc" ? (
+      <IconSortAscendingLetters size={14} color="var(--mantine-color-teal-6)" />
+    ) : (
+      <IconSortDescendingLetters
+        size={14}
+        color="var(--mantine-color-teal-6)"
+      />
+    );
   };
 
   const panelLeftIcon = !isActive ? (
@@ -272,10 +330,102 @@ const WorkspaceMembersPage = () => {
         </Paper>
       )}
 
-      {/* Members table placeholder */}
-      <Text c="dimmed" size="sm">
-        Таблица сотрудников
-      </Text>
+      {/* Members table */}
+      <Paper withBorder radius="md" style={{ overflow: "hidden" }}>
+        {membersLoading ? (
+          <Center py={40}>
+            <Loader size="sm" />
+          </Center>
+        ) : (
+          <Table highlightOnHover verticalSpacing="sm" horizontalSpacing="md">
+            <Table.Thead>
+              <Table.Tr>
+                {COLUMNS.map((col) => (
+                  <Table.Th
+                    key={col.key}
+                    style={{ cursor: "pointer", whiteSpace: "nowrap" }}
+                    onClick={() => handleSort(col.key)}
+                  >
+                    <Group gap={4} wrap="nowrap">
+                      <Text fw={700} size="xs">
+                        {col.label}
+                      </Text>
+                      <SortIcon colKey={col.key} />
+                    </Group>
+                  </Table.Th>
+                ))}
+                <Table.Th style={{ width: 40 }} />
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {(membersData?.members ?? []).length === 0 ? (
+                <Table.Tr>
+                  <Table.Td colSpan={COLUMNS.length + 1}>
+                    <Center py={32}>
+                      <Text c="dimmed" size="sm">
+                        Сотрудников пока нет
+                      </Text>
+                    </Center>
+                  </Table.Td>
+                </Table.Tr>
+              ) : (
+                (membersData?.members ?? []).map((m) => (
+                  <Table.Tr key={m.id}>
+                    <Table.Td>
+                      <Group gap="sm" wrap="nowrap">
+                        <Avatar size={32} radius="xl" color="teal">
+                          {getInitials(m.name, m.surname)}
+                        </Avatar>
+                        <Text size="sm" fw={500}>
+                          {[m.name, m.surname].filter(Boolean).join(" ") ||
+                            m.email ||
+                            "—"}
+                        </Text>
+                      </Group>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="sm">{m.phone || "—"}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="sm">{m.email || "—"}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="sm">{m.telegram || "—"}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="sm">{m.position || "—"}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="sm">{m.role?.name || "—"}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Menu withinPortal position="bottom-end" shadow="sm">
+                        <Menu.Target>
+                          <ActionIcon variant="subtle" color="gray" size={28}>
+                            <IconDotsVertical size={16} />
+                          </ActionIcon>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Item onClick={() => setSelectedMember(m)}>
+                            Редактировать
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                    </Table.Td>
+                  </Table.Tr>
+                ))
+              )}
+            </Table.Tbody>
+          </Table>
+        )}
+      </Paper>
+
+      {/* Member detail drawer */}
+      <MemberDrawer
+        member={selectedMember}
+        workspaceId={workspaceId ?? ""}
+        onClose={() => setSelectedMember(null)}
+      />
     </Stack>
   );
 };
