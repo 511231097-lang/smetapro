@@ -20,6 +20,7 @@ export const ROUTES = {
   WORKSPACE: "/:workspaceId/workspace",
   WORKSPACE_PROFILE: "/:workspaceId/workspace/profile",
   WORKSPACE_MEMBERS: "/:workspaceId/workspace/members",
+  WORKSPACE_ROLES: "/:workspaceId/workspace/roles",
   WORKSPACE_CREATE: "/workspaces/create",
 };
 

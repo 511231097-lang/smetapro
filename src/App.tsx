@@ -17,26 +17,24 @@ import WorkspaceProfilePage from "./pages/workspace/WorkspaceProfilePage";
 import CreateWorkspacePage from "./pages/workspaces/CreateWorkspacePage";
 import RequireAuth from "./layouts/RequireAuth";
 import RequireGuest from "./layouts/RequireGuest";
-import CreateProjectPage from "./pages/projects/CreateProjectPage";
-import EditProjectPage from "./pages/projects/EditProjectPage";
-import AdminUsersPage from "./pages/admin/AdminUsersPage";
-import AdminWorkspacesPage from "./pages/admin/AdminWorkspacesPage";
-import AdminUserDetailPage from "./pages/admin/AdminUserDetailPage";
-import AdminWorkspaceDetailPage from "./pages/admin/AdminWorkspaceDetailPage";
-import AdminLayout from "./layouts/AdminLayout";
+
+import WorkspaceRolesPage from "./pages/workspace/WorkspaceRolesPage";
 
 const App = () => {
   return (
     <Routes>
-      {/* "/" и "/app" — ProtectedLayout сам редиректит на /:workspaceId/projects */}
       <Route path={ROUTES.ROOT} element={<ProtectedLayout />} />
+
       <Route
         path={ROUTES.APP}
         element={<Navigate to={ROUTES.ROOT} replace />}
       />
+
       <Route element={<RequireGuest />}>
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+
         <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
       </Route>
       <Route element={<RequireAuth />}>
@@ -48,38 +46,29 @@ const App = () => {
 
       <Route path="/:workspaceId" element={<ProtectedLayout />}>
         <Route path="projects" element={<ProjectsPage />} />
-        {/* <Route path="projects/new" element={<CreateProjectPage />} /> */}
-        {/* <Route path="projects/:projectId" element={<EditProjectPage />} /> */}
+
         <Route path="profile" element={<ProfilePage />}>
           <Route index element={<Navigate to="common" replace />} />
+
           <Route path="common" element={<ProfileCommonPage />} />
+
           <Route path="sessions" element={<ProfileSessionsPage />} />
         </Route>
+
         <Route path="finances" element={<FinancesPage />} />
+
         <Route path="logout" element={<LogoutPage />} />
+
         <Route path="workspace" element={<WorkspacePage />}>
           <Route index element={<Navigate to="profile" replace />} />
+
           <Route path="profile" element={<WorkspaceProfilePage />} />
+
           <Route path="members" element={<WorkspaceMembersPage />} />
+
+          <Route path="roles" element={<WorkspaceRolesPage />} />
         </Route>
       </Route>
-
-      {/* <Route element={<AdminLayout />}>
-        <Route
-          path={ROUTES.ADMIN_ROOT}
-          element={<Navigate to={ROUTES.ADMIN_USERS} replace />}
-        />
-        <Route path={ROUTES.ADMIN_USERS} element={<AdminUsersPage />} />
-        <Route path={ROUTES.ADMIN_USER} element={<AdminUserDetailPage />} />
-        <Route
-          path={ROUTES.ADMIN_WORKSPACES}
-          element={<AdminWorkspacesPage />}
-        />
-        <Route
-          path={ROUTES.ADMIN_WORKSPACE}
-          element={<AdminWorkspaceDetailPage />}
-        />
-      </Route> */}
 
       <Route path="*" element={<Navigate to={ROUTES.ROOT} replace />} />
     </Routes>

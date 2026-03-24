@@ -1,43 +1,34 @@
-import { Breadcrumbs, Stack, Tabs, Text, Title } from "@mantine/core";
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useParams,
-  // useParams
-} from "react-router-dom";
+import { Box, Stack, Title } from "@mantine/core";
+import { IconBriefcase, IconId, IconUsers } from "@tabler/icons-react";
+import { Link, Outlet, useLocation, useParams } from "react-router-dom";
+import { Tabs } from "../../shared/components/Tabs";
 import { ROUTES, buildRoute } from "../../shared/constants/routes";
 
 const WorkspacePage = () => {
   const { workspaceId } = useParams();
   const location = useLocation();
+
   const profilePath = buildRoute(ROUTES.WORKSPACE_PROFILE, {
     workspaceId: workspaceId ?? "",
   });
   const membersPath = buildRoute(ROUTES.WORKSPACE_MEMBERS, {
     workspaceId: workspaceId ?? "",
   });
-  const projectsPath = buildRoute(ROUTES.PROJECTS, {
+
+  const rolesPath = buildRoute(ROUTES.WORKSPACE_ROLES, {
     workspaceId: workspaceId ?? "",
   });
-  const activeTab = location.pathname === membersPath ? "members" : "profile";
+
+  const activeTab =
+    location.pathname === membersPath
+      ? "members"
+      : location.pathname.startsWith(rolesPath)
+        ? "roles"
+        : "profile";
 
   return (
-    <Stack gap="lg">
+    <Stack gap="lg" p={20}>
       <Title order={2}>Настройки пространства</Title>
-
-      <Breadcrumbs>
-        <Text component={Link} to={projectsPath}>
-          Проекты
-        </Text>
-        <Text
-          c={location.pathname.startsWith("/workspace") ? "dimmed" : undefined}
-          component={Link}
-          to={profilePath}
-        >
-          Пространства
-        </Text>
-      </Breadcrumbs>
 
       <Tabs value={activeTab}>
         <Tabs.List>
@@ -45,7 +36,7 @@ const WorkspacePage = () => {
             value="profile"
             component={Link}
             to={profilePath}
-            // leftSection={<IconPhoto size={12} />}
+            leftSection={<IconId size={12} />}
           >
             Профиль
           </Tabs.Tab>
@@ -53,14 +44,25 @@ const WorkspacePage = () => {
             value="members"
             component={Link}
             to={membersPath}
-            // leftSection={<IconMessageCircle size={12} />}
+            leftSection={<IconUsers size={12} />}
           >
             Сотрудники
+          </Tabs.Tab>
+
+          <Tabs.Tab
+            value="roles"
+            component={Link}
+            to={rolesPath}
+            leftSection={<IconBriefcase size={12} />}
+          >
+            Роли
           </Tabs.Tab>
         </Tabs.List>
       </Tabs>
 
-      <Outlet />
+      <Box pt={20}>
+        <Outlet />
+      </Box>
     </Stack>
   );
 };
