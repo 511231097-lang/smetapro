@@ -1,6 +1,6 @@
 # Rsbuild project
 
-![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/511231097-lang/smetapro/badges/coverage.json)
+![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2F511231097-lang%2Fsmetapro%2Fbadges%2Fcoverage.json&cacheSeconds=300)
 
 ## Setup
 
