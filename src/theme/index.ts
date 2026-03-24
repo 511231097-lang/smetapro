@@ -4,6 +4,10 @@ import {
   type MantineColor,
 } from '@mantine/core';
 
+type SizeProps = {
+  size?: string;
+};
+
 const fontFamily = '"Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif';
 
 export const cssVariablesResolver: CSSVariablesResolver = () => ({
@@ -242,7 +246,7 @@ export const createAppTheme = (primaryColor: MantineColor = 'teal') =>
     components: {
       Button: {
         defaultProps: { radius: 'sm' },
-        vars: (_theme, props) => {
+        vars: (_theme: unknown, props: SizeProps) => {
           const size = (props.size ?? 'sm').replace('compact-', '');
           const map = {
             xs: { height: 24, px: 12, fz: 12 },
@@ -262,7 +266,7 @@ export const createAppTheme = (primaryColor: MantineColor = 'teal') =>
             },
           };
         },
-        styles: (_theme, props) => {
+        styles: (_theme: unknown, props: SizeProps) => {
           const size = (props.size ?? 'sm').replace('compact-', '');
           const lineHeights = {
             xs: '16px',
@@ -281,7 +285,7 @@ export const createAppTheme = (primaryColor: MantineColor = 'teal') =>
         },
       },
       Input: {
-        vars: (_theme, props) => {
+        vars: (_theme: unknown, props: SizeProps) => {
           const size = (props.size ?? 'sm').replace('compact-', '');
           const map = {
             xs: { height: 24, fz: 12, py: 5, px: 12, lh: 16 },
@@ -303,7 +307,7 @@ export const createAppTheme = (primaryColor: MantineColor = 'teal') =>
             },
           };
         },
-        styles: (_theme, props) => {
+        styles: (_theme: unknown, props: SizeProps) => {
           const size = (props.size ?? 'sm').replace('compact-', '');
           const map = {
             xs: { lh: '16px' },
@@ -320,7 +324,7 @@ export const createAppTheme = (primaryColor: MantineColor = 'teal') =>
         },
       },
       InputWrapper: {
-        vars: (_theme, props) => {
+        vars: (_theme: unknown, props: SizeProps) => {
           const size = (props.size ?? 'sm').replace('compact-', '');
           const label = {
             xs: { fz: 12, lh: 16 },
@@ -345,7 +349,7 @@ export const createAppTheme = (primaryColor: MantineColor = 'teal') =>
             error: { '--input-error-size': `${t.fz}px` },
           };
         },
-        styles: (_theme, props) => {
+        styles: (_theme: unknown, props: SizeProps) => {
           const size = (props.size ?? 'sm').replace('compact-', '');
           const label = {
             xs: '16px',

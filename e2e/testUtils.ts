@@ -11,17 +11,6 @@ const mockUser = {
   created_at: '2024-01-01T00:00:00.000Z',
 };
 
-const mockAdminUser = {
-  id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-  phone: '79998887766',
-  email: 'admin@example.com',
-  name: 'Админ',
-  surname: 'Системный',
-  roles: ['admin'],
-  permissions: ['admin_access'],
-  created_at: '2024-01-01T00:00:00.000Z',
-};
-
 const mockWorkspace = {
   id: '22222222-2222-4222-8222-222222222222',
   name: 'Моя компания',
@@ -41,16 +30,6 @@ type Project = {
   updated_at: string;
 };
 
-type AdminUser = {
-  id: string;
-  phone: string;
-  email?: string | null;
-  name?: string;
-  surname?: string | null;
-  created_at?: string;
-  updated_at?: string;
-};
-
 const mockProject = {
   id: '99999999-9999-4999-8999-999999999999',
   workspace_id: mockWorkspace.id,
@@ -65,8 +44,6 @@ const mockProject = {
 type MockOptions = {
   initialUser?: typeof mockUser | null;
   workspaces?: (typeof mockWorkspace)[];
-  adminUsers?: AdminUser[];
-  adminWorkspaces?: (typeof mockWorkspace)[];
   projectsByWorkspace?: Record<string, Project[]>;
   login?: { status: number; error?: string; user?: typeof mockUser };
   register?: { status: number; error?: string; user?: typeof mockUser };
@@ -79,19 +56,6 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
   const state = {
     user: options.initialUser ?? null,
     workspaces: options.workspaces ?? [mockWorkspace],
-    adminUsers: options.adminUsers ?? [
-      {
-        id: mockUser.id,
-        phone: mockUser.phone,
-        email: mockUser.email,
-        name: mockUser.name,
-        surname: mockUser.surname,
-        created_at: mockUser.created_at,
-        updated_at: mockUser.created_at,
-      },
-    ],
-    adminWorkspaces: options.adminWorkspaces ??
-      options.workspaces ?? [mockWorkspace],
     projectsByWorkspace: options.projectsByWorkspace ?? {
       [defaultWorkspaceId]: [mockProject],
     },
@@ -126,8 +90,6 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
             : { 'content-type': 'application/json' },
         body: body === undefined ? undefined : JSON.stringify(body),
       });
-    const isAdmin = state.user?.roles?.includes('admin') ?? false;
-
     if (url.pathname === '/api/v1/auth/me' && method === 'GET') {
       if (state.user) {
         return json(200, state.user);
@@ -199,7 +161,6 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
         updated_at: '2024-01-02T00:00:00.000Z',
       };
       state.workspaces = [created, ...state.workspaces];
-      state.adminWorkspaces = [created, ...state.adminWorkspaces];
       if (!state.projectsByWorkspace[created.id]) {
         state.projectsByWorkspace[created.id] = [];
       }
@@ -245,9 +206,6 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
         state.workspaces = state.workspaces.map((entry) =>
           entry.id === workspaceId ? updated : entry,
         );
-        state.adminWorkspaces = state.adminWorkspaces.map((entry) =>
-          entry.id === workspaceId ? updated : entry,
-        );
         return json(200, { workspace: updated });
       }
 
@@ -258,218 +216,6 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
         if (!exists) {
           return json(404, { error: 'Workspace not found' });
         }
-        state.workspaces = state.workspaces.filter(
-          (entry) => entry.id !== workspaceId,
-        );
-        state.adminWorkspaces = state.adminWorkspaces.filter(
-          (entry) => entry.id !== workspaceId,
-        );
-        delete state.projectsByWorkspace[workspaceId];
-        return json(200);
-      }
-    }
-
-    if (url.pathname === '/api/v1/admin/users' && method === 'GET') {
-      if (!state.user) {
-        return json(401, { error: 'Not authenticated' });
-      }
-      if (!isAdmin) {
-        return json(403, { error: 'Forbidden' });
-      }
-      const limit = Number(url.searchParams.get('limit') ?? '20');
-      const offset = Number(url.searchParams.get('offset') ?? '0');
-      const search = (url.searchParams.get('search') ?? '').toLowerCase();
-      const filtered = search
-        ? state.adminUsers.filter((user) => {
-            const phone = user.phone?.toLowerCase() ?? '';
-            const name = user.name?.toLowerCase() ?? '';
-            const surname = user.surname?.toLowerCase() ?? '';
-            return (
-              phone.includes(search) ||
-              name.includes(search) ||
-              surname.includes(search)
-            );
-          })
-        : state.adminUsers;
-      const paged = filtered.slice(offset, offset + limit);
-      return json(200, {
-        users: paged,
-        total: filtered.length,
-        limit,
-        offset,
-      });
-    }
-
-    if (url.pathname.startsWith('/api/v1/admin/users/')) {
-      const parts = url.pathname.split('/');
-      const userId = parts[5];
-      if (!userId) {
-        return json(400, { error: 'User id is required' });
-      }
-      if (!state.user) {
-        return json(401, { error: 'Not authenticated' });
-      }
-      const isSelf = state.user.id === userId;
-
-      if (method === 'GET') {
-        if (!isAdmin) {
-          return json(403, { error: 'Forbidden' });
-        }
-        const user = state.adminUsers.find((entry) => entry.id === userId);
-        if (!user) {
-          return json(404, { error: 'User not found' });
-        }
-        return json(200, { user });
-      }
-
-      if (method === 'PUT') {
-        if (!isAdmin && !isSelf) {
-          return json(403, { error: 'Forbidden' });
-        }
-        const payload = request.postDataJSON?.() as {
-          phone?: string;
-          email?: string;
-          name?: string;
-          surname?: string;
-        } | null;
-        const existing = state.adminUsers.find((entry) => entry.id === userId);
-        if (!existing && !isSelf) {
-          return json(404, { error: 'User not found' });
-        }
-        const base: AdminUser = existing ?? {
-          id: state.user.id,
-          phone: state.user.phone ?? '',
-          email: state.user.email ?? null,
-          name: state.user.name,
-          surname: state.user.surname ?? null,
-          created_at: state.user.created_at,
-          updated_at: state.user.created_at,
-        };
-        const updated: AdminUser = {
-          ...base,
-          phone: payload?.phone ?? base.phone,
-          email: payload?.email === undefined ? base.email : payload.email,
-          name: payload?.name ?? base.name,
-          surname:
-            payload?.surname === undefined ? base.surname : payload.surname,
-          updated_at: new Date().toISOString(),
-        };
-        if (isSelf) {
-          state.user = {
-            ...state.user,
-            phone: updated.phone,
-            email: updated.email ?? null,
-            name: updated.name,
-            surname: updated.surname ?? null,
-          };
-        }
-        const existingIndex = state.adminUsers.findIndex(
-          (entry) => entry.id === userId,
-        );
-        if (existingIndex >= 0) {
-          state.adminUsers = state.adminUsers.map((entry) =>
-            entry.id === userId ? { ...entry, ...updated } : entry,
-          );
-        } else {
-          state.adminUsers = [updated, ...state.adminUsers];
-        }
-        return json(200, { user: updated });
-      }
-
-      if (method === 'DELETE') {
-        if (!isAdmin) {
-          return json(403, { error: 'Forbidden' });
-        }
-        const exists = state.adminUsers.some((entry) => entry.id === userId);
-        if (!exists) {
-          return json(404, { error: 'User not found' });
-        }
-        state.adminUsers = state.adminUsers.filter(
-          (entry) => entry.id !== userId,
-        );
-        return json(200);
-      }
-    }
-
-    if (url.pathname === '/api/v1/admin/workspaces' && method === 'GET') {
-      if (!state.user) {
-        return json(401, { error: 'Not authenticated' });
-      }
-      if (!isAdmin) {
-        return json(403, { error: 'Forbidden' });
-      }
-      const limit = Number(url.searchParams.get('limit') ?? '20');
-      const offset = Number(url.searchParams.get('offset') ?? '0');
-      const search = (url.searchParams.get('search') ?? '').toLowerCase();
-      const filtered = search
-        ? state.adminWorkspaces.filter((workspace) =>
-            (workspace.name ?? '').toLowerCase().includes(search),
-          )
-        : state.adminWorkspaces;
-      const paged = filtered.slice(offset, offset + limit);
-      return json(200, {
-        workspaces: paged,
-        total: filtered.length,
-        limit,
-        offset,
-      });
-    }
-
-    if (url.pathname.startsWith('/api/v1/admin/workspaces/')) {
-      const parts = url.pathname.split('/');
-      const workspaceId = parts[5];
-      if (!workspaceId) {
-        return json(400, { error: 'Workspace id is required' });
-      }
-      if (!state.user) {
-        return json(401, { error: 'Not authenticated' });
-      }
-      if (!isAdmin) {
-        return json(403, { error: 'Forbidden' });
-      }
-
-      if (method === 'GET') {
-        const workspace = state.adminWorkspaces.find(
-          (entry) => entry.id === workspaceId,
-        );
-        if (!workspace) {
-          return json(404, { error: 'Workspace not found' });
-        }
-        return json(200, { workspace });
-      }
-
-      if (method === 'PUT') {
-        const payload = request.postDataJSON?.() as { name?: string } | null;
-        const existing = state.adminWorkspaces.find(
-          (entry) => entry.id === workspaceId,
-        );
-        if (!existing) {
-          return json(404, { error: 'Workspace not found' });
-        }
-        const updated = {
-          ...existing,
-          name: payload?.name ?? existing.name,
-          updated_at: new Date().toISOString(),
-        };
-        state.adminWorkspaces = state.adminWorkspaces.map((entry) =>
-          entry.id === workspaceId ? updated : entry,
-        );
-        state.workspaces = state.workspaces.map((entry) =>
-          entry.id === workspaceId ? updated : entry,
-        );
-        return json(200, { workspace: updated });
-      }
-
-      if (method === 'DELETE') {
-        const exists = state.adminWorkspaces.some(
-          (entry) => entry.id === workspaceId,
-        );
-        if (!exists) {
-          return json(404, { error: 'Workspace not found' });
-        }
-        state.adminWorkspaces = state.adminWorkspaces.filter(
-          (entry) => entry.id !== workspaceId,
-        );
         state.workspaces = state.workspaces.filter(
           (entry) => entry.id !== workspaceId,
         );
@@ -586,5 +332,5 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
   });
 };
 
-export { mockAdminUser, mockProject, mockUser, mockWorkspace, setupApiMock };
+export { mockProject, mockUser, mockWorkspace, setupApiMock };
 export type { MockOptions };

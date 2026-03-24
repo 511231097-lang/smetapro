@@ -20,15 +20,15 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  // webServer: {
-  //   command: "npm run dev:test",
-  //   url: baseURL,
-  //   reuseExistingServer: !process.env.CI,
-  //   timeout: 120_000,
-  //   env: {
-  //     ...process.env,
-  //     PW_TEST: "1",
-  //     BASE_API_URL: baseURL,
-  //   },
-  // },
+  webServer: {
+    command: 'npm run dev:test',
+    url: baseURL,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+    env: {
+      ...process.env,
+      PW_TEST: '1',
+      BASE_API_URL: process.env.BASE_API_URL ?? baseURL,
+    },
+  },
 });
