@@ -13,9 +13,10 @@ import {
   TextInput,
   Title,
   useComputedColorScheme,
+  useMantineTheme,
 } from "@mantine/core";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconAlertTriangle, IconTrash } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
@@ -27,7 +28,7 @@ import {
   useGetWorkspacesWorkspaceId,
   usePutWorkspacesWorkspaceId,
 } from "../../shared/api/generated/smetchik";
-import type { WorkspacesWorkspaceResponse } from "../../shared/api/generated/schemas";
+import type { WorkspacesSingleWorkspaceResponse } from "../../shared/api/generated/schemas/workspacesSingleWorkspaceResponse";
 import type { WorkspacesListResponse } from "../../shared/api/generated/schemas/workspacesListResponse";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { ROUTES, buildRoute } from "../../shared/constants/routes";
@@ -125,6 +126,8 @@ const DeleteModal = ({
 const WorkspaceGeneralPage = () => {
   const { workspaceId } = useParams();
   const navigate = useNavigate();
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const [deleteOpened, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -187,10 +190,9 @@ const WorkspaceGeneralPage = () => {
             );
           }
 
-          queryClient.setQueryData<WorkspacesWorkspaceResponse | undefined>(
-            detailKey,
-            { workspace: updated },
-          );
+          queryClient.setQueryData<
+            WorkspacesSingleWorkspaceResponse | undefined
+          >(detailKey, { workspace: updated });
           form.resetDirty();
         }
       },
@@ -294,13 +296,23 @@ const WorkspaceGeneralPage = () => {
         }}
       />
 
-      <Group align="flex-start" gap={20} wrap="nowrap">
-        <Stack gap={20} style={{ width: 372, flexShrink: 0 }}>
+      <Group
+        align="flex-start"
+        gap={isMobile ? 12 : 20}
+        wrap={isMobile ? "wrap" : "nowrap"}
+      >
+        <Stack
+          gap={isMobile ? 12 : 20}
+          style={{
+            width: isMobile ? "100%" : 372,
+            flexShrink: 0,
+          }}
+        >
           <Paper
             radius="md"
-            p={24}
+            p={isMobile ? 16 : 24}
             style={{
-              height: 269,
+              minHeight: isMobile ? undefined : 269,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -313,9 +325,9 @@ const WorkspaceGeneralPage = () => {
             </Title>
             <Box
               style={{
-                width: 140,
-                height: 140,
-                minHeight: 140,
+                width: isMobile ? 110 : 140,
+                height: isMobile ? 110 : 140,
+                minHeight: isMobile ? 110 : 140,
                 borderRadius: 30,
                 overflow: "hidden",
                 cursor: "pointer",
@@ -351,13 +363,18 @@ const WorkspaceGeneralPage = () => {
             color="red"
             leftSection={<IconTrash size={20} />}
             onClick={openDelete}
+            fullWidth={isMobile}
           >
             Удалить пространство
           </Button>
         </Stack>
 
         {/* Правая колонка: форма */}
-        <Paper radius="md" p={24} style={{ flex: 1 }}>
+        <Paper
+          radius="md"
+          p={isMobile ? 16 : 24}
+          style={{ flex: 1, width: isMobile ? "100%" : undefined }}
+        >
           <form onSubmit={handleSubmit} noValidate>
             <Stack gap="md">
               <TextInput
@@ -382,6 +399,7 @@ const WorkspaceGeneralPage = () => {
                   type="submit"
                   loading={updateMutation.isPending}
                   disabled={!form.isDirty()}
+                  fullWidth={isMobile}
                 >
                   Сохранить
                 </Button>
