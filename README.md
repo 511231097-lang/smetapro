@@ -35,7 +35,7 @@ npm run preview
 Generate the React Query client from the OpenAPI schema:
 
 ```bash
-npm run generate:api
+npm run api
 ```
 
 Set the `BASE_API_URL` environment variable (for example `http://localhost:8888`) to point the client to your backend. This variable must be defined before starting the app.

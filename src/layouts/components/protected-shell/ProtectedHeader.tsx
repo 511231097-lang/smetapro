@@ -23,7 +23,7 @@ import { Link } from 'react-router-dom';
 import { usePrimaryColor } from '../../../providers/PrimaryColorProvider';
 
 import type { WorkspacesWorkspaceResponse } from '../../../shared/api/generated/schemas';
-import { ROUTES } from '../../../shared/constants/routes';
+import { buildRoute, ROUTES } from '../../../shared/constants/routes';
 import WorkspaceMenu from './WorkspaceMenu';
 
 type ProtectedHeaderProps = {
@@ -51,6 +51,10 @@ const ProtectedHeader = ({
   const computedColorScheme = useComputedColorScheme('light');
   const isDark = computedColorScheme === 'dark';
   const { primaryColor } = usePrimaryColor();
+  const projectsRoute = activeWorkspace?.id
+    ? buildRoute(ROUTES.PROJECTS, { workspaceId: activeWorkspace.id })
+    : ROUTES.ROOT;
+
   return (
     <AppShell.Header
       style={{
@@ -61,7 +65,7 @@ const ProtectedHeader = ({
       <Group h="100%" px={16} justify="space-between" wrap="nowrap">
         <Group gap={0} wrap="nowrap" style={{ flexShrink: 0 }}>
           <Link
-            to={ROUTES.PROJECTS}
+            to={projectsRoute}
             style={{
               display: 'flex',
               alignItems: 'center',

@@ -1,4 +1,4 @@
-import { Center, Loader, Stack } from '@mantine/core';
+import { Button, Center, Loader, Stack, Text, Title } from '@mantine/core';
 import { useMemo } from 'react';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 
@@ -40,6 +40,20 @@ const ProtectedLayout = () => {
 
   if (isError || !user) {
     return <Navigate to={ROUTES.LOGIN} replace state={{ from: location }} />;
+  }
+
+  if (isWorkspacesError) {
+    return (
+      <Center h="100vh">
+        <Stack align="center" gap="sm">
+          <Title order={3}>Не удалось загрузить пространства</Title>
+          <Text c="dimmed" ta="center">
+            Ошибка загрузки списка пространств. Попробуйте обновить страницу.
+          </Text>
+          <Button onClick={() => window.location.reload()}>Обновить</Button>
+        </Stack>
+      </Center>
+    );
   }
 
   if (!isWorkspacesError && workspaceList.length === 0) {

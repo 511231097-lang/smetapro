@@ -103,6 +103,31 @@ describe('ProtectedLayout', () => {
     expect(screen.getByText('workspace create')).toBeInTheDocument();
   });
 
+  test('renders workspace fetch error stub when workspaces request fails', () => {
+    mocks.useGetAuthMe.mockReturnValue({
+      data: { email: 'maria@example.com' },
+      isLoading: false,
+      isError: false,
+    });
+    mocks.useGetWorkspaces.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+    });
+
+    setup('/ws-1/projects');
+
+    expect(
+      screen.getByRole('heading', {
+        name: 'Не удалось загрузить пространства',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Обновить' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('protected-shell')).not.toBeInTheDocument();
+  });
+
   test('redirects root route to the first workspace projects page', () => {
     mocks.useGetAuthMe.mockReturnValue({
       data: { email: 'maria@example.com' },
