@@ -52,6 +52,7 @@ import {
   useGetWorkspacesWorkspaceIdRoles,
   usePostWorkspacesWorkspaceIdInvite,
 } from "../../shared/api/generated/smetchik";
+import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
 import type {
   WorkspacesMemberResponse,
   WorkspacesSingleInviteResponse,
@@ -95,6 +96,7 @@ const COLUMNS: { key: string; label: string }[] = [
 ];
 
 const WorkspaceMembersPage = () => {
+  const { primaryColor } = usePrimaryColor();
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
@@ -272,7 +274,6 @@ const WorkspaceMembersPage = () => {
       <Paper p={12} mb={8}>
         <Group justify="space-between">
           <Button
-            color="teal"
             size="sm"
             leftSection={panelLeftIcon}
             onClick={panelOnClick}
@@ -293,7 +294,6 @@ const WorkspaceMembersPage = () => {
             <Popover.Target>
               <ActionIcon
                 variant={isFilterActive ? "filled" : "outline"}
-                color="teal"
                 size={32}
                 onClick={() => {
                   if (!filterOpen) {
@@ -349,7 +349,6 @@ const WorkspaceMembersPage = () => {
                 <Stack gap={0}>
                   <Checkbox
                     py={4}
-                    color="teal"
                     label={
                       <Text size="sm" fw={600}>
                         Все роли
@@ -375,7 +374,6 @@ const WorkspaceMembersPage = () => {
                     <Checkbox
                       key={role.id}
                       py={4}
-                      color="teal"
                       label={role.name ?? role.code}
                       checked={draftRoleCodes.includes(role.code ?? "")}
                       onChange={(e) => {
@@ -394,7 +392,6 @@ const WorkspaceMembersPage = () => {
               {/* Footer */}
               <Group px={16} pb={16} pt={8} gap={8}>
                 <Button
-                  color="teal"
                   style={{ flex: 1 }}
                   onClick={() => {
                     setFilterRoleCodes(
@@ -431,7 +428,7 @@ const WorkspaceMembersPage = () => {
             {/* Row 1: title + registered count */}
             <Group gap={16}>
               <Group gap={8}>
-                <IconLink size={20} color="var(--mantine-color-teal-6)" />
+                <IconLink size={20} color={"var(--mantine-color-anchor)"} />
                 <Text fw={600} size="sm">
                   Ссылка-приглашение
                 </Text>
@@ -440,7 +437,7 @@ const WorkspaceMembersPage = () => {
                 <Text size="xs" c="dimmed">
                   Зарегистрировалось:
                 </Text>
-                <Badge size="sm" variant="filled" color="teal" radius="sm">
+                <Badge size="sm" variant="filled" radius="sm">
                   {invite.use_count ?? 0}
                 </Badge>
               </Group>
@@ -634,7 +631,7 @@ const WorkspaceMembersPage = () => {
                     >
                       <Table.Td>
                         <Group gap="sm" wrap="nowrap">
-                          <Avatar size={32} radius="xl" color="teal">
+                          <Avatar size={32} radius="xl" color={primaryColor}>
                             {getInitials(m.name, m.surname)}
                           </Avatar>
                           <Text size="sm">
@@ -774,7 +771,7 @@ const WorkspaceMembersPage = () => {
                       <Avatar
                         size={36}
                         radius="xl"
-                        color="teal"
+                        color={primaryColor}
                         style={{ flexShrink: 0 }}
                       >
                         {getInitials(m.name, m.surname)}

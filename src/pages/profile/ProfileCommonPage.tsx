@@ -26,6 +26,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { useGetAuthMe } from "../../shared/api/generated/smetchik";
+import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
 
 const TIMEZONE_OPTIONS = [
   { value: "UTC+0", label: "UTC+0 (Лондон)" },
@@ -47,6 +48,7 @@ const ProfileCommonPage = () => {
   const [deleteOpen, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
+  const { primaryColor } = usePrimaryColor();
 
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : "U";
 
@@ -102,7 +104,12 @@ const ProfileCommonPage = () => {
 
             {/* Аватар */}
             <Group gap={16} align="center">
-              <Avatar color="teal" variant="filled" radius="xl" size={56}>
+              <Avatar
+                variant="filled"
+                radius={9999}
+                size={56}
+                color={primaryColor}
+              >
                 {initials}
               </Avatar>
               <Button
@@ -212,6 +219,7 @@ const ProfileCommonPage = () => {
         onClose={closeDelete}
         title="Удаление аккаунта"
         size="md"
+        centered
       >
         <Stack gap={16}>
           <Alert
@@ -251,7 +259,7 @@ const ProfileCommonPage = () => {
             <Button
               color="red"
               leftSection={<IconTrash size={16} />}
-              disabled={deleteConfirm !== "Удалить"}
+              disabled={deleteConfirm.toLowerCase().trim() !== "удалить"}
               onClick={() => {
                 // API delete будет добавлен позже
                 closeDelete();

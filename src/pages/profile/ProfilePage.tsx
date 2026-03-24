@@ -1,15 +1,22 @@
 import { Box, Stack, Title } from "@mantine/core";
 import { IconBrush, IconUser } from "@tabler/icons-react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useParams } from "react-router-dom";
 import { Tabs } from "../../shared/components/Tabs";
-import { ROUTES } from "../../shared/constants/routes";
+import { ROUTES, buildRoute } from "../../shared/constants/routes";
 
 const ProfilePage = () => {
   const location = useLocation();
+  const { workspaceId } = useParams();
 
-  const activeTab = location.pathname.includes("/appearance")
-    ? "appearance"
-    : "common";
+  const commonPath = buildRoute(ROUTES.PROFILE_COMMON, {
+    workspaceId: workspaceId ?? "",
+  });
+  const appearancePath = buildRoute(ROUTES.PROFILE_APPEARANCE, {
+    workspaceId: workspaceId ?? "",
+  });
+
+  const activeTab =
+    location.pathname === appearancePath ? "appearance" : "common";
 
   return (
     <Stack gap="lg" p={20}>
@@ -20,7 +27,7 @@ const ProfilePage = () => {
           <Tabs.Tab
             value="common"
             component={Link}
-            to={ROUTES.PROFILE_COMMON}
+            to={commonPath}
             leftSection={<IconUser size={14} />}
           >
             Личные данные
@@ -28,7 +35,7 @@ const ProfilePage = () => {
           <Tabs.Tab
             value="appearance"
             component={Link}
-            to={ROUTES.PROFILE_APPEARANCE}
+            to={appearancePath}
             leftSection={<IconBrush size={14} />}
           >
             Оформление

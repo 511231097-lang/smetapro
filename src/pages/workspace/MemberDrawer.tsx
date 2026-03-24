@@ -19,6 +19,7 @@ import {
   usePatchWorkspacesWorkspaceIdMembersMemberId,
   usePatchWorkspacesWorkspaceIdMembersMemberIdRole,
 } from "../../shared/api/generated/smetchik";
+import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
 import type { WorkspacesMemberResponse } from "../../shared/api/generated/schemas";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { queryClient } from "../../shared/api/queryClient";
@@ -40,6 +41,7 @@ const getErrorMessage = (error: unknown) => {
 };
 
 const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
+  const { primaryColor } = usePrimaryColor();
   const { data: rolesData } = useGetWorkspacesWorkspaceIdRoles(workspaceId, {
     query: { enabled: !!workspaceId },
   });
@@ -198,7 +200,7 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
           <Stack gap="md" p={20} style={{ flex: 1 }}>
             {/* Avatar row */}
             <Group gap="md" align="center">
-              <Avatar size={56} radius="xl" color="teal">
+              <Avatar size={56} radius="xl" color={primaryColor}>
                 {initials}
               </Avatar>
               <Button

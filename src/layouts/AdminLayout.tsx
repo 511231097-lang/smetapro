@@ -22,15 +22,17 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { useGetApiV1AuthMe } from "../shared/api/generated/smetchik";
+import { usePrimaryColor } from "../providers/PrimaryColorProvider";
+import { useGetAuthMe } from "../shared/api/generated/smetchik";
 import { ROUTES } from "../shared/constants/routes";
-import { getInitials } from "../shared/utils/getInitials";
 
 const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { primaryColor } = usePrimaryColor();
   const [opened, { toggle, close }] = useDisclosure();
-  const { data: user, isLoading, isError } = useGetApiV1AuthMe({});
+  const { data: userResp, isLoading, isError } = useGetAuthMe({});
+  const user = userResp?.user;
 
   useEffect(() => {
     close();
@@ -54,8 +56,8 @@ const AdminLayout = () => {
     return <Navigate to={ROUTES.PROJECTS} replace />;
   }
 
-  const initials = getInitials(user?.name, user?.surname);
-  const fullName = [user?.name, user?.surname].filter(Boolean).join(" ");
+  const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : "U";
+  const fullName = user?.email ?? "";
 
   return (
     <AppShell
@@ -67,13 +69,18 @@ const AdminLayout = () => {
       <AppShell.Header className="dashboard-header">
         <Group h="100%" px="md" justify="space-between">
           <Group>
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              hiddenFrom="sm"
+              size="sm"
+            />
             <Title order={4}>Админка</Title>
           </Group>
           <Menu position="bottom-end" width={200} withinPortal>
             <Menu.Target>
               <UnstyledButton aria-label="Открыть профиль">
-                <Avatar radius="xl" color="teal" variant="light">
+                <Avatar radius="xl" color={primaryColor} variant="light">
                   {initials}
                 </Avatar>
               </UnstyledButton>
@@ -93,10 +100,17 @@ const AdminLayout = () => {
       </AppShell.Header>
 
       <AppShell.Navbar className="dashboard-navbar" p="md">
-        <Box style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <Box
+          style={{ display: "flex", flexDirection: "column", height: "100%" }}
+        >
           <Stack gap="sm">
             <Group justify="flex-end">
-              <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="md" />
+              <Burger
+                opened={opened}
+                onClick={toggle}
+                hiddenFrom="sm"
+                size="md"
+              />
             </Group>
 
             <NavLink

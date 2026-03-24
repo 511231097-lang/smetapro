@@ -5,19 +5,6 @@ import {
   IconMoneybag,
 } from "@tabler/icons-react";
 
-const WS_COLORS = [
-  "teal",
-  "blue",
-  "violet",
-  "orange",
-  "pink",
-  "green",
-  "red",
-  "indigo",
-  "cyan",
-  "grape",
-] as const;
-
 const getNavItems = (workspaceId: string) =>
   [
     {
@@ -35,7 +22,7 @@ const getNavItems = (workspaceId: string) =>
     {
       label: "Справочники",
       icon: <IconClipboardList size="20px" />,
-      route: `/${workspaceId}/references`,
+      route: buildRoute(ROUTES.REFERENCES, { workspaceId }),
       chevron: false,
     },
   ] as const;
@@ -51,11 +38,4 @@ const wsInitials = (name?: string | null): string => {
   return name.slice(0, 2).toUpperCase();
 };
 
-const wsColor = (id?: string | null): string => {
-  if (!id) return "teal";
-
-  const hash = [...id].reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return WS_COLORS[hash % WS_COLORS.length];
-};
-
-export { getNavItems, wsColor, wsInitials };
+export { getNavItems, wsInitials };

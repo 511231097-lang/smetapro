@@ -18,6 +18,7 @@ import {
   useComputedColorScheme,
   useMantineColorScheme,
 } from "@mantine/core";
+import { usePrimaryColor } from "../../../providers/PrimaryColorProvider";
 import {
   IconInfoCircle,
   IconLogout,
@@ -61,6 +62,7 @@ const ProtectedHeader = ({
   const { toggleColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme("light");
   const isDark = computedColorScheme === "dark";
+  const { primaryColor } = usePrimaryColor();
   return (
     <AppShell.Header
       style={{
@@ -164,7 +166,7 @@ const ProtectedHeader = ({
                 borderRadius: 4,
               },
               item: {
-                padding: "8px 12px",
+                padding: "4px 12px",
                 fontSize: 12,
                 gap: 8,
                 borderRadius: 4,
@@ -174,7 +176,12 @@ const ProtectedHeader = ({
           >
             <Menu.Target>
               <UnstyledButton aria-label="Профиль" style={{ marginLeft: 4 }}>
-                <Avatar color="teal" variant="filled" radius="xl" size={34}>
+                <Avatar
+                  color={primaryColor}
+                  variant="filled"
+                  radius="xl"
+                  size={34}
+                >
                   {initials}
                 </Avatar>
               </UnstyledButton>

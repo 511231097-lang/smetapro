@@ -20,6 +20,7 @@ import {
 } from "@mantine/core";
 import { Link } from "react-router-dom";
 
+import { usePrimaryColor } from "../../../providers/PrimaryColorProvider";
 import type { WorkspacesWorkspaceResponse } from "../../../shared/api/generated/schemas";
 import { ROUTES, buildRoute } from "../../../shared/constants/routes";
 import { getNavItems } from "./constants";
@@ -43,6 +44,8 @@ const ProtectedMobileDrawer = ({
   onWorkspaceSelect,
   onClose,
 }: ProtectedMobileDrawerProps) => {
+  const { primaryColor } = usePrimaryColor();
+
   return (
     <Drawer
       opened={opened}
@@ -81,7 +84,7 @@ const ProtectedMobileDrawer = ({
           style={{ display: "block", width: "100%", padding: "16px" }}
         >
           <Group gap={12}>
-            <Avatar color="teal" variant="filled" radius="xl" size={40}>
+            <Avatar color={primaryColor} variant="filled" radius="xl" size={40}>
               {initials}
             </Avatar>
             <Box>
@@ -112,7 +115,12 @@ const ProtectedMobileDrawer = ({
               <UnstyledButton style={{ width: "100%" }}>
                 <Group justify="space-between" align="center">
                   <Group gap={8}>
-                    <Avatar size={24} radius="sm" color="teal" variant="light">
+                    <Avatar
+                      size={24}
+                      radius="sm"
+                      color={primaryColor}
+                      variant="light"
+                    >
                       <HugeiconsIcon icon={Building01Icon} size={12} />
                     </Avatar>
                     <Text size="sm">{activeWorkspace?.name ?? "—"}</Text>

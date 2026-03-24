@@ -1,19 +1,30 @@
 import {
   Box,
+  Button,
   Group,
   Paper,
-  SegmentedControl,
   Stack,
   Text,
   Title,
+  UnstyledButton,
 } from "@mantine/core";
-import { useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
-import { IconMoon, IconSun, IconDeviceDesktop } from "@tabler/icons-react";
+import { useMantineColorScheme } from "@mantine/core";
+import type { MantineColor } from "@mantine/core";
+import { IconCheck, IconMoon, IconSun } from "@tabler/icons-react";
+import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
+
+const COLOR_OPTIONS: { color: MantineColor; hex: string }[] = [
+  { color: "teal", hex: "#12b886" },
+  { color: "blue", hex: "#228be6" },
+  { color: "grape", hex: "#be4bdb" },
+  { color: "orange", hex: "#fd7e14" },
+  { color: "cyan", hex: "#15aabf" },
+  { color: "yellow", hex: "#fab005" },
+];
 
 const ProfileAppearancePage = () => {
   const { setColorScheme, colorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme("light");
-  const isDark = computedColorScheme === "dark";
+  const { primaryColor, setPrimaryColor } = usePrimaryColor();
 
   return (
     <Stack gap={16} maw={672}>
@@ -22,49 +33,56 @@ const ProfileAppearancePage = () => {
           <Title order={4}>Оформление</Title>
 
           <Box>
-            <Text fz={14} fw={600} mb={8}>
-              Тема интерфейса
+            <Text fz={12} fw={600} tt="uppercase" c="dimmed" mb={8}>
+              Тема
             </Text>
-            <SegmentedControl
-              value={colorScheme}
-              onChange={(v) => setColorScheme(v as "light" | "dark" | "auto")}
-              data={[
-                {
-                  value: "light",
-                  label: (
-                    <Group gap={6} wrap="nowrap">
-                      <IconSun size={14} />
-                      <span>Светлая</span>
-                    </Group>
-                  ),
-                },
-                {
-                  value: "auto",
-                  label: (
-                    <Group gap={6} wrap="nowrap">
-                      <IconDeviceDesktop size={14} />
-                      <span>Системная</span>
-                    </Group>
-                  ),
-                },
-                {
-                  value: "dark",
-                  label: (
-                    <Group gap={6} wrap="nowrap">
-                      <IconMoon size={14} />
-                      <span>Тёмная</span>
-                    </Group>
-                  ),
-                },
-              ]}
-            />
-            <Text fz={12} c="dimmed" mt={8}>
-              {colorScheme === "auto"
-                ? `Автоматически (сейчас: ${isDark ? "тёмная" : "светлая"})`
-                : colorScheme === "dark"
-                  ? "Тёмная тема включена"
-                  : "Светлая тема включена"}
+            <Group gap={8} grow>
+              <Button
+                variant="outline"
+                color={colorScheme === "light" ? undefined : "gray"}
+                leftSection={<IconSun size={16} />}
+                onClick={() => setColorScheme("light")}
+              >
+                Светлая тема
+              </Button>
+              <Button
+                variant="outline"
+                color={colorScheme === "dark" ? undefined : "gray"}
+                leftSection={<IconMoon size={16} />}
+                onClick={() => setColorScheme("dark")}
+              >
+                Темная тема
+              </Button>
+            </Group>
+          </Box>
+
+          <Box>
+            <Text fz={12} fw={600} tt="uppercase" c="dimmed" mb={8}>
+              Основной цвет
             </Text>
+            <Group gap={8}>
+              {COLOR_OPTIONS.map(({ color, hex }) => (
+                <UnstyledButton
+                  key={color}
+                  aria-label={color}
+                  style={{
+                    backgroundColor: hex,
+                    borderRadius: "50%",
+                    width: 36,
+                    height: 36,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                  onClick={() => setPrimaryColor(color)}
+                >
+                  {primaryColor === color && (
+                    <IconCheck size={16} color="white" />
+                  )}
+                </UnstyledButton>
+              ))}
+            </Group>
           </Box>
         </Stack>
       </Paper>

@@ -1,9 +1,4 @@
 import {
-  Add01FreeIcons,
-  Settings01FreeIcons,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
   Avatar,
   Box,
   Divider,
@@ -13,12 +8,15 @@ import {
   Text,
   Title,
   UnstyledButton,
+  useComputedColorScheme,
 } from "@mantine/core";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { usePrimaryColor } from "../../../providers/PrimaryColorProvider";
 import ChevronIcon from "./assets/ChevronIcon.svg?react";
 import type { WorkspacesWorkspaceResponse } from "../../../shared/api/generated/schemas";
 import { ROUTES, buildRoute } from "../../../shared/constants/routes";
-import { wsColor, wsInitials } from "./constants";
+import { wsInitials } from "./constants";
 import { IconCube3dSphere } from "@tabler/icons-react";
 
 type WorkspaceMenuProps = {
@@ -32,12 +30,19 @@ const WorkspaceMenu = ({
   workspaceList,
   onWorkspaceSelect,
 }: WorkspaceMenuProps) => {
+  const { primaryColor } = usePrimaryColor();
+  const colorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
+  const [opened, setOpened] = useState(false);
   const otherWorkspaces = workspaceList.filter(
     (workspace) => workspace.id !== activeWorkspace?.id,
   );
 
   return (
     <Menu
+      opened={opened}
+      onChange={setOpened}
       position="bottom-end"
       withinPortal
       withArrow
@@ -56,7 +61,7 @@ const WorkspaceMenu = ({
             <Avatar
               size={24}
               radius={4}
-              color={wsColor(activeWorkspace?.id)}
+              color={primaryColor}
               variant="filled"
               style={{ fontSize: 11, fontWeight: 700 }}
             >
@@ -76,7 +81,7 @@ const WorkspaceMenu = ({
             <Avatar
               size={32}
               radius={4}
-              color={wsColor(activeWorkspace?.id)}
+              color={primaryColor}
               variant="filled"
               style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}
             >
@@ -97,6 +102,7 @@ const WorkspaceMenu = ({
             to={buildRoute(ROUTES.WORKSPACE_GENERAL, {
               workspaceId: activeWorkspace?.id ?? "",
             })}
+            onClick={() => setOpened(false)}
             style={{
               display: "block",
               width: "100%",
@@ -129,7 +135,7 @@ const WorkspaceMenu = ({
                     <Avatar
                       size={24}
                       radius={4}
-                      color={wsColor(workspace.id)}
+                      color={primaryColor}
                       variant="filled"
                       style={{
                         fontSize: 13,
@@ -167,8 +173,12 @@ const WorkspaceMenu = ({
             <Avatar
               size={24}
               radius={4}
-              bg="rgba(206, 212, 218, 1)"
-              variant="light"
+              bg={
+                colorScheme === "dark"
+                  ? "var(--mantine-color-gray-8)"
+                  : "var(--mantine-color-gray-4)"
+              }
+              variant="filled"
               style={{ flexShrink: 0 }}
             >
               <Text c="white">+</Text>

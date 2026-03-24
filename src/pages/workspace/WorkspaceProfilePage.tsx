@@ -109,7 +109,7 @@ const DeleteModal = ({
           <Button
             color="red"
             leftSection={<IconTrash size={16} />}
-            disabled={input !== "Удалить"}
+            disabled={input.toLowerCase().trim() !== "удалить"}
             loading={isPending}
             onClick={onConfirm}
           >

@@ -12,6 +12,7 @@ import {
   Textarea,
   TextInput,
   Title,
+  useComputedColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
@@ -109,7 +110,7 @@ const DeleteModal = ({
           <Button
             color="red"
             leftSection={<IconTrash size={16} />}
-            disabled={input !== "Удалить"}
+            disabled={input.toLowerCase().trim() !== "удалить"}
             loading={isPending}
             onClick={onConfirm}
           >
@@ -127,6 +128,9 @@ const WorkspaceGeneralPage = () => {
   const [deleteOpened, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const colorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
 
   const form = useForm({
     initialValues: {
@@ -312,10 +316,13 @@ const WorkspaceGeneralPage = () => {
                 width: 140,
                 height: 140,
                 minHeight: 140,
-                borderRadius: "50%",
+                borderRadius: 30,
                 overflow: "hidden",
                 cursor: "pointer",
-                background: "#f1f3f5",
+                background:
+                  colorScheme === "dark"
+                    ? "var(--mantine-color-gray-9)"
+                    : "var(--mantine-color-gray-2)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
