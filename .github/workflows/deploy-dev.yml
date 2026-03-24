@@ -26,7 +26,7 @@ jobs:
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -rltvz --delete
+          switches: -rltvz --delete --omit-dir-times
           path: dist/
           remote_path: /opt/apps/smetchik/dev/frontend/
           remote_host: ${{ secrets.SSH_HOST }}
