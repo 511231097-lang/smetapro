@@ -22,6 +22,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePostAuthLogin } from "../../shared/api/generated/smetchik";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { ROUTES } from "../../shared/constants/routes";
+import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
 import {
   AuthFormWrapper,
   AuthPageLayout,
@@ -51,6 +52,7 @@ const getErrorMessage = (error: unknown): string => {
 const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { primaryColor } = usePrimaryColor();
   const from =
     (location.state as { from?: { pathname: string } } | null)?.from
       ?.pathname ?? ROUTES.ROOT;
@@ -101,7 +103,7 @@ const LoginForm = () => {
   return (
     <AuthFormWrapper>
       {passwordChanged && (
-        <Alert color="teal" icon={<IconCircleCheck size={16} />}>
+        <Alert color={primaryColor} icon={<IconCircleCheck size={16} />}>
           Пароль изменён. Войдите с новым паролем.
         </Alert>
       )}
@@ -121,7 +123,6 @@ const LoginForm = () => {
         noValidate
         className={classes.formCard}
         data-testid="login-form-card"
-        bg="white"
       >
         <Stack gap="lg">
           <Title order={3}>Вход в Сметчик ПРО</Title>

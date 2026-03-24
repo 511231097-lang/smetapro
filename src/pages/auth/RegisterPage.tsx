@@ -26,6 +26,7 @@ import {
   usePostAuthRegister,
   usePostAuthRegisterVerify,
 } from "../../shared/api/generated/smetchik";
+import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { ROUTES } from "../../shared/constants/routes";
 import {
@@ -93,6 +94,7 @@ interface FormStepProps {
 }
 
 const FormStep = ({ onSuccess }: FormStepProps) => {
+  const { primaryColor } = usePrimaryColor();
   const form = useForm({
     initialValues: { phone: "", email: "", password: "" },
     validate: {
@@ -147,7 +149,6 @@ const FormStep = ({ onSuccess }: FormStepProps) => {
         })}
         noValidate
         className={classes.formCard}
-        bg="white"
       >
         <Stack gap="lg">
           <Title order={3}>Регистрация в&nbsp;Сметчик&nbsp;ПРО</Title>
@@ -225,6 +226,7 @@ interface VerifyStepProps {
 
 const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
   const navigate = useNavigate();
+  const { primaryColor } = usePrimaryColor();
   const [seconds, setSeconds] = useState(RESEND_TIMEOUT);
   const [pinValue, setPinValue] = useState("");
   const [verifyError, setVerifyError] = useState<string | null>(null);
@@ -241,7 +243,7 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
     mutation: {
       onSuccess: () => {
         notifications.show({
-          color: "teal",
+          color: primaryColor,
           title: "Регистрация завершена",
           message: "Добро пожаловать в личный кабинет.",
         });
@@ -267,7 +269,7 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
           setSeconds(RESEND_TIMEOUT);
           setPinValue("");
           notifications.show({
-            color: "teal",
+            color: primaryColor,
             title: "Код отправлен",
             message: `На адрес ${email} отправлен новый код.`,
           });
@@ -294,13 +296,13 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
           {verifyError}
         </Alert>
       )}
-      <Paper className={classes.formCard} bg="white">
+      <Paper className={classes.formCard}>
         <Stack gap="lg">
           <Anchor
             component="button"
             type="button"
             size="sm"
-            c="teal"
+            c={primaryColor}
             style={backLinkStyle}
             onClick={onBack}
           >

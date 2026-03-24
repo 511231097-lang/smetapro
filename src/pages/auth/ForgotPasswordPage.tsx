@@ -25,6 +25,7 @@ import {
   usePostAuthForgotPassword,
   usePostAuthResetPassword,
 } from "../../shared/api/generated/smetchik";
+import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
 import { HttpClientError } from "../../shared/api/httpClient";
 import { ROUTES } from "../../shared/constants/routes";
 import {
@@ -107,6 +108,7 @@ const EmailStep = ({
   externalError,
   onExternalErrorClose,
 }: EmailStepProps) => {
+  const { primaryColor } = usePrimaryColor();
   const form = useForm({
     initialValues: { email: initialEmail },
     validate: {
@@ -158,14 +160,13 @@ const EmailStep = ({
         })}
         noValidate
         className={classes.formCard}
-        bg="white"
       >
         <Stack gap="lg">
           <Anchor
             component={Link}
             to={ROUTES.LOGIN}
             size="sm"
-            c="teal"
+            c={primaryColor}
             style={backLinkStyle}
           >
             <IconChevronLeft size={16} />
@@ -223,6 +224,7 @@ interface CodeStepProps {
 }
 
 const CodeStep = ({ email, onSuccess, onBack }: CodeStepProps) => {
+  const { primaryColor } = usePrimaryColor();
   const [seconds, setSeconds] = useState(RESEND_TIMEOUT);
   const [pinValue, setPinValue] = useState("");
   const [resendError, setResendError] = useState<string | null>(null);
@@ -268,20 +270,20 @@ const CodeStep = ({ email, onSuccess, onBack }: CodeStepProps) => {
       )}
       {resendSuccess && (
         <Alert
-          color="teal"
+          color={primaryColor}
           withCloseButton
           onClose={() => setResendSuccess(null)}
         >
           {resendSuccess}
         </Alert>
       )}
-      <Paper className={classes.formCard} bg="white">
+      <Paper className={classes.formCard}>
         <Stack gap="lg">
           <Anchor
             component="button"
             type="button"
             size="sm"
-            c="teal"
+            c={primaryColor}
             style={backLinkStyle}
             onClick={onBack}
           >
@@ -350,6 +352,7 @@ const PasswordStep = ({
   onCodeInvalid,
 }: PasswordStepProps) => {
   const navigate = useNavigate();
+  const { primaryColor } = usePrimaryColor();
 
   const form = useForm({
     initialValues: { password: "" },
@@ -405,14 +408,13 @@ const PasswordStep = ({
         })}
         noValidate
         className={classes.formCard}
-        bg="white"
       >
         <Stack gap="lg">
           <Anchor
             component="button"
             type="button"
             size="sm"
-            c="teal"
+            c={primaryColor}
             style={backLinkStyle}
             onClick={onBack}
           >

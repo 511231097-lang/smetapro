@@ -7,9 +7,9 @@ import {
   Text,
   TextInput,
   Title,
+  useComputedColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconCube3dSphere } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -26,6 +26,7 @@ import {
   AuthPageLayout,
   authLayoutClasses as classes,
 } from "../auth/shared/AuthLayout";
+import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
 
 const MAX_NAME = 60;
 
@@ -40,6 +41,10 @@ const getErrorMessage = (error: unknown) => {
 
 const CreateWorkspacePage = () => {
   const navigate = useNavigate();
+  const { primaryColor } = usePrimaryColor();
+  const colorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
   const [createError, setCreateError] = useState<string | null>(null);
   const form = useForm({
     initialValues: { name: "" },
@@ -144,12 +149,16 @@ const CreateWorkspacePage = () => {
           onSubmit={handleSubmit}
           noValidate
           className={classes.formCard}
-          bg="white"
+          bg={
+            colorScheme === "dark"
+              ? "var(--mantine-color-dark-6)"
+              : "var(--mantine-color-white)"
+          }
         >
           <Stack gap="lg">
             <IconCube3dSphere
               size={32}
-              color="var(--mantine-color-teal-6)"
+              color={`var(--mantine-color-${primaryColor}-6)`}
               stroke={1.5}
             />
 
@@ -175,7 +184,7 @@ const CreateWorkspacePage = () => {
                   input: {
                     borderColor:
                       nameLength > 0
-                        ? "var(--mantine-color-teal-6)"
+                        ? `var(--mantine-color-${primaryColor}-6)`
                         : undefined,
                   },
                 }}

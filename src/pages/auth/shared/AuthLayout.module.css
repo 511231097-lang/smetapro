@@ -3,6 +3,10 @@
   background: var(--mantine-color-gray-1);
 }
 
+[data-mantine-color-scheme="dark"] .page {
+  background: var(--mantine-color-dark-8);
+}
+
 .layout {
   --login-hero-width: 0px;
   --login-hero-inset: 0px;
@@ -34,6 +38,11 @@
   width: 100%;
   padding: 32px 20px;
   border-radius: 8px;
+  background: var(--mantine-color-white);
+}
+
+[data-mantine-color-scheme="dark"] .formCard {
+  background: var(--mantine-color-dark-6);
 }
 
 .heroColumn {
