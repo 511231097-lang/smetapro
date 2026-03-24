@@ -15,6 +15,7 @@ export const ROUTES = {
   PROFILE: "/:workspaceId/profile",
   PROFILE_COMMON: "/:workspaceId/profile/common",
   PROFILE_SESSIONS: "/:workspaceId/profile/sessions",
+  PROFILE_APPEARANCE: "/:workspaceId/profile/appearance",
   FINANCES: "/:workspaceId/finances",
   LOGOUT: "/:workspaceId/logout",
   WORKSPACE: "/:workspaceId/workspace",

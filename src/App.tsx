@@ -3,6 +3,7 @@ import ProjectsPage from "./pages/projects/ProjectsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ProfileCommonPage from "./pages/profile/ProfileCommonPage";
 import ProfileSessionsPage from "./pages/profile/ProfileSessionsPage";
+import ProfileAppearancePage from "./pages/profile/ProfileAppearancePage";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
@@ -55,6 +56,8 @@ const App = () => {
           <Route path="common" element={<ProfileCommonPage />} />
 
           <Route path="sessions" element={<ProfileSessionsPage />} />
+
+          <Route path="appearance" element={<ProfileAppearancePage />} />
         </Route>
 
         <Route path="finances" element={<FinancesPage />} />
