@@ -21,7 +21,7 @@ import {
   usePutWorkspacesWorkspaceId,
 } from "../../shared/api/generated/smetchik";
 import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES } from "../../shared/constants/routes";
+import { ROUTES, buildRoute } from "../../shared/constants/routes";
 import { queryClient } from "../../shared/api/queryClient";
 
 const getErrorMessage = (error: unknown) => {
@@ -38,7 +38,7 @@ const getErrorMessage = (error: unknown) => {
 };
 
 const EditProjectPage = () => {
-  const { projectId } = useParams();
+  const { projectId, workspaceId: urlWorkspaceId } = useParams();
   const navigate = useNavigate();
   const [initialized, setInitialized] = useState(false);
   const form = useForm({
@@ -103,7 +103,10 @@ const EditProjectPage = () => {
           message: "Изменения сохранены.",
         });
         removeProjectQueries(workspaceId);
-        navigate(ROUTES.PROJECTS, { replace: true });
+        navigate(
+          buildRoute(ROUTES.PROJECTS, { workspaceId: urlWorkspaceId ?? '' }),
+          { replace: true },
+        );
       },
       onError: (error) => {
         notifications.show({
@@ -124,7 +127,10 @@ const EditProjectPage = () => {
           message: "Проект больше недоступен.",
         });
         removeProjectQueries(workspaceId);
-        navigate(ROUTES.PROJECTS, { replace: true });
+        navigate(
+          buildRoute(ROUTES.PROJECTS, { workspaceId: urlWorkspaceId ?? '' }),
+          { replace: true },
+        );
       },
       onError: (error) => {
         notifications.show({
@@ -137,7 +143,7 @@ const EditProjectPage = () => {
   });
 
   if (!projectId) {
-    return <Navigate to={ROUTES.PROJECTS} replace />;
+    return <Navigate to={buildRoute(ROUTES.PROJECTS, { workspaceId: urlWorkspaceId ?? '' })} replace />;
   }
 
   if (isLoading) {

@@ -6,19 +6,20 @@ import {
   useParams,
   // useParams
 } from "react-router-dom";
-import { ROUTES } from "../../shared/constants/routes";
+import { ROUTES, buildRoute } from "../../shared/constants/routes";
 
 const WorkspacePage = () => {
   const { workspaceId } = useParams();
   const location = useLocation();
-  const profilePath = ROUTES.WORKSPACE_PROFILE.replace(
-    ":workspaceId",
-    workspaceId ?? "",
-  );
-  const membersPath = ROUTES.WORKSPACE_MEMBERS.replace(
-    ":workspaceId",
-    workspaceId ?? "",
-  );
+  const profilePath = buildRoute(ROUTES.WORKSPACE_PROFILE, {
+    workspaceId: workspaceId ?? "",
+  });
+  const membersPath = buildRoute(ROUTES.WORKSPACE_MEMBERS, {
+    workspaceId: workspaceId ?? "",
+  });
+  const projectsPath = buildRoute(ROUTES.PROJECTS, {
+    workspaceId: workspaceId ?? "",
+  });
   const activeTab = location.pathname === membersPath ? "members" : "profile";
 
   return (
@@ -26,7 +27,7 @@ const WorkspacePage = () => {
       <Title order={2}>Настройки пространства</Title>
 
       <Breadcrumbs>
-        <Text component={Link} to={ROUTES.PROJECTS}>
+        <Text component={Link} to={projectsPath}>
           Проекты
         </Text>
         <Text

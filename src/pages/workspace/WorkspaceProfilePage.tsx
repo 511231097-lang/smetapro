@@ -23,12 +23,8 @@ import {
 import type { WorkspacesWorkspaceResponse } from "../../shared/api/generated/schemas";
 import type { WorkspacesListResponse } from "../../shared/api/generated/schemas/workspacesListResponse";
 import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES } from "../../shared/constants/routes";
+import { ROUTES, buildRoute } from "../../shared/constants/routes";
 import { queryClient } from "../../shared/api/queryClient";
-import {
-  getStoredWorkspaceId,
-  setStoredWorkspaceId,
-} from "../../providers/WorkspaceProvider";
 
 const WorkspaceProfilePage = () => {
   const { workspaceId } = useParams();
@@ -135,17 +131,21 @@ const WorkspaceProfilePage = () => {
           });
         }
 
-        const storedId = getStoredWorkspaceId();
+        const storedId = workspaceId;
         if (storedId && storedId === workspaceId) {
-          const nextId = remaining[0]?.id ?? null;
-          setStoredWorkspaceId(nextId);
+          // активный воркспейс теперь из URL, не localStorage
         }
 
         if (remaining.length === 0) {
           navigate(ROUTES.WORKSPACE_CREATE, { replace: true });
           return;
         }
-        navigate(ROUTES.PROJECTS, { replace: true });
+        navigate(
+          buildRoute(ROUTES.PROJECTS, {
+            workspaceId: remaining[0]?.id ?? '',
+          }),
+          { replace: true },
+        );
       },
       onError: (error) => {
         notifications.show({
@@ -158,7 +158,7 @@ const WorkspaceProfilePage = () => {
   });
 
   if (!workspaceId) {
-    return <Navigate to={ROUTES.PROJECTS} replace />;
+    return <Navigate to={ROUTES.WORKSPACE_CREATE} replace />;
   }
 
   if (isLoading) {

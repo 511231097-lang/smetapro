@@ -11,7 +11,8 @@ import {
 } from "@mantine/core";
 import { Link } from "react-router-dom";
 
-import { NAV_ITEMS } from "./constants";
+import { useWorkspace } from "../../../providers/WorkspaceProvider";
+import { getNavItems } from "./constants";
 import { IconLayoutSidebarRightExpand } from "@tabler/icons-react";
 
 type ProtectedSidebarProps = {
@@ -23,6 +24,8 @@ const ProtectedSidebar = ({
   pathname,
   onToggleSidebar,
 }: ProtectedSidebarProps) => {
+  const { activeWorkspaceId } = useWorkspace();
+  const navItems = getNavItems(activeWorkspaceId ?? '');
   return (
     <AppShell.Navbar
       style={{
@@ -39,7 +42,7 @@ const ProtectedSidebar = ({
       >
         <Stack style={{ flex: 1 }} pt="16px">
           <Stack gap={0}>
-            {NAV_ITEMS.map(({ label, icon, route, chevron }) => (
+            {navItems.map(({ label, icon, route, chevron }) => (
               <NavLink
                 p="6px 10px"
                 key={route}

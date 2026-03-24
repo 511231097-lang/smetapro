@@ -245,7 +245,7 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
           title: "Регистрация завершена",
           message: "Добро пожаловать в личный кабинет.",
         });
-        navigate(ROUTES.PROJECTS, { replace: true });
+        navigate(ROUTES.ROOT, { replace: true });
       },
       onError: (error) => {
         setPinValue("");

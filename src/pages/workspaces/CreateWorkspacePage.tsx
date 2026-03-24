@@ -18,10 +18,9 @@ import {
   usePostWorkspaces,
 } from "../../shared/api/generated/smetchik";
 import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES } from "../../shared/constants/routes";
+import { ROUTES, buildRoute } from "../../shared/constants/routes";
 import { queryClient } from "../../shared/api/queryClient";
 import type { WorkspacesListResponse } from "../../shared/api/generated/schemas";
-import { setStoredWorkspaceId } from "../../providers/WorkspaceProvider";
 import {
   AuthFormWrapper,
   AuthPageLayout,
@@ -56,7 +55,6 @@ const CreateWorkspacePage = () => {
       onSuccess: async (response) => {
         const createdWorkspace = response.workspace;
         if (createdWorkspace) {
-          setStoredWorkspaceId(createdWorkspace.id ?? null);
           const queryKey = getGetWorkspacesQueryKey();
           const current = queryClient.getQueryData<
             WorkspacesListResponse | undefined
@@ -110,7 +108,12 @@ const CreateWorkspacePage = () => {
           });
         }
 
-        navigate(ROUTES.PROJECTS, { replace: true });
+        navigate(
+          buildRoute(ROUTES.PROJECTS, {
+            workspaceId: createdWorkspace?.id ?? '',
+          }),
+          { replace: true },
+        );
       },
       onError: (error) => {
         setCreateError(getErrorMessage(error));

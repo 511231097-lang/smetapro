@@ -28,13 +28,11 @@ import AdminLayout from "./layouts/AdminLayout";
 const App = () => {
   return (
     <Routes>
-      <Route
-        path={ROUTES.ROOT}
-        element={<Navigate to={ROUTES.PROJECTS} replace />}
-      />
+      {/* "/" и "/app" — ProtectedLayout сам редиректит на /:workspaceId/projects */}
+      <Route path={ROUTES.ROOT} element={<ProtectedLayout />} />
       <Route
         path={ROUTES.APP}
-        element={<Navigate to={ROUTES.PROJECTS} replace />}
+        element={<Navigate to={ROUTES.ROOT} replace />}
       />
       <Route element={<RequireGuest />}>
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
@@ -48,25 +46,19 @@ const App = () => {
         />
       </Route>
 
-      <Route element={<ProtectedLayout />}>
-        <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
-        {/* <Route path={ROUTES.PROJECT_CREATE} element={<CreateProjectPage />} /> */}
-        {/* <Route path={ROUTES.PROJECT_EDIT} element={<EditProjectPage />} /> */}
-        <Route path={ROUTES.PROFILE} element={<ProfilePage />}>
-          <Route
-            index
-            element={<Navigate to={ROUTES.PROFILE_COMMON} replace />}
-          />
+      <Route path="/:workspaceId" element={<ProtectedLayout />}>
+        <Route path="projects" element={<ProjectsPage />} />
+        {/* <Route path="projects/new" element={<CreateProjectPage />} /> */}
+        {/* <Route path="projects/:projectId" element={<EditProjectPage />} /> */}
+        <Route path="profile" element={<ProfilePage />}>
+          <Route index element={<Navigate to="common" replace />} />
           <Route path="common" element={<ProfileCommonPage />} />
           <Route path="sessions" element={<ProfileSessionsPage />} />
         </Route>
-        <Route path={ROUTES.FINANCES} element={<FinancesPage />} />
-        <Route path={ROUTES.LOGOUT} element={<LogoutPage />} />
-        <Route path={ROUTES.WORKSPACE} element={<WorkspacePage />}>
-          <Route
-            index
-            element={<Navigate to={ROUTES.WORKSPACE_PROFILE} replace />}
-          />
+        <Route path="finances" element={<FinancesPage />} />
+        <Route path="logout" element={<LogoutPage />} />
+        <Route path="workspace" element={<WorkspacePage />}>
+          <Route index element={<Navigate to="profile" replace />} />
           <Route path="profile" element={<WorkspaceProfilePage />} />
           <Route path="members" element={<WorkspaceMembersPage />} />
         </Route>
@@ -89,7 +81,7 @@ const App = () => {
         />
       </Route> */}
 
-      <Route path="*" element={<Navigate to={ROUTES.PROJECTS} replace />} />
+      <Route path="*" element={<Navigate to={ROUTES.ROOT} replace />} />
     </Routes>
   );
 };

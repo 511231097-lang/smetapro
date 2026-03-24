@@ -17,7 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import ChevronIcon from "./assets/ChevronIcon.svg?react";
 import type { WorkspacesWorkspaceResponse } from "../../../shared/api/generated/schemas";
-import { ROUTES } from "../../../shared/constants/routes";
+import { ROUTES, buildRoute } from "../../../shared/constants/routes";
 import { wsColor, wsInitials } from "./constants";
 import { IconCube3dSphere } from "@tabler/icons-react";
 
@@ -94,10 +94,9 @@ const WorkspaceMenu = ({
 
           <UnstyledButton
             component={Link}
-            to={ROUTES.WORKSPACE_PROFILE.replace(
-              ":workspaceId",
-              activeWorkspace?.id ?? "",
-            )}
+            to={buildRoute(ROUTES.WORKSPACE_PROFILE, {
+              workspaceId: activeWorkspace?.id ?? "",
+            })}
             style={{
               display: "block",
               width: "100%",

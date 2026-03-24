@@ -14,7 +14,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useWorkspace } from "../../providers/WorkspaceProvider";
 import { usePostWorkspaces } from "../../shared/api/generated/smetchik";
 import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES } from "../../shared/constants/routes";
+import { ROUTES, buildRoute } from "../../shared/constants/routes";
 import { queryClient } from "../../shared/api/queryClient";
 
 const getErrorMessage = (error: unknown) => {
@@ -62,7 +62,12 @@ const CreateProjectPage = () => {
           });
         }
 
-        navigate(ROUTES.PROJECTS, { replace: true });
+        navigate(
+          buildRoute(ROUTES.PROJECTS, {
+            workspaceId: activeWorkspace?.id ?? '',
+          }),
+          { replace: true },
+        );
       },
       onError: (error: unknown) => {
         notifications.show({

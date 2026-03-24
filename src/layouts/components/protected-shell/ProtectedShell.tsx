@@ -5,7 +5,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { useWorkspace } from '../../../providers/WorkspaceProvider';
 import type { AuthSuccessResponse } from '../../../shared/api/generated/schemas';
-import { ROUTES } from '../../../shared/constants/routes';
+import { ROUTES, buildRoute } from '../../../shared/constants/routes';
 import ProtectedHeader from './ProtectedHeader';
 import ProtectedMobileDrawer from './ProtectedMobileDrawer';
 import ProtectedSidebar from './ProtectedSidebar';
@@ -53,8 +53,20 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
           onToggleSearch={toggleSearch}
           onCloseSearch={closeSearch}
           onWorkspaceSelect={setActiveWorkspaceId}
-          onGoToProfile={() => navigate(ROUTES.PROFILE_COMMON)}
-          onLogout={() => navigate(ROUTES.LOGOUT)}
+          onGoToProfile={() =>
+            navigate(
+              buildRoute(ROUTES.PROFILE_COMMON, {
+                workspaceId: activeWorkspace?.id ?? '',
+              }),
+            )
+          }
+          onLogout={() =>
+            navigate(
+              buildRoute(ROUTES.LOGOUT, {
+                workspaceId: activeWorkspace?.id ?? '',
+              }),
+            )
+          }
         />
 
         <ProtectedSidebar

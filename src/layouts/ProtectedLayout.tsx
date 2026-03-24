@@ -1,17 +1,18 @@
 import { Center, Loader, Stack } from '@mantine/core';
 import { useMemo } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 
 import { WorkspaceProvider } from '../providers/WorkspaceProvider';
 import {
   useGetAuthMe,
   useGetWorkspaces,
 } from '../shared/api/generated/smetchik';
-import { ROUTES } from '../shared/constants/routes';
+import { ROUTES, buildRoute } from '../shared/constants/routes';
 import ProtectedShell from './components/protected-shell/ProtectedShell';
 
 const ProtectedLayout = () => {
   const location = useLocation();
+  const { workspaceId } = useParams<{ workspaceId: string }>();
   const { data: user, isLoading, isError } = useGetAuthMe({});
   const {
     data: workspaces,
@@ -45,8 +46,31 @@ const ProtectedLayout = () => {
     return <Navigate to={ROUTES.WORKSPACE_CREATE} replace />;
   }
 
+  // Нет workspaceId в URL (например, открыт "/") — редирект на первый воркспейс
+  if (!workspaceId && workspaceList.length > 0) {
+    return (
+      <Navigate
+        to={buildRoute(ROUTES.PROJECTS, { workspaceId: workspaceList[0].id ?? '' })}
+        replace
+      />
+    );
+  }
+
+  // workspaceId не найден в списке — редирект на первый воркспейс
+  if (workspaceId && workspaceList.length > 0) {
+    const validWorkspace = workspaceList.find((w) => w.id === workspaceId);
+    if (!validWorkspace) {
+      return (
+        <Navigate
+          to={buildRoute(ROUTES.PROJECTS, { workspaceId: workspaceList[0].id ?? '' })}
+          replace
+        />
+      );
+    }
+  }
+
   return (
-    <WorkspaceProvider workspaces={workspaceList}>
+    <WorkspaceProvider workspaces={workspaceList} activeWorkspaceId={workspaceId ?? null}>
       <ProtectedShell user={user} />
     </WorkspaceProvider>
   );

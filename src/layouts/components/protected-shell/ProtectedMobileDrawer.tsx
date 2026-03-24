@@ -21,8 +21,8 @@ import {
 import { Link } from "react-router-dom";
 
 import type { WorkspacesWorkspaceResponse } from "../../../shared/api/generated/schemas";
-import { ROUTES } from "../../../shared/constants/routes";
-import { NAV_ITEMS } from "./constants";
+import { ROUTES, buildRoute } from "../../../shared/constants/routes";
+import { getNavItems } from "./constants";
 
 type ProtectedMobileDrawerProps = {
   opened: boolean;
@@ -75,7 +75,9 @@ const ProtectedMobileDrawer = ({
       <Box style={{ overflowY: "auto", height: "calc(100% - 53px)" }}>
         <UnstyledButton
           component={Link}
-          to={ROUTES.PROFILE_COMMON}
+          to={buildRoute(ROUTES.PROFILE_COMMON, {
+            workspaceId: activeWorkspace?.id ?? "",
+          })}
           style={{ display: "block", width: "100%", padding: "16px" }}
         >
           <Group gap={12}>
@@ -146,7 +148,7 @@ const ProtectedMobileDrawer = ({
             Навигация
           </Text>
           <Stack gap={2}>
-            {NAV_ITEMS.map(({ label, icon, route, chevron }) => (
+            {getNavItems(activeWorkspace?.id ?? '').map(({ label, icon, route, chevron }) => (
               <NavLink
                 key={route}
                 component={Link}

@@ -77,7 +77,7 @@ const LoginForm = () => {
   const loginMutation = usePostAuthLogin({
     mutation: {
       onSuccess: () => {
-        navigate(ROUTES.PROJECTS, { replace: true });
+        navigate(ROUTES.ROOT, { replace: true });
       },
       onError: (error) => {
         setLoginError(getErrorMessage(error));
