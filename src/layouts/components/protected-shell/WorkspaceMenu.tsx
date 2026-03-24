@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Divider,
   Group,
   Menu,
@@ -97,27 +98,22 @@ const WorkspaceMenu = ({
             </Box>
           </Group>
 
-          <UnstyledButton
+          <Button
             component={Link}
             to={buildRoute(ROUTES.WORKSPACE_GENERAL, {
               workspaceId: activeWorkspace?.id ?? "",
             })}
+            color="gray"
+            size="xs"
             onClick={() => setOpened(false)}
+            leftSection={<IconCube3dSphere size="12px" />}
+            variant="outline"
             style={{
-              display: "block",
-              width: "100%",
-              padding: "3px 12px",
-              borderRadius: 8,
               border: "1px solid var(--app-border)",
             }}
           >
-            <Group gap={8}>
-              <IconCube3dSphere size="12px" />
-              <Text fz="12px" lh="16px" c="dimmed">
-                Профиль пространства
-              </Text>
-            </Group>
-          </UnstyledButton>
+            Профиль пространства
+          </Button>
         </Stack>
 
         {otherWorkspaces.length > 0 && (

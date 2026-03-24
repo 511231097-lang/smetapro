@@ -281,7 +281,7 @@ const WorkspaceMembersPage = () => {
   return (
     <Stack gap={0}>
       {/* Action bar */}
-      <Paper p={12} mb={8}>
+      <Paper withBorder={false} radius="md" p={12} mb={8}>
         <Group justify="space-between">
           <Button
             size="sm"
@@ -433,7 +433,7 @@ const WorkspaceMembersPage = () => {
 
       {/* Invite section — visible when expanded and invite exists */}
       {isExpanded && invite && (
-        <Paper p={12} mb={8}>
+        <Paper withBorder={false} radius="md" p={12} mb={8}>
           <Stack gap={10}>
             {/* Row 1: title + registered count */}
             <Group gap={16}>
@@ -595,7 +595,7 @@ const WorkspaceMembersPage = () => {
 
       {/* Members table — desktop */}
       <Box visibleFrom="sm">
-        <Paper withBorder radius="md" style={{ overflow: "hidden" }}>
+        <Paper withBorder={false} radius="md" style={{ overflow: "hidden" }}>
           {membersLoading ? (
             <Center py={40}>
               <Loader size="sm" />
