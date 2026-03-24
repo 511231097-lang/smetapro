@@ -127,7 +127,10 @@ const WorkspaceMenu = ({
               {otherWorkspaces.map((workspace) => (
                 <UnstyledButton
                   key={workspace.id}
-                  onClick={() => onWorkspaceSelect(workspace.id ?? null)}
+                  onClick={() => {
+                    setOpened(false);
+                    onWorkspaceSelect(workspace.id ?? null);
+                  }}
                   p="8px"
                   display="block"
                 >

@@ -1,4 +1,4 @@
-import { ArrowRight01Icon, LayoutLeftIcon } from "@hugeicons/core-free-icons";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ActionIcon,
@@ -9,19 +9,25 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
+import { cloneElement, isValidElement } from "react";
 import { Link } from "react-router-dom";
 
 import { useWorkspace } from "../../../providers/WorkspaceProvider";
 import { getNavItems } from "./constants";
-import { IconLayoutSidebarRightExpand } from "@tabler/icons-react";
+import {
+  IconLayoutSidebarLeftExpand,
+  IconLayoutSidebarRightExpand,
+} from "@tabler/icons-react";
 
 type ProtectedSidebarProps = {
   pathname: string;
+  collapsed: boolean;
   onToggleSidebar: () => void;
 };
 
 const ProtectedSidebar = ({
   pathname,
+  collapsed,
   onToggleSidebar,
 }: ProtectedSidebarProps) => {
   const { activeWorkspaceId } = useWorkspace();
@@ -42,37 +48,64 @@ const ProtectedSidebar = ({
       >
         <Stack style={{ flex: 1 }} pt="16px">
           <Stack gap={0}>
-            {navItems.map(({ label, icon, route, chevron }) => (
-              <NavLink
-                p="6px 10px"
-                key={route}
-                component={Link}
-                to={route}
-                label={
-                  <Text pl={"4px"} fz="16px">
-                    {label}
-                  </Text>
-                }
-                leftSection={icon}
-                rightSection={
-                  chevron ? (
-                    <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
-                  ) : undefined
-                }
-                active={pathname.startsWith(route)}
-              />
-            ))}
+            {navItems.map(({ label, icon, route, chevron }) => {
+              const iconNode =
+                collapsed && isValidElement(icon)
+                  ? cloneElement(icon, {
+                      size: 20,
+                    } as Record<string, unknown>)
+                  : icon;
+
+              return (
+                <NavLink
+                  p={collapsed ? "7px" : "6px 10px"}
+                  key={route}
+                  component={Link}
+                  to={route}
+                  label={
+                    collapsed ? (
+                      <Box
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {iconNode}
+                      </Box>
+                    ) : (
+                      <Text pl={"4px"} fz="16px">
+                        {label}
+                      </Text>
+                    )
+                  }
+                  leftSection={collapsed ? undefined : iconNode}
+                  rightSection={
+                    !collapsed && chevron ? (
+                      <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+                    ) : undefined
+                  }
+                  style={collapsed ? { justifyContent: "center" } : undefined}
+                  active={pathname.startsWith(route)}
+                />
+              );
+            })}
           </Stack>
         </Stack>
 
-        <Group justify="end" p="12px">
+        <Group justify={collapsed ? "center" : "end"} p="12px">
           <ActionIcon
             variant="subtle"
             color="gray"
-            // onClick={onToggleSidebar}
+            onClick={onToggleSidebar}
             aria-label="Свернуть боковое меню"
           >
-            <IconLayoutSidebarRightExpand size={20} />
+            {collapsed ? (
+              <IconLayoutSidebarLeftExpand size={18} />
+            ) : (
+              <IconLayoutSidebarRightExpand size={18} />
+            )}
           </ActionIcon>
         </Group>
       </Box>

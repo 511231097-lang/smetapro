@@ -38,9 +38,9 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
       <AppShell
         header={{ height: 59 }}
         navbar={{
-          width: 248,
+          width: sidebarCollapsed ? 64 : 248,
           breakpoint: "sm",
-          collapsed: { mobile: true, desktop: sidebarCollapsed },
+          collapsed: { mobile: true, desktop: false },
         }}
       >
         <ProtectedHeader
@@ -71,6 +71,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
 
         <ProtectedSidebar
           pathname={location.pathname}
+          collapsed={sidebarCollapsed}
           onToggleSidebar={toggleSidebar}
         />
 
