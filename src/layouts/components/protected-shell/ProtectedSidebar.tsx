@@ -9,7 +9,13 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { cloneElement, isValidElement, useEffect, useState } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Link } from "react-router-dom";
 
 import { useWorkspace } from "../../../providers/WorkspaceProvider";
@@ -26,6 +32,8 @@ type ProtectedSidebarProps = {
   onToggleSidebar: () => void;
 };
 
+const HOVER_COLLAPSE_DELAY_MS = 300;
+
 const ProtectedSidebar = ({
   pathname,
   collapsed,
@@ -33,9 +41,10 @@ const ProtectedSidebar = ({
   onToggleSidebar,
 }: ProtectedSidebarProps) => {
   const [hovered, setHovered] = useState(false);
+  const collapseTimeoutRef = useRef<number | null>(null);
   const { activeWorkspaceId } = useWorkspace();
   const navItems = getNavItems(activeWorkspaceId ?? "");
-  const isHoverExpanded = collapsed && hovered && !lockCollapsed;
+  const isHoverExpanded = collapsed && hovered;
   const isExpandedView = !collapsed || isHoverExpanded;
 
   useEffect(() => {
@@ -44,12 +53,32 @@ const ProtectedSidebar = ({
     }
   }, [pathname, collapsed]);
 
+  useEffect(() => {
+    return () => {
+      if (collapseTimeoutRef.current !== null) {
+        window.clearTimeout(collapseTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <AppShell.Navbar
       onMouseEnter={() => {
-        if (collapsed && !lockCollapsed) setHovered(true);
+        if (collapseTimeoutRef.current !== null) {
+          window.clearTimeout(collapseTimeoutRef.current);
+          collapseTimeoutRef.current = null;
+        }
+        if (collapsed) setHovered(true);
       }}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => {
+        if (collapseTimeoutRef.current !== null) {
+          window.clearTimeout(collapseTimeoutRef.current);
+        }
+        collapseTimeoutRef.current = window.setTimeout(() => {
+          setHovered(false);
+          collapseTimeoutRef.current = null;
+        }, HOVER_COLLAPSE_DELAY_MS);
+      }}
       style={{
         background: collapsed ? "transparent" : "var(--app-sidebar-bg)",
         borderRight: collapsed ? "none" : "1px solid var(--app-border)",

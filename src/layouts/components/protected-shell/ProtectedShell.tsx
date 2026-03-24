@@ -1,6 +1,6 @@
 import { AppShell } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { useEffect } from "react";
+import { useDisclosure } from "@mantine/hooks";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { useWorkspace } from "../../../providers/WorkspaceProvider";
@@ -14,16 +14,19 @@ type ProtectedShellProps = {
   user: AuthSuccessResponse;
 };
 
-const FORCED_COLLAPSED_WIDTH = 850;
+const FORCED_COLLAPSED_WIDTH = 950;
 
 const ProtectedShell = ({ user }: ProtectedShellProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const forcedCollapsedQuery = `(max-width: ${FORCED_COLLAPSED_WIDTH}px)`;
   const [mobileMenuOpened, { open: openMobileMenu, close: closeMobileMenu }] =
     useDisclosure(false);
   const [sidebarCollapsed, { toggle: toggleSidebar }] = useDisclosure(false);
-  const forceCollapsed = useMediaQuery(
-    `(max-width: ${FORCED_COLLAPSED_WIDTH}px)`,
+  const [forceCollapsed, setForceCollapsed] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia(forcedCollapsedQuery).matches
+      : false,
   );
   const effectiveCollapsed = sidebarCollapsed || forceCollapsed;
   const { activeWorkspace, workspaceList, setActiveWorkspaceId } =
@@ -36,6 +39,20 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
   useEffect(() => {
     closeMobileMenu();
   }, [closeMobileMenu, location]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia(forcedCollapsedQuery);
+    const handleChange = (event: MediaQueryListEvent) => {
+      setForceCollapsed(event.matches);
+    };
+
+    setForceCollapsed(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [forcedCollapsedQuery]);
 
   return (
     <>

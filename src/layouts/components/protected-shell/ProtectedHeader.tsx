@@ -71,6 +71,7 @@ const ProtectedHeader = ({
             <img
               src={isDark ? "/logo_dark.svg" : "/logo_light.svg"}
               alt="СМЕТЧИК ПРО"
+              width={187}
               height={19}
             />
           </Link>
