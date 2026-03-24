@@ -18,11 +18,8 @@ describe('theme', () => {
   });
 
   test('exposes dark css variables resolver', () => {
-    const resolved = cssVariablesResolver({
-      variables: {},
-      light: {},
-      dark: {},
-    });
+    const theme = createAppTheme();
+    const resolved = cssVariablesResolver(theme);
 
     expect(resolved.dark['--mantine-color-body']).toBe('#2C2E33');
     expect(resolved.dark['--mantine-color-default-border']).toBe('#495057');
