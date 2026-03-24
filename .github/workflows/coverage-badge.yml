@@ -1,0 +1,107 @@
+name: Coverage Badge
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    env:
+      BASE_API_URL: https://dev.smetchik.pro
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests with coverage
+        run: npm run test:unit:coverage
+
+      - name: Build coverage badge payload
+        id: coverage
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const xml = fs.readFileSync('coverage/clover.xml', 'utf8');
+
+          const metricsMatch = xml.match(
+            /<metrics statements="(\d+)" coveredstatements="(\d+)" conditionals="(\d+)" coveredconditionals="(\d+)" methods="(\d+)" coveredmethods="(\d+)"/,
+          );
+
+          if (!metricsMatch) {
+            throw new Error('Could not parse metrics from coverage/clover.xml');
+          }
+
+          const statements = Number.parseInt(metricsMatch[1], 10);
+          const coveredStatements = Number.parseInt(metricsMatch[2], 10);
+
+          const lineCoverage =
+            statements === 0 ? 100 : (coveredStatements / statements) * 100;
+          const lineCoverageText = lineCoverage.toFixed(2);
+
+          let color = 'red';
+          if (lineCoverage >= 80) {
+            color = 'brightgreen';
+          } else if (lineCoverage >= 60) {
+            color = 'yellow';
+          } else if (lineCoverage >= 40) {
+            color = 'orange';
+          }
+
+          fs.mkdirSync('badge-data', { recursive: true });
+          fs.writeFileSync(
+            'badge-data/coverage.json',
+            JSON.stringify(
+              {
+                schemaVersion: 1,
+                label: 'coverage',
+                message: `${lineCoverageText}%`,
+                color,
+              },
+              null,
+              2,
+            ) + '\n',
+          );
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `lines=${lineCoverageText}\n`);
+          NODE
+
+      - name: Publish badge payload to badges branch
+        env:
+          LINE_COVERAGE: ${{ steps.coverage.outputs.lines }}
+        run: |
+          rm -rf .badge-branch
+
+          if git ls-remote --exit-code --heads origin badges >/dev/null; then
+            git worktree add -B badges .badge-branch origin/badges
+          else
+            git worktree add -B badges .badge-branch
+          fi
+
+          cp badge-data/coverage.json .badge-branch/coverage.json
+
+          cd .badge-branch
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add coverage.json
+
+          if git diff --cached --quiet; then
+            echo "Coverage badge is up to date."
+            exit 0
+          fi
+
+          git commit -m "chore: update coverage badge to ${LINE_COVERAGE}%"
+          git push origin HEAD:badges

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import {
   Alert,
   Badge,
@@ -22,13 +20,15 @@ import {
   IconCheck,
   IconUsers,
 } from '@tabler/icons-react';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import logo from '../../assets/logo.svg';
 import {
   useGetInviteToken,
   usePostInviteToken,
 } from '../../shared/api/generated/smetchik';
 import { HttpClientError } from '../../shared/api/httpClient';
-import { ROUTES, buildRoute } from '../../shared/constants/routes';
-import logo from '../../assets/logo.svg';
+import { buildRoute, ROUTES } from '../../shared/constants/routes';
 
 const formatExpiry = (expiresAt: string) =>
   new Date(expiresAt).toLocaleString('ru-RU', {

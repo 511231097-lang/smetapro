@@ -12,7 +12,6 @@ import {
   useComputedColorScheme,
   useMantineColorScheme,
 } from '@mantine/core';
-import { usePrimaryColor } from '../../../providers/PrimaryColorProvider';
 import {
   IconInfoCircle,
   IconLogout,
@@ -21,6 +20,7 @@ import {
   IconUser,
 } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
+import { usePrimaryColor } from '../../../providers/PrimaryColorProvider';
 
 import type { WorkspacesWorkspaceResponse } from '../../../shared/api/generated/schemas';
 import { ROUTES } from '../../../shared/constants/routes';

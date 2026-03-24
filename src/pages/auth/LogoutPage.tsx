@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { usePostAuthLogout } from '../../shared/api/generated/smetchik';
 import { Center, Loader, Stack } from '@mantine/core';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePostAuthLogout } from '../../shared/api/generated/smetchik';
 import { ROUTES } from '../../shared/constants/routes';
 
 const LogoutPage = () => {

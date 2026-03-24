@@ -19,7 +19,10 @@ import { createAppTheme, cssVariablesResolver } from './theme';
 
 const ThemedApp = () => {
   const { primaryColor } = usePrimaryColor();
-  const mergedTheme = useMemo(() => createAppTheme(primaryColor), [primaryColor]);
+  const mergedTheme = useMemo(
+    () => createAppTheme(primaryColor),
+    [primaryColor],
+  );
 
   return (
     <MantineProvider

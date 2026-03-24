@@ -1,9 +1,9 @@
-import { ROUTES, buildRoute } from '../../../shared/constants/routes';
 import {
   IconBuildingCommunity,
   IconClipboardList,
   IconMoneybag,
 } from '@tabler/icons-react';
+import { buildRoute, ROUTES } from '../../../shared/constants/routes';
 
 const getNavItems = (workspaceId: string) =>
   [

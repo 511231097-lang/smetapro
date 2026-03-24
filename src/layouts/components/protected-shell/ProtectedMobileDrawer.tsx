@@ -20,7 +20,7 @@ import { Link } from 'react-router-dom';
 
 import { usePrimaryColor } from '../../../providers/PrimaryColorProvider';
 import type { WorkspacesWorkspaceResponse } from '../../../shared/api/generated/schemas';
-import { ROUTES, buildRoute } from '../../../shared/constants/routes';
+import { buildRoute, ROUTES } from '../../../shared/constants/routes';
 import { getNavItems } from './constants';
 import WorkspaceMenu from './WorkspaceMenu';
 

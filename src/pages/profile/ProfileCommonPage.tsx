@@ -25,8 +25,8 @@ import {
   IconUser,
 } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
-import { useGetAuthMe } from '../../shared/api/generated/smetchik';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
+import { useGetAuthMe } from '../../shared/api/generated/smetchik';
 
 const TIMEZONE_OPTIONS = [
   { value: 'UTC+0', label: 'UTC+0 (Лондон)' },
@@ -44,6 +44,9 @@ const TIMEZONE_OPTIONS = [
 const ProfileCommonPage = () => {
   const { data: userResp, isLoading, isError } = useGetAuthMe({});
   const user = userResp?.user;
+  const userId = user?.id;
+  const userEmail = user?.email ?? '';
+  const userPhone = user?.phone ?? '';
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [deleteOpen, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
@@ -61,15 +64,15 @@ const ProfileCommonPage = () => {
       timezone: 'UTC+3',
     },
   });
+  const { setValues } = form;
 
   useEffect(() => {
-    if (!user) return;
-    form.setValues({
-      email: user.email ?? '',
-      phone: user.phone ?? '',
+    if (!userId) return;
+    setValues({
+      email: userEmail,
+      phone: userPhone,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [setValues, userId, userEmail, userPhone]);
 
   if (isLoading) {
     return (

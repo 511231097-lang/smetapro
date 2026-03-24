@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Alert,
   Anchor,
@@ -21,12 +20,13 @@ import {
   IconMail,
   IconPhone,
 } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import {
   usePostAuthRegister,
   usePostAuthRegisterVerify,
 } from '../../shared/api/generated/smetchik';
-import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { ROUTES } from '../../shared/constants/routes';
 import {
@@ -94,7 +94,6 @@ interface FormStepProps {
 }
 
 const FormStep = ({ onSuccess }: FormStepProps) => {
-  const { primaryColor } = usePrimaryColor();
   const form = useForm({
     initialValues: { phone: '', email: '', password: '' },
     validate: {

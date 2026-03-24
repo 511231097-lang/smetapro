@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Alert,
   Anchor,
@@ -20,12 +19,13 @@ import {
   IconLock,
   IconMail,
 } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import {
   usePostAuthForgotPassword,
   usePostAuthResetPassword,
 } from '../../shared/api/generated/smetchik';
-import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { ROUTES } from '../../shared/constants/routes';
 import {

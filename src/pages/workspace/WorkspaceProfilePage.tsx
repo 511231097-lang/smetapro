@@ -19,18 +19,18 @@ import { notifications } from '@mantine/notifications';
 import { IconAlertTriangle, IconTrash } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import type { WorkspacesWorkspaceResponse } from '../../shared/api/generated/schemas';
+import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
 import {
-  getGetWorkspacesWorkspaceIdQueryKey,
   getGetWorkspacesQueryKey,
+  getGetWorkspacesWorkspaceIdQueryKey,
   useDeleteWorkspacesWorkspaceId,
   useGetWorkspacesWorkspaceId,
   usePutWorkspacesWorkspaceId,
 } from '../../shared/api/generated/smetchik';
-import type { WorkspacesWorkspaceResponse } from '../../shared/api/generated/schemas';
-import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
 import { HttpClientError } from '../../shared/api/httpClient';
-import { ROUTES, buildRoute } from '../../shared/constants/routes';
 import { queryClient } from '../../shared/api/queryClient';
+import { buildRoute, ROUTES } from '../../shared/constants/routes';
 
 const DESCRIPTION_MAX = 320;
 
@@ -137,6 +137,7 @@ const WorkspaceGeneralPage = () => {
       name: (value) => (value.trim().length === 0 ? 'Введите название' : null),
     },
   });
+  const { setValues } = form;
 
   const { data, isLoading, isError } = useGetWorkspacesWorkspaceId(
     workspaceId ?? '',
@@ -144,15 +145,18 @@ const WorkspaceGeneralPage = () => {
   );
 
   const workspace = data?.workspace;
+  const workspaceSyncId = workspace?.id ?? '';
+  const workspaceName = workspace?.name ?? '';
+  const workspaceDescription = workspace?.description ?? '';
 
   useEffect(() => {
-    if (!workspace) return;
-    form.setValues({
-      name: workspace.name ?? '',
-      description: workspace.description ?? '',
+    if (!workspaceSyncId) return;
+
+    setValues({
+      name: workspaceName,
+      description: workspaceDescription,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workspace?.id, workspace?.name, workspace?.description]);
+  }, [setValues, workspaceSyncId, workspaceName, workspaceDescription]);
 
   const updateMutation = usePutWorkspacesWorkspaceId({
     mutation: {

@@ -1,6 +1,6 @@
 import type { MantineColor } from '@mantine/core';
-import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 const STORAGE_KEY = 'primaryColor';
 const DEFAULT_COLOR: MantineColor = 'teal';
