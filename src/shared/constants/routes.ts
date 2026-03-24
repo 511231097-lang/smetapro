@@ -22,6 +22,7 @@ export const ROUTES = {
   WORKSPACE_MEMBERS: "/:workspaceId/workspace/members",
   WORKSPACE_ROLES: "/:workspaceId/workspace/roles",
   WORKSPACE_CREATE: "/workspaces/create",
+  INVITE_ACCEPT: "/invite/:token",
 };
 
 /** Заменяет параметры вида :param в строке маршрута на реальные значения */

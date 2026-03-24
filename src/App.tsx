@@ -19,6 +19,7 @@ import RequireAuth from "./layouts/RequireAuth";
 import RequireGuest from "./layouts/RequireGuest";
 
 import WorkspaceRolesPage from "./pages/workspace/WorkspaceRolesPage";
+import InviteAcceptPage from "./pages/invite/InviteAcceptPage";
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
           path={ROUTES.WORKSPACE_CREATE}
           element={<CreateWorkspacePage />}
         />
+        <Route path={ROUTES.INVITE_ACCEPT} element={<InviteAcceptPage />} />
       </Route>
 
       <Route path="/:workspaceId" element={<ProtectedLayout />}>

@@ -60,7 +60,7 @@ const WorkspacePage = () => {
         </Tabs.List>
       </Tabs>
 
-      <Box pt={20}>
+      <Box pt={4}>
         <Outlet />
       </Box>
     </Stack>

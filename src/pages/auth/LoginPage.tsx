@@ -51,6 +51,9 @@ const getErrorMessage = (error: unknown): string => {
 const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const from =
+    (location.state as { from?: { pathname: string } } | null)?.from
+      ?.pathname ?? ROUTES.ROOT;
   const passwordChanged =
     (location.state as { passwordChanged?: boolean } | null)?.passwordChanged ??
     false;
@@ -77,7 +80,7 @@ const LoginForm = () => {
   const loginMutation = usePostAuthLogin({
     mutation: {
       onSuccess: () => {
-        navigate(ROUTES.ROOT, { replace: true });
+        navigate(from, { replace: true });
       },
       onError: (error) => {
         setLoginError(getErrorMessage(error));
