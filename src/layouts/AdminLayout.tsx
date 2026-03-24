@@ -12,19 +12,19 @@ import {
   Text,
   Title,
   UnstyledButton,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { useEffect } from "react";
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { useEffect } from 'react';
 import {
   Link,
   Navigate,
   Outlet,
   useLocation,
   useNavigate,
-} from "react-router-dom";
-import { usePrimaryColor } from "../providers/PrimaryColorProvider";
-import { useGetAuthMe } from "../shared/api/generated/smetchik";
-import { ROUTES } from "../shared/constants/routes";
+} from 'react-router-dom';
+import { usePrimaryColor } from '../providers/PrimaryColorProvider';
+import { useGetAuthMe } from '../shared/api/generated/smetchik';
+import { ROUTES } from '../shared/constants/routes';
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -52,17 +52,17 @@ const AdminLayout = () => {
     return <Navigate to={ROUTES.LOGIN} replace state={{ from: location }} />;
   }
 
-  if (!user.roles?.includes("admin")) {
+  if (!user.roles?.includes('admin')) {
     return <Navigate to={ROUTES.PROJECTS} replace />;
   }
 
-  const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : "U";
-  const fullName = user?.email ?? "";
+  const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : 'U';
+  const fullName = user?.email ?? '';
 
   return (
     <AppShell
       header={{ height: 64 }}
-      navbar={{ width: 240, breakpoint: "sm", collapsed: { mobile: !opened } }}
+      navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !opened } }}
       padding="md"
       layout="alt"
     >
@@ -86,7 +86,7 @@ const AdminLayout = () => {
               </UnstyledButton>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Label>{fullName || "Профиль"}</Menu.Label>
+              <Menu.Label>{fullName || 'Профиль'}</Menu.Label>
               <Menu.Item onClick={() => navigate(ROUTES.PROFILE_COMMON)}>
                 Профиль
               </Menu.Item>
@@ -101,7 +101,7 @@ const AdminLayout = () => {
 
       <AppShell.Navbar className="dashboard-navbar" p="md">
         <Box
-          style={{ display: "flex", flexDirection: "column", height: "100%" }}
+          style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
         >
           <Stack gap="sm">
             <Group justify="flex-end">

@@ -7,12 +7,12 @@
  */
 
 export type GetWorkspacesParams = {
-/**
- * Page size
- */
-limit?: number;
-/**
- * Page offset
- */
-offset?: number;
+  /**
+   * Page size
+   */
+  limit?: number;
+  /**
+   * Page offset
+   */
+  offset?: number;
 };

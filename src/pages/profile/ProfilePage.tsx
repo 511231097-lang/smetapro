@@ -1,22 +1,22 @@
-import { Box, Stack, Title } from "@mantine/core";
-import { IconBrush, IconUser } from "@tabler/icons-react";
-import { Link, Outlet, useLocation, useParams } from "react-router-dom";
-import { Tabs } from "../../shared/components/Tabs";
-import { ROUTES, buildRoute } from "../../shared/constants/routes";
+import { Box, Stack, Title } from '@mantine/core';
+import { IconBrush, IconUser } from '@tabler/icons-react';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
+import { Tabs } from '../../shared/components/Tabs';
+import { ROUTES, buildRoute } from '../../shared/constants/routes';
 
 const ProfilePage = () => {
   const location = useLocation();
   const { workspaceId } = useParams();
 
   const commonPath = buildRoute(ROUTES.PROFILE_COMMON, {
-    workspaceId: workspaceId ?? "",
+    workspaceId: workspaceId ?? '',
   });
   const appearancePath = buildRoute(ROUTES.PROFILE_APPEARANCE, {
-    workspaceId: workspaceId ?? "",
+    workspaceId: workspaceId ?? '',
   });
 
   const activeTab =
-    location.pathname === appearancePath ? "appearance" : "common";
+    location.pathname === appearancePath ? 'appearance' : 'common';
 
   return (
     <Stack gap="lg" p={20}>

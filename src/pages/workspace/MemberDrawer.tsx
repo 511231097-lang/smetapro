@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 import {
   Avatar,
   Button,
@@ -9,21 +9,21 @@ import {
   Stack,
   Text,
   TextInput,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
-import { IconTrash, IconUpload } from "@tabler/icons-react";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { notifications } from '@mantine/notifications';
+import { IconTrash, IconUpload } from '@tabler/icons-react';
 import {
   getGetWorkspacesWorkspaceIdMembersQueryKey,
   useGetWorkspacesWorkspaceIdRoles,
   usePatchWorkspacesWorkspaceIdMembersMemberId,
   usePatchWorkspacesWorkspaceIdMembersMemberIdRole,
-} from "../../shared/api/generated/smetchik";
-import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
-import type { WorkspacesMemberResponse } from "../../shared/api/generated/schemas";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { queryClient } from "../../shared/api/queryClient";
-import { getInitials } from "../../shared/utils/getInitials";
+} from '../../shared/api/generated/smetchik';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
+import type { WorkspacesMemberResponse } from '../../shared/api/generated/schemas';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { queryClient } from '../../shared/api/queryClient';
+import { getInitials } from '../../shared/utils/getInitials';
 
 type Props = {
   member: WorkspacesMemberResponse | null;
@@ -35,9 +35,9 @@ type Props = {
 const getErrorMessage = (error: unknown) => {
   if (error instanceof HttpClientError) {
     const data = error.data as { error?: string } | undefined;
-    return data?.error ?? "Не удалось выполнить действие";
+    return data?.error ?? 'Не удалось выполнить действие';
   }
-  return "Не удалось выполнить действие";
+  return 'Не удалось выполнить действие';
 };
 
 const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
@@ -48,19 +48,19 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
 
   const roleOptions =
     rolesData?.roles?.map((r) => ({
-      value: r.code ?? "",
-      label: r.name ?? r.code ?? "",
+      value: r.code ?? '',
+      label: r.name ?? r.code ?? '',
     })) ?? [];
 
   const form = useForm({
     initialValues: {
-      name: "",
-      surname: "",
-      phone: "",
-      email: "",
-      telegram: "",
-      position: "",
-      role_code: "",
+      name: '',
+      surname: '',
+      phone: '',
+      email: '',
+      telegram: '',
+      position: '',
+      role_code: '',
     },
   });
 
@@ -68,13 +68,13 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
   useEffect(() => {
     if (member) {
       form.setValues({
-        name: member.name ?? "",
-        surname: member.surname ?? "",
-        phone: member.phone ?? "",
-        email: member.email ?? "",
-        telegram: member.telegram ?? "",
-        position: member.position ?? "",
-        role_code: member.role?.code ?? "",
+        name: member.name ?? '',
+        surname: member.surname ?? '',
+        phone: member.phone ?? '',
+        email: member.email ?? '',
+        telegram: member.telegram ?? '',
+        position: member.position ?? '',
+        role_code: member.role?.code ?? '',
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,7 +86,7 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
   const patchMember = usePatchWorkspacesWorkspaceIdMembersMemberId({
     mutation: {
       onError: (error) => {
-        notifications.show({ color: "red", message: getErrorMessage(error) });
+        notifications.show({ color: 'red', message: getErrorMessage(error) });
       },
     },
   });
@@ -94,7 +94,7 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
   const patchRole = usePatchWorkspacesWorkspaceIdMembersMemberIdRole({
     mutation: {
       onError: (error) => {
-        notifications.show({ color: "red", message: getErrorMessage(error) });
+        notifications.show({ color: 'red', message: getErrorMessage(error) });
       },
     },
   });
@@ -103,14 +103,14 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
     if (!member?.id) return;
 
     const profileChanged =
-      values.name !== (member.name ?? "") ||
-      values.surname !== (member.surname ?? "") ||
-      values.phone !== (member.phone ?? "") ||
-      values.email !== (member.email ?? "") ||
-      values.telegram !== (member.telegram ?? "") ||
-      values.position !== (member.position ?? "");
+      values.name !== (member.name ?? '') ||
+      values.surname !== (member.surname ?? '') ||
+      values.phone !== (member.phone ?? '') ||
+      values.email !== (member.email ?? '') ||
+      values.telegram !== (member.telegram ?? '') ||
+      values.position !== (member.position ?? '');
 
-    const roleChanged = values.role_code !== (member.role?.code ?? "");
+    const roleChanged = values.role_code !== (member.role?.code ?? '');
 
     const patches: Promise<unknown>[] = [];
 
@@ -150,8 +150,8 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
       await Promise.all(patches);
       queryClient.invalidateQueries({ queryKey: membersQueryKey });
       notifications.show({
-        color: "teal",
-        message: "Данные сотрудника сохранены",
+        color: 'teal',
+        message: 'Данные сотрудника сохранены',
       });
       onClose();
     } catch {
@@ -163,7 +163,7 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
 
   const initials = getInitials(member?.name, member?.surname);
   const fullName =
-    [member?.name, member?.surname].filter(Boolean).join(" ") || "Сотрудник";
+    [member?.name, member?.surname].filter(Boolean).join(' ') || 'Сотрудник';
   const title = `Профиль ${fullName}`;
 
   return (
@@ -182,20 +182,20 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
         scrollAreaComponent={ScrollArea.Autosize}
         styles={{
           body: {
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
             padding: 0,
           },
           header: {
-            borderBottom: "1px solid var(--mantine-color-gray-2)",
+            borderBottom: '1px solid var(--mantine-color-gray-2)',
             paddingBottom: 12,
           },
         }}
       >
         <form
           onSubmit={handleSave}
-          style={{ display: "flex", flexDirection: "column", flex: 1 }}
+          style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
         >
           <Stack gap="md" p={20} style={{ flex: 1 }}>
             {/* Avatar row */}
@@ -213,22 +213,22 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
               </Button>
             </Group>
 
-            <TextInput label="Имя" {...form.getInputProps("name")} />
-            <TextInput label="Фамилия" {...form.getInputProps("surname")} />
-            <TextInput label="Телефон" {...form.getInputProps("phone")} />
+            <TextInput label="Имя" {...form.getInputProps('name')} />
+            <TextInput label="Фамилия" {...form.getInputProps('surname')} />
+            <TextInput label="Телефон" {...form.getInputProps('phone')} />
             <TextInput
               label="Почта"
               type="email"
-              {...form.getInputProps("email")}
+              {...form.getInputProps('email')}
             />
-            <TextInput label="Telegram" {...form.getInputProps("telegram")} />
-            <TextInput label="Должность" {...form.getInputProps("position")} />
+            <TextInput label="Telegram" {...form.getInputProps('telegram')} />
+            <TextInput label="Должность" {...form.getInputProps('position')} />
 
             <Select
               label="Роль"
               data={roleOptions}
               allowDeselect={false}
-              {...form.getInputProps("role_code")}
+              {...form.getInputProps('role_code')}
             />
 
             {/* Delete button */}
@@ -236,7 +236,7 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
               variant="outline"
               color="red"
               leftSection={<IconTrash size={16} />}
-              style={{ alignSelf: "flex-start" }}
+              style={{ alignSelf: 'flex-start' }}
               onClick={() => member && onDelete(member)}
               type="button"
             >
@@ -249,7 +249,7 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
             p={20}
             justify="stretch"
             style={{
-              borderTop: "1px solid var(--mantine-color-gray-2)",
+              borderTop: '1px solid var(--mantine-color-gray-2)',
               gap: 12,
             }}
           >

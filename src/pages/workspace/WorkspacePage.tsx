@@ -1,30 +1,30 @@
-import { Box, Stack, Title } from "@mantine/core";
-import { IconBriefcase, IconId, IconUsers } from "@tabler/icons-react";
-import { Link, Outlet, useLocation, useParams } from "react-router-dom";
-import { Tabs } from "../../shared/components/Tabs";
-import { ROUTES, buildRoute } from "../../shared/constants/routes";
+import { Box, Stack, Title } from '@mantine/core';
+import { IconBriefcase, IconId, IconUsers } from '@tabler/icons-react';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
+import { Tabs } from '../../shared/components/Tabs';
+import { ROUTES, buildRoute } from '../../shared/constants/routes';
 
 const WorkspacePage = () => {
   const { workspaceId } = useParams();
   const location = useLocation();
 
   const profilePath = buildRoute(ROUTES.WORKSPACE_GENERAL, {
-    workspaceId: workspaceId ?? "",
+    workspaceId: workspaceId ?? '',
   });
   const membersPath = buildRoute(ROUTES.WORKSPACE_MEMBERS, {
-    workspaceId: workspaceId ?? "",
+    workspaceId: workspaceId ?? '',
   });
 
   const rolesPath = buildRoute(ROUTES.WORKSPACE_ROLES, {
-    workspaceId: workspaceId ?? "",
+    workspaceId: workspaceId ?? '',
   });
 
   const activeTab =
     location.pathname === membersPath
-      ? "members"
+      ? 'members'
       : location.pathname.startsWith(rolesPath)
-        ? "roles"
-        : "profile";
+        ? 'roles'
+        : 'profile';
 
   return (
     <Stack gap="lg" p={20}>

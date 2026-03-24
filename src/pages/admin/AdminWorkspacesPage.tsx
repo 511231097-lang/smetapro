@@ -9,19 +9,19 @@ import {
   Text,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { useGetApiV1AdminWorkspaces } from "../../shared/api/generated/smetchik";
-import { ROUTES } from "../../shared/constants/routes";
+} from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
+import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useGetApiV1AdminWorkspaces } from '../../shared/api/generated/smetchik';
+import { ROUTES } from '../../shared/constants/routes';
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE = 300;
 
 const AdminWorkspacesPage = () => {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, SEARCH_DEBOUNCE);
 
   useEffect(() => {
@@ -91,18 +91,18 @@ const AdminWorkspacesPage = () => {
                     <Anchor
                       component={Link}
                       to={ROUTES.ADMIN_WORKSPACE.replace(
-                        ":workspaceId",
+                        ':workspaceId',
                         workspace.id,
                       )}
                     >
-                      {workspace.name ?? "—"}
+                      {workspace.name ?? '—'}
                     </Anchor>
                   ) : (
-                    workspace.name ?? "—"
+                    (workspace.name ?? '—')
                   )}
                 </Table.Td>
-                <Table.Td>{workspace.created_by ?? "—"}</Table.Td>
-                <Table.Td>{workspace.created_at ?? "—"}</Table.Td>
+                <Table.Td>{workspace.created_by ?? '—'}</Table.Td>
+                <Table.Td>{workspace.created_at ?? '—'}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>

@@ -1,26 +1,26 @@
-import { ROUTES, buildRoute } from "../../../shared/constants/routes";
+import { ROUTES, buildRoute } from '../../../shared/constants/routes';
 import {
   IconBuildingCommunity,
   IconClipboardList,
   IconMoneybag,
-} from "@tabler/icons-react";
+} from '@tabler/icons-react';
 
 const getNavItems = (workspaceId: string) =>
   [
     {
-      label: "Проекты",
+      label: 'Проекты',
       icon: <IconBuildingCommunity size="20px" />,
       route: buildRoute(ROUTES.PROJECTS, { workspaceId }),
       chevron: true,
     },
     {
-      label: "Финансы",
+      label: 'Финансы',
       icon: <IconMoneybag size="20px" />,
       route: buildRoute(ROUTES.FINANCES, { workspaceId }),
       chevron: false,
     },
     {
-      label: "Справочники",
+      label: 'Справочники',
       icon: <IconClipboardList size="20px" />,
       route: buildRoute(ROUTES.REFERENCES, { workspaceId }),
       chevron: false,
@@ -28,7 +28,7 @@ const getNavItems = (workspaceId: string) =>
   ] as const;
 
 const wsInitials = (name?: string | null): string => {
-  if (!name) return "WS";
+  if (!name) return 'WS';
 
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length >= 2) {

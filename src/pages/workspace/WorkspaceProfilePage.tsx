@@ -12,35 +12,35 @@ import {
   Textarea,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { IconAlertTriangle, IconTrash } from "@tabler/icons-react";
-import { useEffect, useRef, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { useDisclosure } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
+import { IconAlertTriangle, IconTrash } from '@tabler/icons-react';
+import { useEffect, useRef, useState } from 'react';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import {
   getGetWorkspacesWorkspaceIdQueryKey,
   getGetWorkspacesQueryKey,
   useDeleteWorkspacesWorkspaceId,
   useGetWorkspacesWorkspaceId,
   usePutWorkspacesWorkspaceId,
-} from "../../shared/api/generated/smetchik";
-import type { WorkspacesWorkspaceResponse } from "../../shared/api/generated/schemas";
-import type { WorkspacesListResponse } from "../../shared/api/generated/schemas/workspacesListResponse";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES, buildRoute } from "../../shared/constants/routes";
-import { queryClient } from "../../shared/api/queryClient";
+} from '../../shared/api/generated/smetchik';
+import type { WorkspacesWorkspaceResponse } from '../../shared/api/generated/schemas';
+import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { ROUTES, buildRoute } from '../../shared/constants/routes';
+import { queryClient } from '../../shared/api/queryClient';
 
 const DESCRIPTION_MAX = 320;
 
 const getErrorMessage = (error: unknown) => {
   if (error instanceof HttpClientError) {
     const data = error.data as { error?: string } | undefined;
-    return data?.error ?? "Не удалось выполнить действие";
+    return data?.error ?? 'Не удалось выполнить действие';
   }
   if (error instanceof Error) return error.message;
-  return "Не удалось выполнить действие. Попробуйте еще раз.";
+  return 'Не удалось выполнить действие. Попробуйте еще раз.';
 };
 
 type DeleteModalProps = {
@@ -56,10 +56,10 @@ const DeleteModal = ({
   onClose,
   onConfirm,
 }: DeleteModalProps) => {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
 
   useEffect(() => {
-    if (!opened) setInput("");
+    if (!opened) setInput('');
   }, [opened]);
 
   return (
@@ -109,7 +109,7 @@ const DeleteModal = ({
           <Button
             color="red"
             leftSection={<IconTrash size={16} />}
-            disabled={input.toLowerCase().trim() !== "удалить"}
+            disabled={input.toLowerCase().trim() !== 'удалить'}
             loading={isPending}
             onClick={onConfirm}
           >
@@ -130,16 +130,16 @@ const WorkspaceGeneralPage = () => {
 
   const form = useForm({
     initialValues: {
-      name: "",
-      description: "",
+      name: '',
+      description: '',
     },
     validate: {
-      name: (value) => (value.trim().length === 0 ? "Введите название" : null),
+      name: (value) => (value.trim().length === 0 ? 'Введите название' : null),
     },
   });
 
   const { data, isLoading, isError } = useGetWorkspacesWorkspaceId(
-    workspaceId ?? "",
+    workspaceId ?? '',
     { query: { enabled: !!workspaceId } },
   );
 
@@ -148,8 +148,8 @@ const WorkspaceGeneralPage = () => {
   useEffect(() => {
     if (!workspace) return;
     form.setValues({
-      name: workspace.name ?? "",
-      description: workspace.description ?? "",
+      name: workspace.name ?? '',
+      description: workspace.description ?? '',
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workspace?.id, workspace?.name, workspace?.description]);
@@ -159,9 +159,9 @@ const WorkspaceGeneralPage = () => {
       onSuccess: (response) => {
         const updated = response.workspace;
         notifications.show({
-          color: "teal",
-          title: "Пространство обновлено",
-          message: "Изменения сохранены.",
+          color: 'teal',
+          title: 'Пространство обновлено',
+          message: 'Изменения сохранены.',
         });
 
         if (updated && workspaceId) {
@@ -192,8 +192,8 @@ const WorkspaceGeneralPage = () => {
       },
       onError: (error) => {
         notifications.show({
-          color: "red",
-          title: "Ошибка",
+          color: 'red',
+          title: 'Ошибка',
           message: getErrorMessage(error),
         });
       },
@@ -237,14 +237,14 @@ const WorkspaceGeneralPage = () => {
           return;
         }
         navigate(
-          buildRoute(ROUTES.PROJECTS, { workspaceId: remaining[0]?.id ?? "" }),
+          buildRoute(ROUTES.PROJECTS, { workspaceId: remaining[0]?.id ?? '' }),
           { replace: true },
         );
       },
       onError: (error) => {
         notifications.show({
-          color: "red",
-          title: "Ошибка",
+          color: 'red',
+          title: 'Ошибка',
           message: getErrorMessage(error),
         });
       },
@@ -298,10 +298,10 @@ const WorkspaceGeneralPage = () => {
             p={24}
             style={{
               height: 269,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
               gap: 16,
             }}
           >
@@ -313,12 +313,12 @@ const WorkspaceGeneralPage = () => {
                 width: 140,
                 height: 140,
                 borderRadius: 64,
-                overflow: "hidden",
-                cursor: "pointer",
-                background: "#f1f3f5",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                overflow: 'hidden',
+                cursor: 'pointer',
+                background: '#f1f3f5',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
               onClick={() => fileInputRef.current?.click()}
             >
@@ -330,7 +330,7 @@ const WorkspaceGeneralPage = () => {
               ref={fileInputRef}
               type="file"
               accept=".jpeg,.jpg,.png,.gif"
-              style={{ display: "none" }}
+              style={{ display: 'none' }}
             />
             <Text size="xs" c="dimmed" ta="center">
               Разрешены *.jpeg, *.jpg, *.png, *.gif
@@ -355,7 +355,7 @@ const WorkspaceGeneralPage = () => {
             <Stack gap="md">
               <TextInput
                 label="Название пространства"
-                {...form.getInputProps("name")}
+                {...form.getInputProps('name')}
               />
 
               <Box>
@@ -363,7 +363,7 @@ const WorkspaceGeneralPage = () => {
                   label="Информация для сотрудников"
                   minRows={4}
                   maxLength={DESCRIPTION_MAX}
-                  {...form.getInputProps("description")}
+                  {...form.getInputProps('description')}
                 />
                 <Text size="xs" c="dimmed" ta="right" mt={4}>
                   {descLen}/{DESCRIPTION_MAX}

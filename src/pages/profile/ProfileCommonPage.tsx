@@ -14,31 +14,31 @@ import {
   Text,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { useDisclosure } from '@mantine/hooks';
 import {
   IconAlertTriangle,
   IconPhone,
   IconTrash,
   IconUpload,
   IconUser,
-} from "@tabler/icons-react";
-import { useEffect, useRef, useState } from "react";
-import { useGetAuthMe } from "../../shared/api/generated/smetchik";
-import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
+} from '@tabler/icons-react';
+import { useEffect, useRef, useState } from 'react';
+import { useGetAuthMe } from '../../shared/api/generated/smetchik';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 
 const TIMEZONE_OPTIONS = [
-  { value: "UTC+0", label: "UTC+0 (Лондон)" },
-  { value: "UTC+3", label: "+3 (Москва)" },
-  { value: "UTC+4", label: "+4 (Самара)" },
-  { value: "UTC+5", label: "+5 (Екатеринбург)" },
-  { value: "UTC+6", label: "+6 (Омск)" },
-  { value: "UTC+7", label: "+7 (Новосибирск)" },
-  { value: "UTC+8", label: "+8 (Иркутск)" },
-  { value: "UTC+9", label: "+9 (Якутск)" },
-  { value: "UTC+10", label: "+10 (Владивосток)" },
-  { value: "UTC+12", label: "+12 (Камчатка)" },
+  { value: 'UTC+0', label: 'UTC+0 (Лондон)' },
+  { value: 'UTC+3', label: '+3 (Москва)' },
+  { value: 'UTC+4', label: '+4 (Самара)' },
+  { value: 'UTC+5', label: '+5 (Екатеринбург)' },
+  { value: 'UTC+6', label: '+6 (Омск)' },
+  { value: 'UTC+7', label: '+7 (Новосибирск)' },
+  { value: 'UTC+8', label: '+8 (Иркутск)' },
+  { value: 'UTC+9', label: '+9 (Якутск)' },
+  { value: 'UTC+10', label: '+10 (Владивосток)' },
+  { value: 'UTC+12', label: '+12 (Камчатка)' },
 ];
 
 const ProfileCommonPage = () => {
@@ -47,26 +47,26 @@ const ProfileCommonPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [deleteOpen, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
-  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState('');
   const { primaryColor } = usePrimaryColor();
 
-  const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : "U";
+  const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : 'U';
 
   const form = useForm({
     initialValues: {
-      name: "",
-      surname: "",
-      email: "",
-      phone: "",
-      timezone: "UTC+3",
+      name: '',
+      surname: '',
+      email: '',
+      phone: '',
+      timezone: 'UTC+3',
     },
   });
 
   useEffect(() => {
     if (!user) return;
     form.setValues({
-      email: user.email ?? "",
-      phone: user.phone ?? "",
+      email: user.email ?? '',
+      phone: user.phone ?? '',
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
@@ -125,7 +125,7 @@ const ProfileCommonPage = () => {
                 ref={fileInputRef}
                 type="file"
                 accept=".jpeg,.jpg,.png,.gif"
-                style={{ display: "none" }}
+                style={{ display: 'none' }}
               />
             </Group>
 
@@ -136,13 +136,13 @@ const ProfileCommonPage = () => {
                     label="Имя"
                     placeholder="Иван"
                     leftSection={<IconUser size={14} />}
-                    {...form.getInputProps("name")}
+                    {...form.getInputProps('name')}
                   />
                   <TextInput
                     label="Фамилия"
                     placeholder="Петров"
                     leftSection={<IconUser size={14} />}
-                    {...form.getInputProps("surname")}
+                    {...form.getInputProps('surname')}
                   />
                 </SimpleGrid>
 
@@ -156,14 +156,14 @@ const ProfileCommonPage = () => {
                         @
                       </Text>
                     }
-                    {...form.getInputProps("email")}
+                    {...form.getInputProps('email')}
                   />
                   <TextInput
                     label="Телефон"
                     placeholder="+7 (000) 000-00-00"
                     type="tel"
                     leftSection={<IconPhone size={14} />}
-                    {...form.getInputProps("phone")}
+                    {...form.getInputProps('phone')}
                   />
                 </SimpleGrid>
 
@@ -171,8 +171,8 @@ const ProfileCommonPage = () => {
                   label="Часовой пояс"
                   data={TIMEZONE_OPTIONS}
                   allowDeselect={false}
-                  style={{ maxWidth: "calc(50% - 6px)" }}
-                  {...form.getInputProps("timezone")}
+                  style={{ maxWidth: 'calc(50% - 6px)' }}
+                  {...form.getInputProps('timezone')}
                 />
 
                 <Group justify="flex-end" mt={4}>
@@ -189,7 +189,7 @@ const ProfileCommonPage = () => {
         <Paper
           radius="md"
           p={24}
-          style={{ border: "1px solid var(--mantine-color-red-5)" }}
+          style={{ border: '1px solid var(--mantine-color-red-5)' }}
         >
           <Stack gap={8}>
             <Title order={4} c="red">
@@ -259,7 +259,7 @@ const ProfileCommonPage = () => {
             <Button
               color="red"
               leftSection={<IconTrash size={16} />}
-              disabled={deleteConfirm.toLowerCase().trim() !== "удалить"}
+              disabled={deleteConfirm.toLowerCase().trim() !== 'удалить'}
               onClick={() => {
                 // API delete будет добавлен позже
                 closeDelete();

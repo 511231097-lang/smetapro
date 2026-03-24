@@ -4,7 +4,7 @@ const DashboardHomePage = () => {
   return (
     <>
       <Title order={2}>Главная</Title>
-      <Text c='dimmed' mt={6}>
+      <Text c="dimmed" mt={6}>
         Контент личного кабинета появится здесь.
       </Text>
     </>

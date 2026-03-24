@@ -3,7 +3,7 @@ import {
   type TabsListProps,
   type TabsProps,
   type TabsTabProps,
-} from "@mantine/core";
+} from '@mantine/core';
 
 const tabStyles = {
   tab: {

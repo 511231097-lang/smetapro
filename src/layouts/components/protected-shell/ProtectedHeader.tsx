@@ -1,5 +1,5 @@
-import { Menu01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Menu01Icon } from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ActionIcon,
   AppShell,
@@ -11,20 +11,20 @@ import {
   UnstyledButton,
   useComputedColorScheme,
   useMantineColorScheme,
-} from "@mantine/core";
-import { usePrimaryColor } from "../../../providers/PrimaryColorProvider";
+} from '@mantine/core';
+import { usePrimaryColor } from '../../../providers/PrimaryColorProvider';
 import {
   IconInfoCircle,
   IconLogout,
   IconMoon,
   IconSun,
   IconUser,
-} from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+} from '@tabler/icons-react';
+import { Link } from 'react-router-dom';
 
-import type { WorkspacesWorkspaceResponse } from "../../../shared/api/generated/schemas";
-import { ROUTES } from "../../../shared/constants/routes";
-import WorkspaceMenu from "./WorkspaceMenu";
+import type { WorkspacesWorkspaceResponse } from '../../../shared/api/generated/schemas';
+import { ROUTES } from '../../../shared/constants/routes';
+import WorkspaceMenu from './WorkspaceMenu';
 
 type ProtectedHeaderProps = {
   email: string;
@@ -48,14 +48,14 @@ const ProtectedHeader = ({
   onLogout,
 }: ProtectedHeaderProps) => {
   const { toggleColorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme("light");
-  const isDark = computedColorScheme === "dark";
+  const computedColorScheme = useComputedColorScheme('light');
+  const isDark = computedColorScheme === 'dark';
   const { primaryColor } = usePrimaryColor();
   return (
     <AppShell.Header
       style={{
-        background: "var(--app-header-bg)",
-        borderBottom: "1px solid var(--app-border)",
+        background: 'var(--app-header-bg)',
+        borderBottom: '1px solid var(--app-border)',
       }}
     >
       <Group h="100%" px={16} justify="space-between" wrap="nowrap">
@@ -63,13 +63,13 @@ const ProtectedHeader = ({
           <Link
             to={ROUTES.PROJECTS}
             style={{
-              display: "flex",
-              alignItems: "center",
+              display: 'flex',
+              alignItems: 'center',
               flexShrink: 0,
             }}
           >
             <img
-              src={isDark ? "/logo_dark.svg" : "/logo_light.svg"}
+              src={isDark ? '/logo_dark.svg' : '/logo_light.svg'}
               alt="СМЕТЧИК ПРО"
               width={187}
               height={19}
@@ -102,16 +102,16 @@ const ProtectedHeader = ({
               styles={{
                 dropdown: {
                   padding: 4,
-                  border: "1px solid var(--mantine-color-default-border)",
+                  border: '1px solid var(--mantine-color-default-border)',
                   borderRadius: 4,
                 },
                 item: {
-                  padding: "4px 12px",
+                  padding: '4px 12px',
                   fontSize: 12,
                   gap: 8,
                   borderRadius: 4,
                 },
-                divider: { margin: "4px 0" },
+                divider: { margin: '4px 0' },
               }}
             >
               <Menu.Target>
@@ -149,7 +149,7 @@ const ProtectedHeader = ({
                   }
                   onClick={() => toggleColorScheme()}
                 >
-                  {isDark ? "Светлая тема" : "Темная тема"}
+                  {isDark ? 'Светлая тема' : 'Темная тема'}
                 </Menu.Item>
                 <Menu.Divider />
                 <Menu.Item

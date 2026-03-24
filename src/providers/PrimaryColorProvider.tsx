@@ -1,9 +1,9 @@
-import type { MantineColor } from "@mantine/core";
-import { createContext, useContext, useState } from "react";
-import type { ReactNode } from "react";
+import type { MantineColor } from '@mantine/core';
+import { createContext, useContext, useState } from 'react';
+import type { ReactNode } from 'react';
 
-const STORAGE_KEY = "primaryColor";
-const DEFAULT_COLOR: MantineColor = "teal";
+const STORAGE_KEY = 'primaryColor';
+const DEFAULT_COLOR: MantineColor = 'teal';
 
 interface PrimaryColorContextValue {
   primaryColor: MantineColor;

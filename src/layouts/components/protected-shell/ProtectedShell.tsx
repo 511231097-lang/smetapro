@@ -1,14 +1,14 @@
-import { AppShell } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { AppShell } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { useEffect, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
-import { useWorkspace } from "../../../providers/WorkspaceProvider";
-import type { AuthSuccessResponse } from "../../../shared/api/generated/schemas";
-import { ROUTES, buildRoute } from "../../../shared/constants/routes";
-import ProtectedHeader from "./ProtectedHeader";
-import ProtectedMobileDrawer from "./ProtectedMobileDrawer";
-import ProtectedSidebar from "./ProtectedSidebar";
+import { useWorkspace } from '../../../providers/WorkspaceProvider';
+import type { AuthSuccessResponse } from '../../../shared/api/generated/schemas';
+import { buildRoute, ROUTES } from '../../../shared/constants/routes';
+import ProtectedHeader from './ProtectedHeader';
+import ProtectedMobileDrawer from './ProtectedMobileDrawer';
+import ProtectedSidebar from './ProtectedSidebar';
 
 type ProtectedShellProps = {
   user: AuthSuccessResponse;
@@ -24,7 +24,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
     useDisclosure(false);
   const [sidebarCollapsed, { toggle: toggleSidebar }] = useDisclosure(false);
   const [forceCollapsed, setForceCollapsed] = useState(() =>
-    typeof window !== "undefined"
+    typeof window !== 'undefined'
       ? window.matchMedia(forcedCollapsedQuery).matches
       : false,
   );
@@ -32,8 +32,8 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
   const { activeWorkspace, workspaceList, setActiveWorkspaceId } =
     useWorkspace();
 
-  const email = user?.user?.email ?? "";
-  const initials = email.slice(0, 2).toUpperCase() || "U";
+  const email = user?.user?.email ?? '';
+  const initials = email.slice(0, 2).toUpperCase() || 'U';
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: location is intentional trigger
   useEffect(() => {
@@ -41,7 +41,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
   }, [closeMobileMenu, location]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
 
     const mediaQuery = window.matchMedia(forcedCollapsedQuery);
     const handleChange = (event: MediaQueryListEvent) => {
@@ -49,9 +49,9 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
     };
 
     setForceCollapsed(mediaQuery.matches);
-    mediaQuery.addEventListener("change", handleChange);
+    mediaQuery.addEventListener('change', handleChange);
 
-    return () => mediaQuery.removeEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
   }, [forcedCollapsedQuery]);
 
   return (
@@ -60,7 +60,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
         header={{ height: 59 }}
         navbar={{
           width: effectiveCollapsed ? 64 : 248,
-          breakpoint: "sm",
+          breakpoint: 'sm',
           collapsed: { mobile: true, desktop: false },
         }}
       >
@@ -74,14 +74,14 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
           onGoToProfile={() =>
             navigate(
               buildRoute(ROUTES.PROFILE_COMMON, {
-                workspaceId: activeWorkspace?.id ?? "",
+                workspaceId: activeWorkspace?.id ?? '',
               }),
             )
           }
           onLogout={() =>
             navigate(
               buildRoute(ROUTES.LOGOUT, {
-                workspaceId: activeWorkspace?.id ?? "",
+                workspaceId: activeWorkspace?.id ?? '',
               }),
             )
           }

@@ -8,11 +8,11 @@ import {
   Text,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
-import { useEffect } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { notifications } from '@mantine/notifications';
+import { useEffect } from 'react';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import {
   getGetApiV1AdminWorkspacesIdQueryKey,
   getGetApiV1AdminWorkspacesQueryKey,
@@ -21,31 +21,31 @@ import {
   useDeleteApiV1AdminWorkspacesId,
   useGetApiV1AdminWorkspacesId,
   usePutApiV1AdminWorkspacesId,
-} from "../../shared/api/generated/smetchik";
+} from '../../shared/api/generated/smetchik';
 import type {
   AdminWorkspacesListResponse,
   GetApiV1AdminWorkspacesId200,
   GetApiV1WorkspacesId200,
-} from "../../shared/api/generated/schemas";
-import type { WorkspacesListResponse } from "../../shared/api/generated/schemas/workspacesListResponse";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { queryClient } from "../../shared/api/queryClient";
-import { ROUTES } from "../../shared/constants/routes";
+} from '../../shared/api/generated/schemas';
+import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { queryClient } from '../../shared/api/queryClient';
+import { ROUTES } from '../../shared/constants/routes';
 
 const AdminWorkspaceDetailPage = () => {
   const { workspaceId } = useParams();
   const navigate = useNavigate();
   const form = useForm({
     initialValues: {
-      name: "",
+      name: '',
     },
     validate: {
-      name: (value) => (value.trim().length === 0 ? "Введите название" : null),
+      name: (value) => (value.trim().length === 0 ? 'Введите название' : null),
     },
   });
 
   const { data, isLoading, isError } = useGetApiV1AdminWorkspacesId(
-    workspaceId ?? "",
+    workspaceId ?? '',
     {
       query: {
         enabled: !!workspaceId,
@@ -59,7 +59,7 @@ const AdminWorkspaceDetailPage = () => {
     if (!workspace) {
       return;
     }
-    form.setValues({ name: workspace.name ?? "" });
+    form.setValues({ name: workspace.name ?? '' });
   }, [workspace?.id, workspace?.name]);
 
   const updateMutation = usePutApiV1AdminWorkspacesId({
@@ -108,15 +108,15 @@ const AdminWorkspaceDetailPage = () => {
         }
 
         notifications.show({
-          color: "teal",
-          title: "Пространство обновлено",
-          message: "Изменения сохранены.",
+          color: 'teal',
+          title: 'Пространство обновлено',
+          message: 'Изменения сохранены.',
         });
       },
       onError: (error: unknown) => {
         notifications.show({
-          color: "red",
-          title: "Ошибка",
+          color: 'red',
+          title: 'Ошибка',
           message: getErrorMessage(error),
         });
       },
@@ -176,16 +176,16 @@ const AdminWorkspaceDetailPage = () => {
         }
 
         notifications.show({
-          color: "teal",
-          title: "Пространство удалено",
-          message: "Пространство больше недоступно.",
+          color: 'teal',
+          title: 'Пространство удалено',
+          message: 'Пространство больше недоступно.',
         });
         navigate(ROUTES.ADMIN_WORKSPACES, { replace: true });
       },
       onError: (error) => {
         notifications.show({
-          color: "red",
-          title: "Ошибка",
+          color: 'red',
+          title: 'Ошибка',
           message: getErrorMessage(error),
         });
       },
@@ -227,7 +227,7 @@ const AdminWorkspaceDetailPage = () => {
       return;
     }
     const confirmed = window.confirm(
-      "Удалить пространство? Это действие нельзя отменить.",
+      'Удалить пространство? Это действие нельзя отменить.',
     );
     if (!confirmed) {
       return;
@@ -250,7 +250,7 @@ const AdminWorkspaceDetailPage = () => {
             <TextInput
               label="Название"
               placeholder="Моя компания"
-              {...form.getInputProps("name")}
+              {...form.getInputProps('name')}
             />
             <Group justify="space-between">
               <Button type="submit" loading={updateMutation.isPending}>
@@ -275,14 +275,14 @@ const AdminWorkspaceDetailPage = () => {
 const getErrorMessage = (error: unknown) => {
   if (error instanceof HttpClientError) {
     const data = error.data as { error?: string } | undefined;
-    return data?.error ?? "Не удалось выполнить действие";
+    return data?.error ?? 'Не удалось выполнить действие';
   }
 
   if (error instanceof Error) {
     return error.message;
   }
 
-  return "Не удалось выполнить действие. Попробуйте еще раз.";
+  return 'Не удалось выполнить действие. Попробуйте еще раз.';
 };
 
 export default AdminWorkspaceDetailPage;

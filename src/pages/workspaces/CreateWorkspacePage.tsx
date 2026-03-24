@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Alert,
   Button,
@@ -8,48 +8,48 @@ import {
   TextInput,
   Title,
   useComputedColorScheme,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { IconAlertCircle, IconCube3dSphere } from "@tabler/icons-react";
-import { useNavigate } from "react-router-dom";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { IconAlertCircle, IconCube3dSphere } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import {
   getGetWorkspacesQueryKey,
   getGetWorkspacesQueryOptions,
   usePostWorkspaces,
-} from "../../shared/api/generated/smetchik";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES, buildRoute } from "../../shared/constants/routes";
-import { queryClient } from "../../shared/api/queryClient";
-import type { WorkspacesListResponse } from "../../shared/api/generated/schemas";
+} from '../../shared/api/generated/smetchik';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { ROUTES, buildRoute } from '../../shared/constants/routes';
+import { queryClient } from '../../shared/api/queryClient';
+import type { WorkspacesListResponse } from '../../shared/api/generated/schemas';
 import {
   AuthFormWrapper,
   AuthPageLayout,
   authLayoutClasses as classes,
-} from "../auth/shared/AuthLayout";
-import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
+} from '../auth/shared/AuthLayout';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 
 const MAX_NAME = 60;
 
 const getErrorMessage = (error: unknown) => {
   if (error instanceof HttpClientError) {
     const data = error.data as { error?: string } | undefined;
-    return data?.error ?? "Не удалось создать пространство";
+    return data?.error ?? 'Не удалось создать пространство';
   }
   if (error instanceof Error) return error.message;
-  return "Не удалось создать пространство. Попробуйте еще раз.";
+  return 'Не удалось создать пространство. Попробуйте еще раз.';
 };
 
 const CreateWorkspacePage = () => {
   const navigate = useNavigate();
   const { primaryColor } = usePrimaryColor();
-  const colorScheme = useComputedColorScheme("light", {
+  const colorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,
   });
   const [createError, setCreateError] = useState<string | null>(null);
   const form = useForm({
-    initialValues: { name: "" },
+    initialValues: { name: '' },
     validate: {
-      name: (value) => (value.trim().length === 0 ? "Введите название" : null),
+      name: (value) => (value.trim().length === 0 ? 'Введите название' : null),
     },
   });
 
@@ -115,7 +115,7 @@ const CreateWorkspacePage = () => {
 
         navigate(
           buildRoute(ROUTES.PROJECTS, {
-            workspaceId: createdWorkspace?.id ?? "",
+            workspaceId: createdWorkspace?.id ?? '',
           }),
           { replace: true },
         );
@@ -150,9 +150,9 @@ const CreateWorkspacePage = () => {
           noValidate
           className={classes.formCard}
           bg={
-            colorScheme === "dark"
-              ? "var(--mantine-color-dark-6)"
-              : "var(--mantine-color-white)"
+            colorScheme === 'dark'
+              ? 'var(--mantine-color-dark-6)'
+              : 'var(--mantine-color-white)'
           }
         >
           <Stack gap="lg">
@@ -188,7 +188,7 @@ const CreateWorkspacePage = () => {
                         : undefined,
                   },
                 }}
-                {...form.getInputProps("name")}
+                {...form.getInputProps('name')}
               />
               <Text size="xs" c="dimmed" ta="right">
                 {nameLength}/{MAX_NAME}

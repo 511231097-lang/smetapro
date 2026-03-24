@@ -10,15 +10,15 @@ import {
   Title,
   UnstyledButton,
   useComputedColorScheme,
-} from "@mantine/core";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { usePrimaryColor } from "../../../providers/PrimaryColorProvider";
-import ChevronIcon from "./assets/ChevronIcon.svg?react";
-import type { WorkspacesWorkspaceResponse } from "../../../shared/api/generated/schemas";
-import { ROUTES, buildRoute } from "../../../shared/constants/routes";
-import { wsInitials } from "./constants";
-import { IconCube3dSphere } from "@tabler/icons-react";
+} from '@mantine/core';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { usePrimaryColor } from '../../../providers/PrimaryColorProvider';
+import ChevronIcon from './assets/ChevronIcon.svg?react';
+import type { WorkspacesWorkspaceResponse } from '../../../shared/api/generated/schemas';
+import { ROUTES, buildRoute } from '../../../shared/constants/routes';
+import { wsInitials } from './constants';
+import { IconCube3dSphere } from '@tabler/icons-react';
 
 type WorkspaceMenuProps = {
   activeWorkspace?: WorkspacesWorkspaceResponse;
@@ -34,7 +34,7 @@ const WorkspaceMenu = ({
   mobile = false,
 }: WorkspaceMenuProps) => {
   const { primaryColor } = usePrimaryColor();
-  const colorScheme = useComputedColorScheme("light", {
+  const colorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,
   });
   const [opened, setOpened] = useState(false);
@@ -46,7 +46,7 @@ const WorkspaceMenu = ({
     <Menu
       opened={opened}
       onChange={setOpened}
-      position={mobile ? "bottom-start" : "bottom-end"}
+      position={mobile ? 'bottom-start' : 'bottom-end'}
       withinPortal
       withArrow
       arrowOffset={12}
@@ -54,12 +54,12 @@ const WorkspaceMenu = ({
     >
       <Menu.Target>
         <UnstyledButton
-          visibleFrom={mobile ? undefined : "sm"}
-          p={mobile ? "0" : "0 12px 0 0"}
+          visibleFrom={mobile ? undefined : 'sm'}
+          p={mobile ? '0' : '0 12px 0 0'}
           bdrs={4}
           ml={mobile ? 0 : 63}
           miw={mobile ? undefined : 176}
-          style={mobile ? { width: "100%" } : undefined}
+          style={mobile ? { width: '100%' } : undefined}
         >
           <Group gap={8} wrap="nowrap">
             <Avatar
@@ -72,7 +72,7 @@ const WorkspaceMenu = ({
               {wsInitials(activeWorkspace?.name)}
             </Avatar>
             <Title size="xs" fw={400} w="100%">
-              {activeWorkspace?.name ?? "—"}
+              {activeWorkspace?.name ?? '—'}
             </Title>
             <ChevronIcon width={12} height={12} />
           </Group>
@@ -81,7 +81,7 @@ const WorkspaceMenu = ({
 
       <Menu.Dropdown p={4}>
         <Stack p="6px 8px 8px">
-          <Group gap={"8px"} wrap="nowrap">
+          <Group gap={'8px'} wrap="nowrap">
             <Avatar
               size={32}
               radius={4}
@@ -92,8 +92,8 @@ const WorkspaceMenu = ({
               {wsInitials(activeWorkspace?.name)}
             </Avatar>
             <Box>
-              <Text fz={12} fw={700} lh={"16px"}>
-                {activeWorkspace?.name ?? "—"}
+              <Text fz={12} fw={700} lh={'16px'}>
+                {activeWorkspace?.name ?? '—'}
               </Text>
               <Text fz="10px" lh="12.5px" c="dimmed" truncate mt={4}>
                 Владелец • 5 участников
@@ -104,7 +104,7 @@ const WorkspaceMenu = ({
           <Button
             component={Link}
             to={buildRoute(ROUTES.WORKSPACE_GENERAL, {
-              workspaceId: activeWorkspace?.id ?? "",
+              workspaceId: activeWorkspace?.id ?? '',
             })}
             color="gray"
             size="xs"
@@ -112,7 +112,7 @@ const WorkspaceMenu = ({
             leftSection={<IconCube3dSphere size="12px" />}
             variant="outline"
             style={{
-              border: "1px solid var(--app-border)",
+              border: '1px solid var(--app-border)',
             }}
           >
             Профиль пространства
@@ -176,9 +176,9 @@ const WorkspaceMenu = ({
               size={24}
               radius={4}
               bg={
-                colorScheme === "dark"
-                  ? "var(--mantine-color-gray-8)"
-                  : "var(--mantine-color-gray-4)"
+                colorScheme === 'dark'
+                  ? 'var(--mantine-color-gray-8)'
+                  : 'var(--mantine-color-gray-4)'
               }
               variant="filled"
               style={{ flexShrink: 0 }}

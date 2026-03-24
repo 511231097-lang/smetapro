@@ -1,7 +1,7 @@
-import { Box, Stack, Text } from "@mantine/core";
-import loginHeroImage from "../../../assets/login-hero.png";
-import logo from "../../../assets/logo.svg";
-import classes from "./AuthLayout.module.css";
+import { Box, Stack, Text } from '@mantine/core';
+import loginHeroImage from '../../../assets/login-hero.png';
+import logo from '../../../assets/logo.svg';
+import classes from './AuthLayout.module.css';
 
 const AuthHero = () => (
   <Box

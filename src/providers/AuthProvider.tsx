@@ -1,10 +1,10 @@
-import { useQueryClient } from "@tanstack/react-query";
-import type { ReactNode } from "react";
-import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { postAuthRefresh } from "../shared/api/generated/smetchik";
-import { setAuthHandlers } from "../shared/api/httpClient";
-import { ROUTES } from "../shared/constants/routes";
+import { useQueryClient } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
+import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { postAuthRefresh } from '../shared/api/generated/smetchik';
+import { setAuthHandlers } from '../shared/api/httpClient';
+import { ROUTES } from '../shared/constants/routes';
 
 type AuthProviderProps = {
   children: ReactNode;

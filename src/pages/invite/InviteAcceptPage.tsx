@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Alert,
   Badge,
@@ -14,41 +14,41 @@ import {
   Text,
   ThemeIcon,
   Title,
-} from "@mantine/core";
-import { notifications } from "@mantine/notifications";
+} from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import {
   IconAlertCircle,
   IconBuilding,
   IconCheck,
   IconUsers,
-} from "@tabler/icons-react";
+} from '@tabler/icons-react';
 import {
   useGetInviteToken,
   usePostInviteToken,
-} from "../../shared/api/generated/smetchik";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES, buildRoute } from "../../shared/constants/routes";
-import logo from "../../assets/logo.svg";
+} from '../../shared/api/generated/smetchik';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { ROUTES, buildRoute } from '../../shared/constants/routes';
+import logo from '../../assets/logo.svg';
 
 const formatExpiry = (expiresAt: string) =>
-  new Date(expiresAt).toLocaleString("ru-RU", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  new Date(expiresAt).toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
 const getErrorMessage = (error: unknown) => {
   if (error instanceof HttpClientError) {
     const data = error.data as { error?: string } | undefined;
-    return data?.error ?? "Не удалось вступить в пространство";
+    return data?.error ?? 'Не удалось вступить в пространство';
   }
-  return "Не удалось вступить в пространство";
+  return 'Не удалось вступить в пространство';
 };
 
 const InviteAcceptPage = () => {
-  const { token = "" } = useParams<{ token: string }>();
+  const { token = '' } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const [joined, setJoined] = useState(false);
 
@@ -77,8 +77,8 @@ const InviteAcceptPage = () => {
       },
       onError: (error) => {
         notifications.show({
-          color: "red",
-          title: "Ошибка",
+          color: 'red',
+          title: 'Ошибка',
           message: getErrorMessage(error),
         });
       },
@@ -90,18 +90,18 @@ const InviteAcceptPage = () => {
   return (
     <Box
       style={{
-        minHeight: "100vh",
-        backgroundColor: "var(--mantine-color-gray-0)",
+        minHeight: '100vh',
+        backgroundColor: 'var(--mantine-color-gray-0)',
       }}
     >
       <Center
-        style={{ minHeight: "100vh", padding: "var(--mantine-spacing-xl)" }}
+        style={{ minHeight: '100vh', padding: 'var(--mantine-spacing-xl)' }}
       >
         <Card
           withBorder
           shadow="sm"
           radius="md"
-          style={{ width: "100%", maxWidth: 460 }}
+          style={{ width: '100%', maxWidth: 460 }}
           padding="xl"
         >
           <Group justify="center" mb="xl">
@@ -166,7 +166,7 @@ const InviteAcceptPage = () => {
                     <Badge variant="light">{invite.role.name}</Badge>
                   </Group>
                 )}
-                {typeof invite.member_count === "number" && (
+                {typeof invite.member_count === 'number' && (
                   <Group justify="space-between">
                     <Text size="sm" c="dimmed">
                       Участников

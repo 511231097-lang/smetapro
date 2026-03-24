@@ -7,19 +7,19 @@ import {
   Text,
   Title,
   UnstyledButton,
-} from "@mantine/core";
-import { useMantineColorScheme } from "@mantine/core";
-import type { MantineColor } from "@mantine/core";
-import { IconCheck, IconMoon, IconSun } from "@tabler/icons-react";
-import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
+} from '@mantine/core';
+import { useMantineColorScheme } from '@mantine/core';
+import type { MantineColor } from '@mantine/core';
+import { IconCheck, IconMoon, IconSun } from '@tabler/icons-react';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 
 const COLOR_OPTIONS: { color: MantineColor; hex: string }[] = [
-  { color: "teal", hex: "#12b886" },
-  { color: "blue", hex: "#228be6" },
-  { color: "grape", hex: "#be4bdb" },
-  { color: "orange", hex: "#fd7e14" },
-  { color: "cyan", hex: "#15aabf" },
-  { color: "yellow", hex: "#fab005" },
+  { color: 'teal', hex: '#12b886' },
+  { color: 'blue', hex: '#228be6' },
+  { color: 'grape', hex: '#be4bdb' },
+  { color: 'orange', hex: '#fd7e14' },
+  { color: 'cyan', hex: '#15aabf' },
+  { color: 'yellow', hex: '#fab005' },
 ];
 
 const ProfileAppearancePage = () => {
@@ -39,17 +39,17 @@ const ProfileAppearancePage = () => {
             <Group gap={8} grow>
               <Button
                 variant="outline"
-                color={colorScheme === "light" ? undefined : "gray"}
+                color={colorScheme === 'light' ? undefined : 'gray'}
                 leftSection={<IconSun size={16} />}
-                onClick={() => setColorScheme("light")}
+                onClick={() => setColorScheme('light')}
               >
                 Светлая тема
               </Button>
               <Button
                 variant="outline"
-                color={colorScheme === "dark" ? undefined : "gray"}
+                color={colorScheme === 'dark' ? undefined : 'gray'}
                 leftSection={<IconMoon size={16} />}
-                onClick={() => setColorScheme("dark")}
+                onClick={() => setColorScheme('dark')}
               >
                 Темная тема
               </Button>
@@ -67,12 +67,12 @@ const ProfileAppearancePage = () => {
                   aria-label={color}
                   style={{
                     backgroundColor: hex,
-                    borderRadius: "50%",
+                    borderRadius: '50%',
                     width: 36,
                     height: 36,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     flexShrink: 0,
                   }}
                   onClick={() => setPrimaryColor(color)}

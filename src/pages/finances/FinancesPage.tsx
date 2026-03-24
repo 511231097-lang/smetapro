@@ -1,4 +1,4 @@
-import { Box, Text, Title } from "@mantine/core";
+import { Box, Text, Title } from '@mantine/core';
 
 export const FinancesPage = () => {
   return (

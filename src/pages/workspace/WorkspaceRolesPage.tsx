@@ -1,12 +1,12 @@
-import { Center, Loader, Paper, Table, Text } from "@mantine/core";
-import { useParams } from "react-router-dom";
-import { useGetWorkspacesWorkspaceIdRoles } from "../../shared/api/generated/smetchik";
+import { Center, Loader, Paper, Table, Text } from '@mantine/core';
+import { useParams } from 'react-router-dom';
+import { useGetWorkspacesWorkspaceIdRoles } from '../../shared/api/generated/smetchik';
 
 const WorkspaceRolesPage = () => {
   const { workspaceId } = useParams();
 
   const { data, isLoading, isError } = useGetWorkspacesWorkspaceIdRoles(
-    workspaceId ?? "",
+    workspaceId ?? '',
     {
       query: {
         enabled: !!workspaceId,
@@ -35,10 +35,10 @@ const WorkspaceRolesPage = () => {
           th: {
             fontWeight: 600,
             fontSize: 14,
-            lineHeight: "20px",
+            lineHeight: '20px',
             padding: 12,
           },
-          td: { fontSize: 14, lineHeight: "20px", padding: 12 },
+          td: { fontSize: 14, lineHeight: '20px', padding: 12 },
         }}
       >
         <Table.Thead>
@@ -59,8 +59,8 @@ const WorkspaceRolesPage = () => {
           ) : (
             roles.map((role) => (
               <Table.Tr key={role.id}>
-                <Table.Td w={260}>{role.name ?? "—"}</Table.Td>
-                <Table.Td>{role.description ?? "—"}</Table.Td>
+                <Table.Td w={260}>{role.name ?? '—'}</Table.Td>
+                <Table.Td>{role.description ?? '—'}</Table.Td>
               </Table.Tr>
             ))
           )}

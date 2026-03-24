@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   ActionIcon,
   Avatar,
@@ -17,8 +17,8 @@ import {
   Stack,
   Table,
   Text,
-} from "@mantine/core";
-import { notifications } from "@mantine/notifications";
+} from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import {
   IconArrowsSort,
   IconChevronDown,
@@ -32,7 +32,7 @@ import {
   IconSortDescendingLetters,
   IconTrash,
   IconX,
-} from "@tabler/icons-react";
+} from '@tabler/icons-react';
 import {
   getGetWorkspacesWorkspaceIdInviteQueryKey,
   getGetWorkspacesWorkspaceIdMembersQueryKey,
@@ -42,17 +42,17 @@ import {
   useGetWorkspacesWorkspaceIdMembers,
   useGetWorkspacesWorkspaceIdRoles,
   usePostWorkspacesWorkspaceIdInvite,
-} from "../../shared/api/generated/smetchik";
-import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
+} from '../../shared/api/generated/smetchik';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import type {
   WorkspacesMemberResponse,
   WorkspacesSingleInviteResponse,
-} from "../../shared/api/generated/schemas";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { queryClient } from "../../shared/api/queryClient";
-import { getInitials } from "../../shared/utils/getInitials";
-import MemberDrawer from "./MemberDrawer";
-import WorkspaceInviteWidget from "./WorkspaceInviteWidget";
+} from '../../shared/api/generated/schemas';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { queryClient } from '../../shared/api/queryClient';
+import { getInitials } from '../../shared/utils/getInitials';
+import MemberDrawer from './MemberDrawer';
+import WorkspaceInviteWidget from './WorkspaceInviteWidget';
 
 const useCountdown = (expiresAt: string | undefined) => {
   const [remaining, setRemaining] = useState<number | null>(null);
@@ -71,12 +71,12 @@ const useCountdown = (expiresAt: string | undefined) => {
 };
 
 const COLUMNS: { key: string; label: string }[] = [
-  { key: "full_name", label: "Сотрудник" },
-  { key: "phone", label: "Телефон" },
-  { key: "email", label: "Почта" },
-  { key: "telegram", label: "Telegram" },
-  { key: "position", label: "Должность" },
-  { key: "role", label: "Роль" },
+  { key: 'full_name', label: 'Сотрудник' },
+  { key: 'phone', label: 'Телефон' },
+  { key: 'email', label: 'Почта' },
+  { key: 'telegram', label: 'Telegram' },
+  { key: 'position', label: 'Должность' },
+  { key: 'role', label: 'Роль' },
 ];
 
 const WorkspaceMembersPage = () => {
@@ -87,7 +87,7 @@ const WorkspaceMembersPage = () => {
   const didAutoExpand = useRef(false);
 
   const [sortBy, setSortBy] = useState<string | null>(null);
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [selectedMember, setSelectedMember] =
     useState<WorkspacesMemberResponse | null>(null);
   const [confirmAction, setConfirmAction] = useState<{
@@ -115,26 +115,26 @@ const WorkspaceMembersPage = () => {
       },
       onError: () => {
         notifications.show({
-          color: "red",
-          message: "Не удалось выполнить действие",
+          color: 'red',
+          message: 'Не удалось выполнить действие',
         });
       },
     },
   });
 
   const { data: inviteData, status: inviteStatus } =
-    useGetWorkspacesWorkspaceIdInvite(workspaceId ?? "", {
+    useGetWorkspacesWorkspaceIdInvite(workspaceId ?? '', {
       query: { enabled: !!workspaceId },
     });
 
   const { data: rolesData } = useGetWorkspacesWorkspaceIdRoles(
-    workspaceId ?? "",
+    workspaceId ?? '',
     { query: { enabled: !!workspaceId } },
   );
 
   const { data: membersData, isLoading: membersLoading } =
     useGetWorkspacesWorkspaceIdMembers(
-      workspaceId ?? "",
+      workspaceId ?? '',
       sortBy ? { sort_by: sortBy, sort_dir: sortDir } : undefined,
       { query: { enabled: !!workspaceId } },
     );
@@ -152,9 +152,9 @@ const WorkspaceMembersPage = () => {
         const msg =
           error instanceof HttpClientError
             ? ((error.data as { error?: string })?.error ??
-              "Не удалось создать ссылку-приглашение")
-            : "Не удалось создать ссылку-приглашение";
-        notifications.show({ color: "red", message: msg });
+              'Не удалось создать ссылку-приглашение')
+            : 'Не удалось создать ссылку-приглашение';
+        notifications.show({ color: 'red', message: msg });
       },
     },
   });
@@ -166,7 +166,7 @@ const WorkspaceMembersPage = () => {
 
   // Auto-expand on first successful load when invite is active
   useEffect(() => {
-    if (inviteStatus === "success" && !didAutoExpand.current) {
+    if (inviteStatus === 'success' && !didAutoExpand.current) {
       didAutoExpand.current = true;
       if (isActive) setIsExpanded(true);
     }
@@ -189,9 +189,9 @@ const WorkspaceMembersPage = () => {
 
   const roleOptions =
     rolesData?.roles?.map((r) => ({
-      value: r.code ?? "",
+      value: r.code ?? '',
       label: `Роль: ${r.name ?? r.code}`,
-      name: r.name ?? r.code ?? "",
+      name: r.name ?? r.code ?? '',
     })) ?? [];
 
   const allRoles = rolesData?.roles ?? [];
@@ -204,7 +204,7 @@ const WorkspaceMembersPage = () => {
 
   const inviteUrl = invite?.token
     ? `${window.location.origin}/invite/${invite.token}`
-    : "";
+    : '';
 
   const handleCreateOrRefresh = () => {
     if (!workspaceId || !selectedRole) return;
@@ -223,22 +223,22 @@ const WorkspaceMembersPage = () => {
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(inviteUrl);
-    notifications.show({ color: "teal", message: "Ссылка скопирована" });
+    notifications.show({ color: 'teal', message: 'Ссылка скопирована' });
   };
 
   const handleSort = (key: string) => {
     if (sortBy === key) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     } else {
       setSortBy(key);
-      setSortDir("asc");
+      setSortDir('asc');
     }
   };
 
   const SortIcon = ({ colKey }: { colKey: string }) => {
     if (sortBy !== colKey)
       return <IconArrowsSort size={14} color="var(--mantine-color-gray-5)" />;
-    return sortDir === "asc" ? (
+    return sortDir === 'asc' ? (
       <IconSortAscendingLetters size={14} color="var(--mantine-color-teal-6)" />
     ) : (
       <IconSortDescendingLetters
@@ -287,12 +287,12 @@ const WorkspaceMembersPage = () => {
           >
             <Popover.Target>
               <ActionIcon
-                variant={isFilterActive ? "filled" : "outline"}
+                variant={isFilterActive ? 'filled' : 'outline'}
                 size={32}
                 onClick={() => {
                   if (!filterOpen) {
                     const allCodes = allRoles
-                      .map((r) => r.code ?? "")
+                      .map((r) => r.code ?? '')
                       .filter(Boolean);
                     setDraftRoleCodes(
                       filterRoleCodes.length === 0 ? allCodes : filterRoleCodes,
@@ -311,7 +311,7 @@ const WorkspaceMembersPage = () => {
                 px={16}
                 style={{
                   height: 44,
-                  borderBottom: "1px solid var(--mantine-color-gray-2)",
+                  borderBottom: '1px solid var(--mantine-color-gray-2)',
                 }}
               >
                 <Group gap={8}>
@@ -336,7 +336,7 @@ const WorkspaceMembersPage = () => {
                   c="dimmed"
                   tt="uppercase"
                   mb={8}
-                  style={{ letterSpacing: "0.04em" }}
+                  style={{ letterSpacing: '0.04em' }}
                 >
                   Роль
                 </Text>
@@ -359,7 +359,7 @@ const WorkspaceMembersPage = () => {
                     onChange={(e) => {
                       if (e.currentTarget.checked)
                         setDraftRoleCodes(
-                          allRoles.map((r) => r.code ?? "").filter(Boolean),
+                          allRoles.map((r) => r.code ?? '').filter(Boolean),
                         );
                       else setDraftRoleCodes([]);
                     }}
@@ -369,9 +369,9 @@ const WorkspaceMembersPage = () => {
                       key={role.id}
                       py={4}
                       label={role.name ?? role.code}
-                      checked={draftRoleCodes.includes(role.code ?? "")}
+                      checked={draftRoleCodes.includes(role.code ?? '')}
                       onChange={(e) => {
-                        const code = role.code ?? "";
+                        const code = role.code ?? '';
                         if (e.currentTarget.checked)
                           setDraftRoleCodes((prev) => [...prev, code]);
                         else
@@ -432,7 +432,7 @@ const WorkspaceMembersPage = () => {
 
       {/* Members table — desktop */}
       <Box visibleFrom="sm">
-        <Paper withBorder={false} radius="md" style={{ overflow: "hidden" }}>
+        <Paper withBorder={false} radius="md" style={{ overflow: 'hidden' }}>
           {membersLoading ? (
             <Center py={40}>
               <Loader size="sm" />
@@ -444,7 +444,7 @@ const WorkspaceMembersPage = () => {
                   {COLUMNS.map((col) => (
                     <Table.Th
                       key={col.key}
-                      style={{ cursor: "pointer", whiteSpace: "nowrap" }}
+                      style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
                       onClick={() => handleSort(col.key)}
                     >
                       <Group gap={4} wrap="nowrap">
@@ -474,7 +474,7 @@ const WorkspaceMembersPage = () => {
                     <Table.Tr
                       key={m.id}
                       onClick={() => setSelectedMember(m)}
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                     >
                       <Table.Td>
                         <Group gap="sm" wrap="nowrap">
@@ -485,17 +485,17 @@ const WorkspaceMembersPage = () => {
                             <Text
                               component="span"
                               style={{
-                                textDecoration: "underline",
-                                textDecorationColor: "#ced4da",
+                                textDecoration: 'underline',
+                                textDecorationColor: '#ced4da',
                               }}
                             >
-                              {[m.name, m.surname].filter(Boolean).join(" ") ||
+                              {[m.name, m.surname].filter(Boolean).join(' ') ||
                                 m.email ||
-                                "—"}
+                                '—'}
                             </Text>
                             {isMe(m) && (
                               <Text component="span" c="dimmed">
-                                {" "}
+                                {' '}
                                 (Вы)
                               </Text>
                             )}
@@ -503,19 +503,19 @@ const WorkspaceMembersPage = () => {
                         </Group>
                       </Table.Td>
                       <Table.Td>
-                        <Text size="sm">{m.phone || "—"}</Text>
+                        <Text size="sm">{m.phone || '—'}</Text>
                       </Table.Td>
                       <Table.Td>
-                        <Text size="sm">{m.email || "—"}</Text>
+                        <Text size="sm">{m.email || '—'}</Text>
                       </Table.Td>
                       <Table.Td>
-                        <Text size="sm">{m.telegram || "—"}</Text>
+                        <Text size="sm">{m.telegram || '—'}</Text>
                       </Table.Td>
                       <Table.Td>
-                        <Text size="sm">{m.position || "—"}</Text>
+                        <Text size="sm">{m.position || '—'}</Text>
                       </Table.Td>
                       <Table.Td>
-                        <Text size="sm">{m.role?.name || "—"}</Text>
+                        <Text size="sm">{m.role?.name || '—'}</Text>
                       </Table.Td>
                       <Table.Td>
                         <Menu
@@ -524,9 +524,9 @@ const WorkspaceMembersPage = () => {
                           shadow="sm"
                           styles={{
                             item: {
-                              padding: "8px 12px",
-                              fontSize: "12px",
-                              lineHeight: "16px",
+                              padding: '8px 12px',
+                              fontSize: '12px',
+                              lineHeight: '16px',
                             },
                           }}
                         >
@@ -599,10 +599,10 @@ const WorkspaceMembersPage = () => {
           <Stack gap={8}>
             {filteredMembers.map((m) => {
               const fullName =
-                [m.name, m.surname].filter(Boolean).join(" ") || m.email || "—";
+                [m.name, m.surname].filter(Boolean).join(' ') || m.email || '—';
               const subtitle = [m.position, m.role?.name]
                 .filter(Boolean)
-                .join(" · ");
+                .join(' · ');
               return (
                 <Paper
                   key={m.id}
@@ -610,7 +610,7 @@ const WorkspaceMembersPage = () => {
                   radius="md"
                   p={12}
                   onClick={() => setSelectedMember(m)}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                 >
                   <Stack gap={10}>
                     {/* Header row: avatar + name + menu */}
@@ -628,15 +628,15 @@ const WorkspaceMembersPage = () => {
                           <Text
                             component="span"
                             style={{
-                              textDecoration: "underline",
-                              textDecorationColor: "#ced4da",
+                              textDecoration: 'underline',
+                              textDecorationColor: '#ced4da',
                             }}
                           >
                             {fullName}
                           </Text>
                           {isMe(m) && (
                             <Text component="span" c="dimmed">
-                              {" "}
+                              {' '}
                               (Вы)
                             </Text>
                           )}
@@ -653,9 +653,9 @@ const WorkspaceMembersPage = () => {
                         shadow="sm"
                         styles={{
                           item: {
-                            padding: "8px 12px",
-                            fontSize: "12px",
-                            lineHeight: "16px",
+                            padding: '8px 12px',
+                            fontSize: '12px',
+                            lineHeight: '16px',
                           },
                         }}
                       >
@@ -716,9 +716,9 @@ const WorkspaceMembersPage = () => {
                         </Text>
                       </Stack>
                       <Stack gap={6}>
-                        <Text size="xs">{m.phone || "—"}</Text>
-                        <Text size="xs">{m.email || "—"}</Text>
-                        <Text size="xs">{m.telegram || "—"}</Text>
+                        <Text size="xs">{m.phone || '—'}</Text>
+                        <Text size="xs">{m.email || '—'}</Text>
+                        <Text size="xs">{m.telegram || '—'}</Text>
                       </Stack>
                     </Group>
                   </Stack>
@@ -735,8 +735,8 @@ const WorkspaceMembersPage = () => {
         onClose={() => setConfirmAction(null)}
         title={
           confirmAction?.isLeave
-            ? "Покинуть пространство"
-            : "Удаление сотрудника"
+            ? 'Покинуть пространство'
+            : 'Удаление сотрудника'
         }
         centered
         size="sm"
@@ -744,13 +744,13 @@ const WorkspaceMembersPage = () => {
         <Stack gap={16}>
           <Text size="sm">
             {confirmAction?.isLeave
-              ? "Вы уверены, что хотите покинуть это пространство? Вы потеряете доступ ко всем его данным."
+              ? 'Вы уверены, что хотите покинуть это пространство? Вы потеряете доступ ко всем его данным.'
               : `Вы уверены, что хотите удалить сотрудника ${
                   [confirmAction?.member.name, confirmAction?.member.surname]
                     .filter(Boolean)
-                    .join(" ") ||
+                    .join(' ') ||
                   confirmAction?.member.email ||
-                  ""
+                  ''
                 }?`}
           </Text>
           <Group justify="flex-end" gap={8}>
@@ -769,11 +769,11 @@ const WorkspaceMembersPage = () => {
                 if (!confirmAction || !workspaceId) return;
                 deleteMutation.mutate({
                   workspaceId,
-                  memberId: confirmAction.member.id ?? "",
+                  memberId: confirmAction.member.id ?? '',
                 });
               }}
             >
-              {confirmAction?.isLeave ? "Покинуть" : "Удалить"}
+              {confirmAction?.isLeave ? 'Покинуть' : 'Удалить'}
             </Button>
           </Group>
         </Stack>
@@ -782,7 +782,7 @@ const WorkspaceMembersPage = () => {
       {/* Member detail drawer */}
       <MemberDrawer
         member={selectedMember}
-        workspaceId={workspaceId ?? ""}
+        workspaceId={workspaceId ?? ''}
         onClose={() => setSelectedMember(null)}
         onDelete={(m) => {
           setSelectedMember(null);

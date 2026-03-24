@@ -9,19 +9,19 @@ import {
   Text,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { useGetApiV1AdminUsers } from "../../shared/api/generated/smetchik";
-import { ROUTES } from "../../shared/constants/routes";
+} from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
+import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useGetApiV1AdminUsers } from '../../shared/api/generated/smetchik';
+import { ROUTES } from '../../shared/constants/routes';
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE = 300;
 
 const AdminUsersPage = () => {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, SEARCH_DEBOUNCE);
 
   useEffect(() => {
@@ -91,17 +91,17 @@ const AdminUsersPage = () => {
                   {user.id ? (
                     <Anchor
                       component={Link}
-                      to={ROUTES.ADMIN_USER.replace(":userId", user.id)}
+                      to={ROUTES.ADMIN_USER.replace(':userId', user.id)}
                     >
-                      {user.phone ?? "—"}
+                      {user.phone ?? '—'}
                     </Anchor>
                   ) : (
-                    (user.phone ?? "—")
+                    (user.phone ?? '—')
                   )}
                 </Table.Td>
-                <Table.Td>{user.name ?? "—"}</Table.Td>
-                <Table.Td>{user.surname ?? "—"}</Table.Td>
-                <Table.Td>{user.email ?? "—"}</Table.Td>
+                <Table.Td>{user.name ?? '—'}</Table.Td>
+                <Table.Td>{user.surname ?? '—'}</Table.Td>
+                <Table.Td>{user.email ?? '—'}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>

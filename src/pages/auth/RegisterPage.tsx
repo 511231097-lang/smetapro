@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Anchor,
@@ -11,37 +11,37 @@ import {
   Text,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { notifications } from '@mantine/notifications';
 import {
   IconAlertCircle,
   IconChevronLeft,
   IconLock,
   IconMail,
   IconPhone,
-} from "@tabler/icons-react";
-import { Link, useNavigate } from "react-router-dom";
+} from '@tabler/icons-react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   usePostAuthRegister,
   usePostAuthRegisterVerify,
-} from "../../shared/api/generated/smetchik";
-import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES } from "../../shared/constants/routes";
+} from '../../shared/api/generated/smetchik';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { ROUTES } from '../../shared/constants/routes';
 import {
   AuthFormWrapper,
   AuthPageLayout,
   authLayoutClasses as classes,
-} from "./shared/AuthLayout";
+} from './shared/AuthLayout';
 
 const RESEND_TIMEOUT = 60;
 
 const ERROR_MESSAGES: Record<string, string> = {
-  USER_ALREADY_EXISTS: "Пользователь с таким e-mail уже зарегистрирован",
-  INVALID_PHONE: "Неверный формат номера телефона",
+  USER_ALREADY_EXISTS: 'Пользователь с таким e-mail уже зарегистрирован',
+  INVALID_PHONE: 'Неверный формат номера телефона',
   TOO_MANY_REQUESTS:
-    "Слишком много попыток. Подождите немного и попробуйте снова",
+    'Слишком много попыток. Подождите немного и попробуйте снова',
 };
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
@@ -57,27 +57,27 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
 };
 
 const inputStyles = {
-  label: { marginBottom: "var(--mantine-spacing-xxs)" },
-  input: { paddingLeft: "36px" },
-  section: { "--left-section-start": "5px" },
+  label: { marginBottom: 'var(--mantine-spacing-xxs)' },
+  input: { paddingLeft: '36px' },
+  section: { '--left-section-start': '5px' },
 };
 
 const passwordInputStyles = {
-  label: { marginBottom: "var(--mantine-spacing-xxs)" },
+  label: { marginBottom: 'var(--mantine-spacing-xxs)' },
   section: {
-    "--left-section-start": "5px",
-    "--right-section-end": "5px",
+    '--left-section-start': '5px',
+    '--right-section-end': '5px',
   },
-  innerInput: { paddingLeft: "36px" },
+  innerInput: { paddingLeft: '36px' },
 };
 
 const backLinkStyle = {
-  display: "inline-flex" as const,
-  alignItems: "center",
+  display: 'inline-flex' as const,
+  alignItems: 'center',
   gap: 4,
-  background: "none",
-  border: "none",
-  cursor: "pointer",
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
   padding: 0,
 };
 
@@ -96,16 +96,16 @@ interface FormStepProps {
 const FormStep = ({ onSuccess }: FormStepProps) => {
   const { primaryColor } = usePrimaryColor();
   const form = useForm({
-    initialValues: { phone: "", email: "", password: "" },
+    initialValues: { phone: '', email: '', password: '' },
     validate: {
-      phone: (v) => (v.trim().length === 0 ? "Введите телефон" : null),
+      phone: (v) => (v.trim().length === 0 ? 'Введите телефон' : null),
       email: (v) => {
-        if (v.trim().length === 0) return "Введите e-mail";
+        if (v.trim().length === 0) return 'Введите e-mail';
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
           ? null
-          : "Некорректный e-mail";
+          : 'Некорректный e-mail';
       },
-      password: (v) => (v.length < 8 ? "Минимум 8 символов" : null),
+      password: (v) => (v.length < 8 ? 'Минимум 8 символов' : null),
     },
   });
 
@@ -119,7 +119,7 @@ const FormStep = ({ onSuccess }: FormStepProps) => {
           password: variables.data.password,
         }),
       onError: (error) =>
-        setFormError(getErrorMessage(error, "Не удалось зарегистрироваться")),
+        setFormError(getErrorMessage(error, 'Не удалось зарегистрироваться')),
     },
   });
 
@@ -161,7 +161,7 @@ const FormStep = ({ onSuccess }: FormStepProps) => {
             type="tel"
             autoComplete="tel"
             styles={inputStyles}
-            {...form.getInputProps("phone")}
+            {...form.getInputProps('phone')}
           />
 
           <TextInput
@@ -172,7 +172,7 @@ const FormStep = ({ onSuccess }: FormStepProps) => {
             type="email"
             autoComplete="email"
             styles={inputStyles}
-            {...form.getInputProps("email")}
+            {...form.getInputProps('email')}
           />
 
           <PasswordInput
@@ -182,7 +182,7 @@ const FormStep = ({ onSuccess }: FormStepProps) => {
             leftSection={<IconLock size={16} />}
             autoComplete="new-password"
             styles={passwordInputStyles}
-            {...form.getInputProps("password")}
+            {...form.getInputProps('password')}
           />
 
           <Button
@@ -205,7 +205,7 @@ const FormStep = ({ onSuccess }: FormStepProps) => {
             Нажимая «Зарегистрироваться», вы соглашаетесь с&nbsp;
             <Anchor size="xs" href="#">
               Условиями&nbsp;использования
-            </Anchor>{" "}
+            </Anchor>{' '}
             и&nbsp;
             <Anchor size="xs" href="#">
               Политикой&nbsp;конфиденциальности
@@ -228,7 +228,7 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
   const navigate = useNavigate();
   const { primaryColor } = usePrimaryColor();
   const [seconds, setSeconds] = useState(RESEND_TIMEOUT);
-  const [pinValue, setPinValue] = useState("");
+  const [pinValue, setPinValue] = useState('');
   const [verifyError, setVerifyError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -244,14 +244,14 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
       onSuccess: () => {
         notifications.show({
           color: primaryColor,
-          title: "Регистрация завершена",
-          message: "Добро пожаловать в личный кабинет.",
+          title: 'Регистрация завершена',
+          message: 'Добро пожаловать в личный кабинет.',
         });
         navigate(ROUTES.ROOT, { replace: true });
       },
       onError: (error) => {
-        setPinValue("");
-        setVerifyError(getErrorMessage(error, "Неверный или истёкший код"));
+        setPinValue('');
+        setVerifyError(getErrorMessage(error, 'Неверный или истёкший код'));
       },
     },
   });
@@ -263,22 +263,22 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
 
   const handleResend = () => {
     resendMutation.mutate(
-      { data: { email, phone: "", password: "" } },
+      { data: { email, phone: '', password: '' } },
       {
         onSuccess: () => {
           setSeconds(RESEND_TIMEOUT);
-          setPinValue("");
+          setPinValue('');
           notifications.show({
             color: primaryColor,
-            title: "Код отправлен",
+            title: 'Код отправлен',
             message: `На адрес ${email} отправлен новый код.`,
           });
         },
         onError: (error) =>
           notifications.show({
-            color: "red",
-            title: "Ошибка",
-            message: getErrorMessage(error, "Не удалось отправить код"),
+            color: 'red',
+            title: 'Ошибка',
+            message: getErrorMessage(error, 'Не удалось отправить код'),
           }),
       },
     );
@@ -357,19 +357,19 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
 // ── Страница ─────────────────────────────────────────────────────────────────
 
 const RegisterPage = () => {
-  const [step, setStep] = useState<"form" | "verify">("form");
-  const [email, setEmail] = useState("");
+  const [step, setStep] = useState<'form' | 'verify'>('form');
+  const [email, setEmail] = useState('');
 
   const handleFormSuccess = (data: RegisterData) => {
     setEmail(data.email);
-    setStep("verify");
+    setStep('verify');
   };
 
   return (
     <AuthPageLayout>
-      {step === "form" && <FormStep onSuccess={handleFormSuccess} />}
-      {step === "verify" && (
-        <VerifyStep email={email} onBack={() => setStep("form")} />
+      {step === 'form' && <FormStep onSuccess={handleFormSuccess} />}
+      {step === 'verify' && (
+        <VerifyStep email={email} onBack={() => setStep('form')} />
       )}
     </AuthPageLayout>
   );

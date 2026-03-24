@@ -9,15 +9,15 @@ import {
   Text,
   TextInput,
   Tooltip,
-} from "@mantine/core";
+} from '@mantine/core';
 import {
   IconClock,
   IconCopy,
   IconInfoCircle,
   IconLink,
   IconRefresh,
-} from "@tabler/icons-react";
-import type { WorkspacesInviteResponse } from "../../shared/api/generated/schemas/workspacesInviteResponse";
+} from '@tabler/icons-react';
+import type { WorkspacesInviteResponse } from '../../shared/api/generated/schemas/workspacesInviteResponse';
 
 type RoleOption = {
   value: string;
@@ -42,7 +42,7 @@ const formatDuration = (ms: number): string => {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
 };
 
 const WorkspaceInviteWidget = ({
@@ -61,7 +61,7 @@ const WorkspaceInviteWidget = ({
       <Stack gap={10}>
         <Group gap={16}>
           <Group gap={8}>
-            <IconLink size={20} color={"var(--mantine-color-anchor)"} />
+            <IconLink size={20} color={'var(--mantine-color-anchor)'} />
             <Text fw={600} size="sm">
               Ссылка-приглашение
             </Text>
@@ -130,10 +130,10 @@ const WorkspaceInviteWidget = ({
               position="top"
               withArrow
             >
-              <Group gap={4} style={{ cursor: "default", flexShrink: 0 }}>
+              <Group gap={4} style={{ cursor: 'default', flexShrink: 0 }}>
                 <IconClock size={16} />
-                <Text size="sm" style={{ userSelect: "none" }}>
-                  {remaining !== null ? formatDuration(remaining) : "—"}
+                <Text size="sm" style={{ userSelect: 'none' }}>
+                  {remaining !== null ? formatDuration(remaining) : '—'}
                 </Text>
               </Group>
             </Tooltip>
@@ -191,10 +191,10 @@ const WorkspaceInviteWidget = ({
                 position="top"
                 withArrow
               >
-                <Group gap={4} style={{ cursor: "default", flexShrink: 0 }}>
+                <Group gap={4} style={{ cursor: 'default', flexShrink: 0 }}>
                   <IconClock size={16} />
-                  <Text size="sm" style={{ userSelect: "none" }}>
-                    {remaining !== null ? formatDuration(remaining) : "—"}
+                  <Text size="sm" style={{ userSelect: 'none' }}>
+                    {remaining !== null ? formatDuration(remaining) : '—'}
                   </Text>
                 </Group>
               </Tooltip>

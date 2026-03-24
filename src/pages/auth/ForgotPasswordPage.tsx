@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Anchor,
@@ -12,41 +12,41 @@ import {
   Text,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
 import {
   IconAlertCircle,
   IconChevronLeft,
   IconLock,
   IconMail,
-} from "@tabler/icons-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+} from '@tabler/icons-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   usePostAuthForgotPassword,
   usePostAuthResetPassword,
-} from "../../shared/api/generated/smetchik";
-import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES } from "../../shared/constants/routes";
+} from '../../shared/api/generated/smetchik';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { ROUTES } from '../../shared/constants/routes';
 import {
   AuthFormWrapper,
   AuthPageLayout,
   authLayoutClasses as classes,
-} from "./shared/AuthLayout";
+} from './shared/AuthLayout';
 
-type Step = "email" | "code" | "password";
+type Step = 'email' | 'code' | 'password';
 
 const RESEND_TIMEOUT = 60;
 
 const ERROR_MESSAGES: Record<string, string> = {
-  USER_NOT_FOUND: "Пользователь с таким e-mail не найден",
-  CODE_INVALID: "Код неверный или устарел. Запросите новый код",
-  CODE_EXPIRED: "Код устарел. Запросите новый код",
+  USER_NOT_FOUND: 'Пользователь с таким e-mail не найден',
+  CODE_INVALID: 'Код неверный или устарел. Запросите новый код',
+  CODE_EXPIRED: 'Код устарел. Запросите новый код',
   TOO_MANY_REQUESTS:
-    "Слишком много попыток. Подождите немного и попробуйте снова",
+    'Слишком много попыток. Подождите немного и попробуйте снова',
 };
 
-const CODE_INVALID_CODES = new Set(["CODE_INVALID", "CODE_EXPIRED"]);
+const CODE_INVALID_CODES = new Set(['CODE_INVALID', 'CODE_EXPIRED']);
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
   if (error instanceof HttpClientError) {
@@ -69,27 +69,27 @@ const isCodeInvalidError = (error: unknown): boolean => {
 };
 
 const inputStyles = {
-  label: { marginBottom: "var(--mantine-spacing-xxs)" },
-  input: { paddingLeft: "36px" },
-  section: { "--left-section-start": "5px" },
+  label: { marginBottom: 'var(--mantine-spacing-xxs)' },
+  input: { paddingLeft: '36px' },
+  section: { '--left-section-start': '5px' },
 };
 
 const passwordInputStyles = {
-  label: { marginBottom: "var(--mantine-spacing-xxs)" },
+  label: { marginBottom: 'var(--mantine-spacing-xxs)' },
   section: {
-    "--left-section-start": "5px",
-    "--right-section-end": "5px",
+    '--left-section-start': '5px',
+    '--right-section-end': '5px',
   },
-  innerInput: { paddingLeft: "36px" },
+  innerInput: { paddingLeft: '36px' },
 };
 
 const backLinkStyle = {
-  display: "inline-flex" as const,
-  alignItems: "center",
+  display: 'inline-flex' as const,
+  alignItems: 'center',
   gap: 4,
-  background: "none",
-  border: "none",
-  cursor: "pointer",
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
   padding: 0,
 };
 
@@ -114,10 +114,10 @@ const EmailStep = ({
     validate: {
       email: (v) =>
         v.trim().length === 0
-          ? "Введите e-mail"
+          ? 'Введите e-mail'
           : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
             ? null
-            : "Некорректный e-mail",
+            : 'Некорректный e-mail',
     },
   });
 
@@ -126,7 +126,7 @@ const EmailStep = ({
     mutation: {
       onSuccess: () => onSuccess(form.values.email.trim()),
       onError: (error) =>
-        setEmailError(getErrorMessage(error, "Не удалось отправить код")),
+        setEmailError(getErrorMessage(error, 'Не удалось отправить код')),
     },
   });
 
@@ -191,7 +191,7 @@ const EmailStep = ({
             type="email"
             autoComplete="email"
             styles={inputStyles}
-            {...form.getInputProps("email")}
+            {...form.getInputProps('email')}
           />
 
           <Button
@@ -226,7 +226,7 @@ interface CodeStepProps {
 const CodeStep = ({ email, onSuccess, onBack }: CodeStepProps) => {
   const { primaryColor } = usePrimaryColor();
   const [seconds, setSeconds] = useState(RESEND_TIMEOUT);
-  const [pinValue, setPinValue] = useState("");
+  const [pinValue, setPinValue] = useState('');
   const [resendError, setResendError] = useState<string | null>(null);
   const [resendSuccess, setResendSuccess] = useState<string | null>(null);
 
@@ -244,13 +244,13 @@ const CodeStep = ({ email, onSuccess, onBack }: CodeStepProps) => {
       {
         onSuccess: () => {
           setSeconds(RESEND_TIMEOUT);
-          setPinValue("");
+          setPinValue('');
           setResendError(null);
           setResendSuccess(`На адрес ${email} отправлен новый код.`);
         },
         onError: (error) => {
           setResendSuccess(null);
-          setResendError(getErrorMessage(error, "Не удалось отправить код"));
+          setResendError(getErrorMessage(error, 'Не удалось отправить код'));
         },
       },
     );
@@ -355,13 +355,13 @@ const PasswordStep = ({
   const { primaryColor } = usePrimaryColor();
 
   const form = useForm({
-    initialValues: { password: "" },
+    initialValues: { password: '' },
     validate: {
       password: (v) =>
         v.length === 0
-          ? "Введите пароль"
+          ? 'Введите пароль'
           : v.length < 8
-            ? "Минимум 8 символов"
+            ? 'Минимум 8 символов'
             : null,
     },
   });
@@ -381,7 +381,7 @@ const PasswordStep = ({
           onCodeInvalid();
         } else {
           setPasswordError(
-            getErrorMessage(error, "Не удалось изменить пароль"),
+            getErrorMessage(error, 'Не удалось изменить пароль'),
           );
         }
       },
@@ -438,7 +438,7 @@ const PasswordStep = ({
             leftSection={<IconLock size={16} />}
             autoComplete="new-password"
             styles={passwordInputStyles}
-            {...form.getInputProps("password")}
+            {...form.getInputProps('password')}
           />
 
           <Button
@@ -450,7 +450,7 @@ const PasswordStep = ({
             Изменить пароль
           </Button>
         </Stack>
-      </Paper>{" "}
+      </Paper>{' '}
     </AuthFormWrapper>
   );
 };
@@ -460,11 +460,11 @@ const PasswordStep = ({
 const ForgotPasswordPage = () => {
   const location = useLocation();
   const prefillEmail =
-    (location.state as { email?: string } | null)?.email ?? "";
+    (location.state as { email?: string } | null)?.email ?? '';
 
-  const [step, setStep] = useState<Step>("email");
+  const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState(prefillEmail);
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState('');
   const [codeInvalidMessage, setCodeInvalidMessage] = useState<string | null>(
     null,
   );
@@ -472,23 +472,23 @@ const ForgotPasswordPage = () => {
   const handleEmailSuccess = (submittedEmail: string) => {
     setEmail(submittedEmail);
     setCodeInvalidMessage(null);
-    setStep("code");
+    setStep('code');
   };
 
   const handleCodeInvalid = () => {
-    setCode("");
+    setCode('');
     setCodeInvalidMessage(ERROR_MESSAGES.CODE_INVALID);
-    setStep("email");
+    setStep('email');
   };
 
   const handleCodeSuccess = (enteredCode: string) => {
     setCode(enteredCode);
-    setStep("password");
+    setStep('password');
   };
 
   return (
     <AuthPageLayout>
-      {step === "email" && (
+      {step === 'email' && (
         <EmailStep
           initialEmail={email}
           onSuccess={handleEmailSuccess}
@@ -496,18 +496,18 @@ const ForgotPasswordPage = () => {
           onExternalErrorClose={() => setCodeInvalidMessage(null)}
         />
       )}
-      {step === "code" && (
+      {step === 'code' && (
         <CodeStep
           email={email}
           onSuccess={handleCodeSuccess}
-          onBack={() => setStep("email")}
+          onBack={() => setStep('email')}
         />
       )}
-      {step === "password" && (
+      {step === 'password' && (
         <PasswordStep
           email={email}
           code={code}
-          onBack={() => setStep("code")}
+          onBack={() => setStep('code')}
           onCodeInvalid={handleCodeInvalid}
         />
       )}

@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
-import { createContext, useCallback, useContext, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import type { WorkspacesWorkspaceResponse } from "../shared/api/generated/schemas";
+import type { ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import type { WorkspacesWorkspaceResponse } from '../shared/api/generated/schemas';
 
 type WorkspaceContextValue = {
   workspaceList: WorkspacesWorkspaceResponse[];
@@ -30,9 +30,9 @@ const WorkspaceProvider = ({
     (id: string | null) => {
       if (!id) return;
       // Оставляем текущий суб-путь: /:workspaceId/subpath → /newId/subpath
-      const parts = location.pathname.split("/").filter(Boolean);
-      const subPath = parts.slice(1).join("/");
-      navigate(`/${id}/${subPath || "projects"}`);
+      const parts = location.pathname.split('/').filter(Boolean);
+      const subPath = parts.slice(1).join('/');
+      navigate(`/${id}/${subPath || 'projects'}`);
     },
     [navigate, location.pathname],
   );
@@ -67,7 +67,7 @@ const WorkspaceProvider = ({
 const useWorkspace = () => {
   const ctx = useContext(WorkspaceContext);
   if (!ctx) {
-    throw new Error("useWorkspace must be used within WorkspaceProvider");
+    throw new Error('useWorkspace must be used within WorkspaceProvider');
   }
   return ctx;
 };

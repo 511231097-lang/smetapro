@@ -1,26 +1,26 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import ProjectsPage from "./pages/projects/ProjectsPage.tsx";
-import ProfilePage from "./pages/profile/ProfilePage";
-import ProfileCommonPage from "./pages/profile/ProfileCommonPage";
-import ProfileAppearancePage from "./pages/profile/ProfileAppearancePage";
-import ProtectedLayout from "./layouts/ProtectedLayout";
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
-import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
-import FinancesPage from "./pages/finances/FinancesPage";
-import LogoutPage from "./pages/auth/LogoutPage";
-import ReferencesPage from "./pages/references/ReferencesPage";
-import { ROUTES } from "./shared/constants/routes";
-import WorkspacePage from "./pages/workspace/WorkspacePage";
+import { Navigate, Route, Routes } from 'react-router-dom';
+import ProjectsPage from './pages/projects/ProjectsPage.tsx';
+import ProfilePage from './pages/profile/ProfilePage';
+import ProfileCommonPage from './pages/profile/ProfileCommonPage';
+import ProfileAppearancePage from './pages/profile/ProfileAppearancePage';
+import ProtectedLayout from './layouts/ProtectedLayout';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import FinancesPage from './pages/finances/FinancesPage';
+import LogoutPage from './pages/auth/LogoutPage';
+import ReferencesPage from './pages/references/ReferencesPage';
+import { ROUTES } from './shared/constants/routes';
+import WorkspacePage from './pages/workspace/WorkspacePage';
 
-import WorkspaceMembersPage from "./pages/workspace/WorkspaceMembersPage";
-import WorkspaceGeneralPage from "./pages/workspace/WorkspaceGeneralPage";
-import CreateWorkspacePage from "./pages/workspaces/CreateWorkspacePage";
-import RequireAuth from "./layouts/RequireAuth";
-import RequireGuest from "./layouts/RequireGuest";
+import WorkspaceMembersPage from './pages/workspace/WorkspaceMembersPage';
+import WorkspaceGeneralPage from './pages/workspace/WorkspaceGeneralPage';
+import CreateWorkspacePage from './pages/workspaces/CreateWorkspacePage';
+import RequireAuth from './layouts/RequireAuth';
+import RequireGuest from './layouts/RequireGuest';
 
-import WorkspaceRolesPage from "./pages/workspace/WorkspaceRolesPage";
-import InviteAcceptPage from "./pages/invite/InviteAcceptPage";
+import WorkspaceRolesPage from './pages/workspace/WorkspaceRolesPage';
+import InviteAcceptPage from './pages/invite/InviteAcceptPage';
 
 const App = () => {
   return (

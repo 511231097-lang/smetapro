@@ -5,10 +5,7 @@
  * HTTP API сервиса smethick-pro.
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -21,7 +18,7 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
+  UseQueryResult,
 } from '@tanstack/react-query';
 
 import type {
@@ -51,2240 +48,3990 @@ import type {
   WorkspacesUpdateMemberProfileRequest,
   WorkspacesUpdateMemberRoleRequest,
   WorkspacesUpdateRequest,
-  WorkspacesUpdateRoleRequest
+  WorkspacesUpdateRoleRequest,
 } from './schemas';
 
 import { httpClient } from '../httpClient';
 
-
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * Requests password reset code. Always returns generic success message.
  * @summary Forgot password (step 1)
  */
 export const postAuthForgotPassword = (
-    authForgotPasswordRequest: AuthForgotPasswordRequest,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  authForgotPasswordRequest: AuthForgotPasswordRequest,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<AuthMessageResponse>(
-      {url: `/api/v1/auth/forgot-password`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: authForgotPasswordRequest, signal
+  return httpClient<AuthMessageResponse>(
+    {
+      url: `/api/v1/auth/forgot-password`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: authForgotPasswordRequest,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPostAuthForgotPasswordMutationOptions = <
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postAuthForgotPassword>>,
+    TError,
+    { data: AuthForgotPasswordRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postAuthForgotPassword>>,
+  TError,
+  { data: AuthForgotPasswordRequest },
+  TContext
+> => {
+  const mutationKey = ['postAuthForgotPassword'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostAuthForgotPasswordMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthForgotPassword>>, TError,{data: AuthForgotPasswordRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postAuthForgotPassword>>, TError,{data: AuthForgotPasswordRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postAuthForgotPassword>>,
+    { data: AuthForgotPasswordRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['postAuthForgotPassword'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return postAuthForgotPassword(data, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostAuthForgotPasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthForgotPassword>>
+>;
+export type PostAuthForgotPasswordMutationBody = AuthForgotPasswordRequest;
+export type PostAuthForgotPasswordMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthForgotPassword>>, {data: AuthForgotPasswordRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postAuthForgotPassword(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostAuthForgotPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthForgotPassword>>>
-    export type PostAuthForgotPasswordMutationBody = AuthForgotPasswordRequest
-    export type PostAuthForgotPasswordMutationError = ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Forgot password (step 1)
  */
-export const usePostAuthForgotPassword = <TError = ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthForgotPassword>>, TError,{data: AuthForgotPasswordRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAuthForgotPassword>>,
-        TError,
-        {data: AuthForgotPasswordRequest},
-        TContext
-      > => {
+export const usePostAuthForgotPassword = <
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postAuthForgotPassword>>,
+      TError,
+      { data: AuthForgotPasswordRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postAuthForgotPassword>>,
+  TError,
+  { data: AuthForgotPasswordRequest },
+  TContext
+> => {
+  const mutationOptions = getPostAuthForgotPasswordMutationOptions(options);
 
-      const mutationOptions = getPostAuthForgotPasswordMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Authenticates user and sets access_token + refresh_token cookies on success.
  * @summary Login with email/password
  */
 export const postAuthLogin = (
-    authLoginRequest: AuthLoginRequest,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  authLoginRequest: AuthLoginRequest,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<AuthSuccessResponse>(
-      {url: `/api/v1/auth/login`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: authLoginRequest, signal
+  return httpClient<AuthSuccessResponse>(
+    {
+      url: `/api/v1/auth/login`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: authLoginRequest,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPostAuthLoginMutationOptions = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postAuthLogin>>,
+    TError,
+    { data: AuthLoginRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postAuthLogin>>,
+  TError,
+  { data: AuthLoginRequest },
+  TContext
+> => {
+  const mutationKey = ['postAuthLogin'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostAuthLoginMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: AuthLoginRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: AuthLoginRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postAuthLogin>>,
+    { data: AuthLoginRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['postAuthLogin'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return postAuthLogin(data, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostAuthLoginMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthLogin>>
+>;
+export type PostAuthLoginMutationBody = AuthLoginRequest;
+export type PostAuthLoginMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthLogin>>, {data: AuthLoginRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postAuthLogin(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostAuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthLogin>>>
-    export type PostAuthLoginMutationBody = AuthLoginRequest
-    export type PostAuthLoginMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Login with email/password
  */
-export const usePostAuthLogin = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: AuthLoginRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAuthLogin>>,
-        TError,
-        {data: AuthLoginRequest},
-        TContext
-      > => {
+export const usePostAuthLogin = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postAuthLogin>>,
+      TError,
+      { data: AuthLoginRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postAuthLogin>>,
+  TError,
+  { data: AuthLoginRequest },
+  TContext
+> => {
+  const mutationOptions = getPostAuthLoginMutationOptions(options);
 
-      const mutationOptions = getPostAuthLoginMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Revokes current refresh token and clears auth cookies.
  * @summary Logout
  */
 export const postAuthLogout = (
-    
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<AuthMessageResponse>(
-      {url: `/api/v1/auth/logout`, method: 'POST', signal
-    },
-      options);
-    }
-  
+  return httpClient<AuthMessageResponse>(
+    { url: `/api/v1/auth/logout`, method: 'POST', signal },
+    options,
+  );
+};
 
+export const getPostAuthLogoutMutationOptions = <
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postAuthLogout>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postAuthLogout>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['postAuthLogout'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostAuthLogoutMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogout>>, TError,void, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postAuthLogout>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postAuthLogout>>,
+    void
+  > = () => {
+    return postAuthLogout(requestOptions);
+  };
 
-const mutationKey = ['postAuthLogout'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type PostAuthLogoutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthLogout>>
+>;
 
+export type PostAuthLogoutMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthLogout>>, void> = () => {
-          
-
-          return  postAuthLogout(requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostAuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthLogout>>>
-    
-    export type PostAuthLogoutMutationError = ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Logout
  */
-export const usePostAuthLogout = <TError = ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogout>>, TError,void, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAuthLogout>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const usePostAuthLogout = <
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postAuthLogout>>,
+      TError,
+      void,
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postAuthLogout>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getPostAuthLogoutMutationOptions(options);
 
-      const mutationOptions = getPostAuthLogoutMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Revokes all refresh tokens for current user and clears auth cookies.
  * @summary Logout from all sessions
  */
 export const postAuthLogoutAll = (
-    
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<AuthMessageResponse>(
-      {url: `/api/v1/auth/logout-all`, method: 'POST', signal
-    },
-      options);
-    }
-  
+  return httpClient<AuthMessageResponse>(
+    { url: `/api/v1/auth/logout-all`, method: 'POST', signal },
+    options,
+  );
+};
 
+export const getPostAuthLogoutAllMutationOptions = <
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postAuthLogoutAll>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postAuthLogoutAll>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['postAuthLogoutAll'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostAuthLogoutAllMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogoutAll>>, TError,void, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postAuthLogoutAll>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postAuthLogoutAll>>,
+    void
+  > = () => {
+    return postAuthLogoutAll(requestOptions);
+  };
 
-const mutationKey = ['postAuthLogoutAll'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type PostAuthLogoutAllMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthLogoutAll>>
+>;
 
+export type PostAuthLogoutAllMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthLogoutAll>>, void> = () => {
-          
-
-          return  postAuthLogoutAll(requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostAuthLogoutAllMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthLogoutAll>>>
-    
-    export type PostAuthLogoutAllMutationError = ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Logout from all sessions
  */
-export const usePostAuthLogoutAll = <TError = ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogoutAll>>, TError,void, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAuthLogoutAll>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const usePostAuthLogoutAll = <
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postAuthLogoutAll>>,
+      TError,
+      void,
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postAuthLogoutAll>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getPostAuthLogoutAllMutationOptions(options);
 
-      const mutationOptions = getPostAuthLogoutAllMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Returns current authenticated user profile.
  * @summary Get current user
  */
 export const getAuthMe = (
-    
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<AuthSuccessResponse>(
-      {url: `/api/v1/auth/me`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-
+  return httpClient<AuthSuccessResponse>(
+    { url: `/api/v1/auth/me`, method: 'GET', signal },
+    options,
+  );
+};
 
 export const getGetAuthMeQueryKey = () => {
-    return [
-    `/api/v1/auth/me`
-    ] as const;
-    }
+  return [`/api/v1/auth/me`] as const;
+};
 
-    
-export const getGetAuthMeQueryOptions = <TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
-) => {
+export const getGetAuthMeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAuthMe>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetAuthMeQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getGetAuthMeQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuthMe>>> = ({
+    signal,
+  }) => getAuthMe(requestOptions, signal);
 
-  
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAuthMe>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuthMe>>> = ({ signal }) => getAuthMe(requestOptions, signal);
+export type GetAuthMeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAuthMe>>
+>;
+export type GetAuthMeQueryError = ToolsErrorResponse | ToolsErrorResponse;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetAuthMeQueryResult = NonNullable<Awaited<ReturnType<typeof getAuthMe>>>
-export type GetAuthMeQueryError = ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>> & Pick<
+export function useGetAuthMe<
+  TData = Awaited<ReturnType<typeof getAuthMe>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAuthMe>>,
           TError,
           Awaited<ReturnType<typeof getAuthMe>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetAuthMe<
+  TData = Awaited<ReturnType<typeof getAuthMe>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAuthMe>>,
           TError,
           Awaited<ReturnType<typeof getAuthMe>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetAuthMe<
+  TData = Awaited<ReturnType<typeof getAuthMe>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get current user
  */
 
-export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetAuthMe<
+  TData = Awaited<ReturnType<typeof getAuthMe>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetAuthMeQueryOptions(options);
 
-  const queryOptions = getGetAuthMeQueryOptions(options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Rotates refresh token and returns new auth cookies.
  * @summary Refresh tokens
  */
 export const postAuthRefresh = (
-    
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<AuthSuccessResponse>(
-      {url: `/api/v1/auth/refresh`, method: 'POST', signal
-    },
-      options);
-    }
-  
+  return httpClient<AuthSuccessResponse>(
+    { url: `/api/v1/auth/refresh`, method: 'POST', signal },
+    options,
+  );
+};
 
+export const getPostAuthRefreshMutationOptions = <
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postAuthRefresh>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postAuthRefresh>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['postAuthRefresh'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostAuthRefreshMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRefresh>>, TError,void, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postAuthRefresh>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postAuthRefresh>>,
+    void
+  > = () => {
+    return postAuthRefresh(requestOptions);
+  };
 
-const mutationKey = ['postAuthRefresh'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type PostAuthRefreshMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthRefresh>>
+>;
 
+export type PostAuthRefreshMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthRefresh>>, void> = () => {
-          
-
-          return  postAuthRefresh(requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostAuthRefreshMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthRefresh>>>
-    
-    export type PostAuthRefreshMutationError = ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Refresh tokens
  */
-export const usePostAuthRefresh = <TError = ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRefresh>>, TError,void, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAuthRefresh>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const usePostAuthRefresh = <
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postAuthRefresh>>,
+      TError,
+      void,
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postAuthRefresh>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getPostAuthRefreshMutationOptions(options);
 
-      const mutationOptions = getPostAuthRefreshMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Sends verification code to email. In local/dev mode response includes pin.
  * @summary Register (step 1)
  */
 export const postAuthRegister = (
-    authRegisterRequest: AuthRegisterRequest,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  authRegisterRequest: AuthRegisterRequest,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<AuthMessageResponse>(
-      {url: `/api/v1/auth/register`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: authRegisterRequest, signal
+  return httpClient<AuthMessageResponse>(
+    {
+      url: `/api/v1/auth/register`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: authRegisterRequest,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPostAuthRegisterMutationOptions = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postAuthRegister>>,
+    TError,
+    { data: AuthRegisterRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postAuthRegister>>,
+  TError,
+  { data: AuthRegisterRequest },
+  TContext
+> => {
+  const mutationKey = ['postAuthRegister'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostAuthRegisterMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRegister>>, TError,{data: AuthRegisterRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postAuthRegister>>, TError,{data: AuthRegisterRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postAuthRegister>>,
+    { data: AuthRegisterRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['postAuthRegister'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return postAuthRegister(data, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostAuthRegisterMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthRegister>>
+>;
+export type PostAuthRegisterMutationBody = AuthRegisterRequest;
+export type PostAuthRegisterMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthRegister>>, {data: AuthRegisterRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postAuthRegister(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostAuthRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthRegister>>>
-    export type PostAuthRegisterMutationBody = AuthRegisterRequest
-    export type PostAuthRegisterMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Register (step 1)
  */
-export const usePostAuthRegister = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRegister>>, TError,{data: AuthRegisterRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAuthRegister>>,
-        TError,
-        {data: AuthRegisterRequest},
-        TContext
-      > => {
+export const usePostAuthRegister = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postAuthRegister>>,
+      TError,
+      { data: AuthRegisterRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postAuthRegister>>,
+  TError,
+  { data: AuthRegisterRequest },
+  TContext
+> => {
+  const mutationOptions = getPostAuthRegisterMutationOptions(options);
 
-      const mutationOptions = getPostAuthRegisterMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Verifies code, creates account, and signs user in.
  * @summary Register verification (step 2)
  */
 export const postAuthRegisterVerify = (
-    authVerifyRequest: AuthVerifyRequest,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  authVerifyRequest: AuthVerifyRequest,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<AuthSuccessResponse>(
-      {url: `/api/v1/auth/register/verify`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: authVerifyRequest, signal
+  return httpClient<AuthSuccessResponse>(
+    {
+      url: `/api/v1/auth/register/verify`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: authVerifyRequest,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPostAuthRegisterVerifyMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postAuthRegisterVerify>>,
+    TError,
+    { data: AuthVerifyRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postAuthRegisterVerify>>,
+  TError,
+  { data: AuthVerifyRequest },
+  TContext
+> => {
+  const mutationKey = ['postAuthRegisterVerify'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostAuthRegisterVerifyMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRegisterVerify>>, TError,{data: AuthVerifyRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postAuthRegisterVerify>>, TError,{data: AuthVerifyRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postAuthRegisterVerify>>,
+    { data: AuthVerifyRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['postAuthRegisterVerify'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return postAuthRegisterVerify(data, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostAuthRegisterVerifyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthRegisterVerify>>
+>;
+export type PostAuthRegisterVerifyMutationBody = AuthVerifyRequest;
+export type PostAuthRegisterVerifyMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthRegisterVerify>>, {data: AuthVerifyRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postAuthRegisterVerify(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostAuthRegisterVerifyMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthRegisterVerify>>>
-    export type PostAuthRegisterVerifyMutationBody = AuthVerifyRequest
-    export type PostAuthRegisterVerifyMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Register verification (step 2)
  */
-export const usePostAuthRegisterVerify = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRegisterVerify>>, TError,{data: AuthVerifyRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAuthRegisterVerify>>,
-        TError,
-        {data: AuthVerifyRequest},
-        TContext
-      > => {
+export const usePostAuthRegisterVerify = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postAuthRegisterVerify>>,
+      TError,
+      { data: AuthVerifyRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postAuthRegisterVerify>>,
+  TError,
+  { data: AuthVerifyRequest },
+  TContext
+> => {
+  const mutationOptions = getPostAuthRegisterVerifyMutationOptions(options);
 
-      const mutationOptions = getPostAuthRegisterVerifyMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Resets password by verification code and signs user in.
  * @summary Reset password (step 2)
  */
 export const postAuthResetPassword = (
-    authResetPasswordRequest: AuthResetPasswordRequest,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  authResetPasswordRequest: AuthResetPasswordRequest,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<AuthSuccessResponse>(
-      {url: `/api/v1/auth/reset-password`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: authResetPasswordRequest, signal
+  return httpClient<AuthSuccessResponse>(
+    {
+      url: `/api/v1/auth/reset-password`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: authResetPasswordRequest,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPostAuthResetPasswordMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postAuthResetPassword>>,
+    TError,
+    { data: AuthResetPasswordRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postAuthResetPassword>>,
+  TError,
+  { data: AuthResetPasswordRequest },
+  TContext
+> => {
+  const mutationKey = ['postAuthResetPassword'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostAuthResetPasswordMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthResetPassword>>, TError,{data: AuthResetPasswordRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postAuthResetPassword>>, TError,{data: AuthResetPasswordRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postAuthResetPassword>>,
+    { data: AuthResetPasswordRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['postAuthResetPassword'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return postAuthResetPassword(data, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostAuthResetPasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthResetPassword>>
+>;
+export type PostAuthResetPasswordMutationBody = AuthResetPasswordRequest;
+export type PostAuthResetPasswordMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthResetPassword>>, {data: AuthResetPasswordRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postAuthResetPassword(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostAuthResetPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthResetPassword>>>
-    export type PostAuthResetPasswordMutationBody = AuthResetPasswordRequest
-    export type PostAuthResetPasswordMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Reset password (step 2)
  */
-export const usePostAuthResetPassword = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthResetPassword>>, TError,{data: AuthResetPasswordRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAuthResetPassword>>,
-        TError,
-        {data: AuthResetPasswordRequest},
-        TContext
-      > => {
+export const usePostAuthResetPassword = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postAuthResetPassword>>,
+      TError,
+      { data: AuthResetPasswordRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postAuthResetPassword>>,
+  TError,
+  { data: AuthResetPasswordRequest },
+  TContext
+> => {
+  const mutationOptions = getPostAuthResetPasswordMutationOptions(options);
 
-      const mutationOptions = getPostAuthResetPasswordMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Returns workspace preview for invite token.
  * @summary Preview invite
  */
 export const getInviteToken = (
-    token: string,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  token: string,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesSingleInvitePreviewResponse>(
-      {url: `/api/v1/invite/${token}`, method: 'GET', signal
-    },
-      options);
-    }
-  
+  return httpClient<WorkspacesSingleInvitePreviewResponse>(
+    { url: `/api/v1/invite/${token}`, method: 'GET', signal },
+    options,
+  );
+};
 
+export const getGetInviteTokenQueryKey = (token?: string) => {
+  return [`/api/v1/invite/${token}`] as const;
+};
 
-
-export const getGetInviteTokenQueryKey = (token?: string,) => {
-    return [
-    `/api/v1/invite/${token}`
-    ] as const;
-    }
-
-    
-export const getGetInviteTokenQueryOptions = <TData = Awaited<ReturnType<typeof getInviteToken>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(token: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+export const getGetInviteTokenQueryOptions = <
+  TData = Awaited<ReturnType<typeof getInviteToken>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  token: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
 ) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetInviteTokenQueryKey(token);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetInviteTokenQueryKey(token);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getInviteToken>>> = ({
+    signal,
+  }) => getInviteToken(token, requestOptions, signal);
 
-  
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!token,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getInviteToken>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getInviteToken>>> = ({ signal }) => getInviteToken(token, requestOptions, signal);
+export type GetInviteTokenQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getInviteToken>>
+>;
+export type GetInviteTokenQueryError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(token), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetInviteTokenQueryResult = NonNullable<Awaited<ReturnType<typeof getInviteToken>>>
-export type GetInviteTokenQueryError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetInviteToken<TData = Awaited<ReturnType<typeof getInviteToken>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- token: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>> & Pick<
+export function useGetInviteToken<
+  TData = Awaited<ReturnType<typeof getInviteToken>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  token: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getInviteToken>>,
           TError,
           Awaited<ReturnType<typeof getInviteToken>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetInviteToken<TData = Awaited<ReturnType<typeof getInviteToken>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- token: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetInviteToken<
+  TData = Awaited<ReturnType<typeof getInviteToken>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  token: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getInviteToken>>,
           TError,
           Awaited<ReturnType<typeof getInviteToken>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetInviteToken<TData = Awaited<ReturnType<typeof getInviteToken>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- token: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetInviteToken<
+  TData = Awaited<ReturnType<typeof getInviteToken>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  token: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Preview invite
  */
 
-export function useGetInviteToken<TData = Awaited<ReturnType<typeof getInviteToken>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- token: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetInviteToken<
+  TData = Awaited<ReturnType<typeof getInviteToken>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  token: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getInviteToken>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetInviteTokenQueryOptions(token, options);
 
-  const queryOptions = getGetInviteTokenQueryOptions(token,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Adds current user to workspace by invite token.
  * @summary Accept invite
  */
 export const postInviteToken = (
-    token: string,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  token: string,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesSingleMemberResponse>(
-      {url: `/api/v1/invite/${token}`, method: 'POST', signal
-    },
-      options);
-    }
-  
+  return httpClient<WorkspacesSingleMemberResponse>(
+    { url: `/api/v1/invite/${token}`, method: 'POST', signal },
+    options,
+  );
+};
 
+export const getPostInviteTokenMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postInviteToken>>,
+    TError,
+    { token: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postInviteToken>>,
+  TError,
+  { token: string },
+  TContext
+> => {
+  const mutationKey = ['postInviteToken'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostInviteTokenMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postInviteToken>>, TError,{token: string}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postInviteToken>>, TError,{token: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postInviteToken>>,
+    { token: string }
+  > = (props) => {
+    const { token } = props ?? {};
 
-const mutationKey = ['postInviteToken'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return postInviteToken(token, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostInviteTokenMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postInviteToken>>
+>;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postInviteToken>>, {token: string}> = (props) => {
-          const {token} = props ?? {};
+export type PostInviteTokenMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-          return  postInviteToken(token,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostInviteTokenMutationResult = NonNullable<Awaited<ReturnType<typeof postInviteToken>>>
-    
-    export type PostInviteTokenMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Accept invite
  */
-export const usePostInviteToken = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postInviteToken>>, TError,{token: string}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postInviteToken>>,
-        TError,
-        {token: string},
-        TContext
-      > => {
+export const usePostInviteToken = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postInviteToken>>,
+      TError,
+      { token: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postInviteToken>>,
+  TError,
+  { token: string },
+  TContext
+> => {
+  const mutationOptions = getPostInviteTokenMutationOptions(options);
 
-      const mutationOptions = getPostInviteTokenMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Returns paginated list of workspaces available for current user.
  * @summary List workspaces
  */
 export const getWorkspaces = (
-    params?: GetWorkspacesParams,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  params?: GetWorkspacesParams,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesListResponse>(
-      {url: `/api/v1/workspaces`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-  
+  return httpClient<WorkspacesListResponse>(
+    { url: `/api/v1/workspaces`, method: 'GET', params, signal },
+    options,
+  );
+};
 
+export const getGetWorkspacesQueryKey = (params?: GetWorkspacesParams) => {
+  return [`/api/v1/workspaces`, ...(params ? [params] : [])] as const;
+};
 
-
-export const getGetWorkspacesQueryKey = (params?: GetWorkspacesParams,) => {
-    return [
-    `/api/v1/workspaces`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getGetWorkspacesQueryOptions = <TData = Awaited<ReturnType<typeof getWorkspaces>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(params?: GetWorkspacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+export const getGetWorkspacesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getWorkspaces>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+>(
+  params?: GetWorkspacesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
 ) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetWorkspacesQueryKey(params);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetWorkspacesQueryKey(params);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspaces>>> = ({
+    signal,
+  }) => getWorkspaces(params, requestOptions, signal);
 
-  
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getWorkspaces>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspaces>>> = ({ signal }) => getWorkspaces(params, requestOptions, signal);
+export type GetWorkspacesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getWorkspaces>>
+>;
+export type GetWorkspacesQueryError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetWorkspacesQueryResult = NonNullable<Awaited<ReturnType<typeof getWorkspaces>>>
-export type GetWorkspacesQueryError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetWorkspaces<TData = Awaited<ReturnType<typeof getWorkspaces>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- params: undefined |  GetWorkspacesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>> & Pick<
+export function useGetWorkspaces<
+  TData = Awaited<ReturnType<typeof getWorkspaces>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+>(
+  params: undefined | GetWorkspacesParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspaces>>,
           TError,
           Awaited<ReturnType<typeof getWorkspaces>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspaces<TData = Awaited<ReturnType<typeof getWorkspaces>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- params?: GetWorkspacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspaces<
+  TData = Awaited<ReturnType<typeof getWorkspaces>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+>(
+  params?: GetWorkspacesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspaces>>,
           TError,
           Awaited<ReturnType<typeof getWorkspaces>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspaces<TData = Awaited<ReturnType<typeof getWorkspaces>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- params?: GetWorkspacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspaces<
+  TData = Awaited<ReturnType<typeof getWorkspaces>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+>(
+  params?: GetWorkspacesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary List workspaces
  */
 
-export function useGetWorkspaces<TData = Awaited<ReturnType<typeof getWorkspaces>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- params?: GetWorkspacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetWorkspaces<
+  TData = Awaited<ReturnType<typeof getWorkspaces>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+>(
+  params?: GetWorkspacesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getWorkspaces>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetWorkspacesQueryOptions(params, options);
 
-  const queryOptions = getGetWorkspacesQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Creates a workspace and assigns current user as owner.
  * @summary Create workspace
  */
 export const postWorkspaces = (
-    workspacesCreateRequest: WorkspacesCreateRequest,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  workspacesCreateRequest: WorkspacesCreateRequest,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesSingleWorkspaceResponse>(
-      {url: `/api/v1/workspaces`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: workspacesCreateRequest, signal
+  return httpClient<WorkspacesSingleWorkspaceResponse>(
+    {
+      url: `/api/v1/workspaces`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: workspacesCreateRequest,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPostWorkspacesMutationOptions = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postWorkspaces>>,
+    TError,
+    { data: WorkspacesCreateRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postWorkspaces>>,
+  TError,
+  { data: WorkspacesCreateRequest },
+  TContext
+> => {
+  const mutationKey = ['postWorkspaces'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostWorkspacesMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postWorkspaces>>, TError,{data: WorkspacesCreateRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postWorkspaces>>, TError,{data: WorkspacesCreateRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postWorkspaces>>,
+    { data: WorkspacesCreateRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['postWorkspaces'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return postWorkspaces(data, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostWorkspacesMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postWorkspaces>>
+>;
+export type PostWorkspacesMutationBody = WorkspacesCreateRequest;
+export type PostWorkspacesMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postWorkspaces>>, {data: WorkspacesCreateRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postWorkspaces(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostWorkspacesMutationResult = NonNullable<Awaited<ReturnType<typeof postWorkspaces>>>
-    export type PostWorkspacesMutationBody = WorkspacesCreateRequest
-    export type PostWorkspacesMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Create workspace
  */
-export const usePostWorkspaces = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postWorkspaces>>, TError,{data: WorkspacesCreateRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postWorkspaces>>,
-        TError,
-        {data: WorkspacesCreateRequest},
-        TContext
-      > => {
+export const usePostWorkspaces = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postWorkspaces>>,
+      TError,
+      { data: WorkspacesCreateRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postWorkspaces>>,
+  TError,
+  { data: WorkspacesCreateRequest },
+  TContext
+> => {
+  const mutationOptions = getPostWorkspacesMutationOptions(options);
 
-      const mutationOptions = getPostWorkspacesMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Soft-deletes workspace for current member.
  * @summary Delete workspace
  */
 export const deleteWorkspacesWorkspaceId = (
-    workspaceId: string,
- options?: SecondParameter<typeof httpClient>,) => {
-      
-      
-      return httpClient<void>(
-      {url: `/api/v1/workspaces/${workspaceId}`, method: 'DELETE'
-    },
-      options);
-    }
-  
+  workspaceId: string,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<void>(
+    { url: `/api/v1/workspaces/${workspaceId}`, method: 'DELETE' },
+    options,
+  );
+};
 
+export const getDeleteWorkspacesWorkspaceIdMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>,
+    TError,
+    { workspaceId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>,
+  TError,
+  { workspaceId: string },
+  TContext
+> => {
+  const mutationKey = ['deleteWorkspacesWorkspaceId'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getDeleteWorkspacesWorkspaceIdMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>, TError,{workspaceId: string}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>, TError,{workspaceId: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>,
+    { workspaceId: string }
+  > = (props) => {
+    const { workspaceId } = props ?? {};
 
-const mutationKey = ['deleteWorkspacesWorkspaceId'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return deleteWorkspacesWorkspaceId(workspaceId, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type DeleteWorkspacesWorkspaceIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>
+>;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>, {workspaceId: string}> = (props) => {
-          const {workspaceId} = props ?? {};
+export type DeleteWorkspacesWorkspaceIdMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-          return  deleteWorkspacesWorkspaceId(workspaceId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteWorkspacesWorkspaceIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>>
-    
-    export type DeleteWorkspacesWorkspaceIdMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Delete workspace
  */
-export const useDeleteWorkspacesWorkspaceId = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>, TError,{workspaceId: string}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>,
-        TError,
-        {workspaceId: string},
-        TContext
-      > => {
+export const useDeleteWorkspacesWorkspaceId = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>,
+      TError,
+      { workspaceId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceId>>,
+  TError,
+  { workspaceId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getDeleteWorkspacesWorkspaceIdMutationOptions(options);
 
-      const mutationOptions = getDeleteWorkspacesWorkspaceIdMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Returns workspace by id for current member.
  * @summary Get workspace
  */
 export const getWorkspacesWorkspaceId = (
-    workspaceId: string,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  workspaceId: string,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesSingleWorkspaceResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}`, method: 'GET', signal
-    },
-      options);
-    }
-  
+  return httpClient<WorkspacesSingleWorkspaceResponse>(
+    { url: `/api/v1/workspaces/${workspaceId}`, method: 'GET', signal },
+    options,
+  );
+};
 
+export const getGetWorkspacesWorkspaceIdQueryKey = (workspaceId?: string) => {
+  return [`/api/v1/workspaces/${workspaceId}`] as const;
+};
 
-
-export const getGetWorkspacesWorkspaceIdQueryKey = (workspaceId?: string,) => {
-    return [
-    `/api/v1/workspaces/${workspaceId}`
-    ] as const;
-    }
-
-    
-export const getGetWorkspacesWorkspaceIdQueryOptions = <TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+export const getGetWorkspacesWorkspaceIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
 ) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey =
+    queryOptions?.queryKey ?? getGetWorkspacesWorkspaceIdQueryKey(workspaceId);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetWorkspacesWorkspaceIdQueryKey(workspaceId);
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>
+  > = ({ signal }) =>
+    getWorkspacesWorkspaceId(workspaceId, requestOptions, signal);
 
-  
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!workspaceId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>> = ({ signal }) => getWorkspacesWorkspaceId(workspaceId, requestOptions, signal);
+export type GetWorkspacesWorkspaceIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>
+>;
+export type GetWorkspacesWorkspaceIdQueryError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(workspaceId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetWorkspacesWorkspaceIdQueryResult = NonNullable<Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>>
-export type GetWorkspacesWorkspaceIdQueryError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetWorkspacesWorkspaceId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError, TData>> & Pick<
+export function useGetWorkspacesWorkspaceId<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceId<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceId<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get workspace
  */
 
-export function useGetWorkspacesWorkspaceId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetWorkspacesWorkspaceId<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetWorkspacesWorkspaceIdQueryOptions(
+    workspaceId,
+    options,
+  );
 
-  const queryOptions = getGetWorkspacesWorkspaceIdQueryOptions(workspaceId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Updates workspace fields for current member.
  * @summary Update workspace
  */
 export const putWorkspacesWorkspaceId = (
-    workspaceId: string,
-    workspacesUpdateRequest: WorkspacesUpdateRequest,
- options?: SecondParameter<typeof httpClient>,) => {
-      
-      
-      return httpClient<WorkspacesSingleWorkspaceResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: workspacesUpdateRequest
+  workspaceId: string,
+  workspacesUpdateRequest: WorkspacesUpdateRequest,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<WorkspacesSingleWorkspaceResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: workspacesUpdateRequest,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPutWorkspacesWorkspaceIdMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>,
+    TError,
+    { workspaceId: string; data: WorkspacesUpdateRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>,
+  TError,
+  { workspaceId: string; data: WorkspacesUpdateRequest },
+  TContext
+> => {
+  const mutationKey = ['putWorkspacesWorkspaceId'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPutWorkspacesWorkspaceIdMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>, TError,{workspaceId: string;data: WorkspacesUpdateRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>, TError,{workspaceId: string;data: WorkspacesUpdateRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>,
+    { workspaceId: string; data: WorkspacesUpdateRequest }
+  > = (props) => {
+    const { workspaceId, data } = props ?? {};
 
-const mutationKey = ['putWorkspacesWorkspaceId'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return putWorkspacesWorkspaceId(workspaceId, data, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PutWorkspacesWorkspaceIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>
+>;
+export type PutWorkspacesWorkspaceIdMutationBody = WorkspacesUpdateRequest;
+export type PutWorkspacesWorkspaceIdMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>, {workspaceId: string;data: WorkspacesUpdateRequest}> = (props) => {
-          const {workspaceId,data} = props ?? {};
-
-          return  putWorkspacesWorkspaceId(workspaceId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutWorkspacesWorkspaceIdMutationResult = NonNullable<Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>>
-    export type PutWorkspacesWorkspaceIdMutationBody = WorkspacesUpdateRequest
-    export type PutWorkspacesWorkspaceIdMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Update workspace
  */
-export const usePutWorkspacesWorkspaceId = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>, TError,{workspaceId: string;data: WorkspacesUpdateRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>,
-        TError,
-        {workspaceId: string;data: WorkspacesUpdateRequest},
-        TContext
-      > => {
+export const usePutWorkspacesWorkspaceId = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>,
+      TError,
+      { workspaceId: string; data: WorkspacesUpdateRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putWorkspacesWorkspaceId>>,
+  TError,
+  { workspaceId: string; data: WorkspacesUpdateRequest },
+  TContext
+> => {
+  const mutationOptions = getPutWorkspacesWorkspaceIdMutationOptions(options);
 
-      const mutationOptions = getPutWorkspacesWorkspaceIdMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Soft-deletes current workspace invite.
  * @summary Delete workspace invite
  */
 export const deleteWorkspacesWorkspaceIdInvite = (
-    workspaceId: string,
- options?: SecondParameter<typeof httpClient>,) => {
-      
-      
-      return httpClient<void>(
-      {url: `/api/v1/workspaces/${workspaceId}/invite`, method: 'DELETE'
-    },
-      options);
-    }
-  
+  workspaceId: string,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<void>(
+    { url: `/api/v1/workspaces/${workspaceId}/invite`, method: 'DELETE' },
+    options,
+  );
+};
 
+export const getDeleteWorkspacesWorkspaceIdInviteMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>,
+    TError,
+    { workspaceId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>,
+  TError,
+  { workspaceId: string },
+  TContext
+> => {
+  const mutationKey = ['deleteWorkspacesWorkspaceIdInvite'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getDeleteWorkspacesWorkspaceIdInviteMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>, TError,{workspaceId: string}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>, TError,{workspaceId: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>,
+    { workspaceId: string }
+  > = (props) => {
+    const { workspaceId } = props ?? {};
 
-const mutationKey = ['deleteWorkspacesWorkspaceIdInvite'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return deleteWorkspacesWorkspaceIdInvite(workspaceId, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type DeleteWorkspacesWorkspaceIdInviteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>
+>;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>, {workspaceId: string}> = (props) => {
-          const {workspaceId} = props ?? {};
+export type DeleteWorkspacesWorkspaceIdInviteMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-          return  deleteWorkspacesWorkspaceIdInvite(workspaceId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteWorkspacesWorkspaceIdInviteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>>
-    
-    export type DeleteWorkspacesWorkspaceIdInviteMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Delete workspace invite
  */
-export const useDeleteWorkspacesWorkspaceIdInvite = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>, TError,{workspaceId: string}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>,
-        TError,
-        {workspaceId: string},
-        TContext
-      > => {
+export const useDeleteWorkspacesWorkspaceIdInvite = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>,
+      TError,
+      { workspaceId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdInvite>>,
+  TError,
+  { workspaceId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getDeleteWorkspacesWorkspaceIdInviteMutationOptions(options);
 
-      const mutationOptions = getDeleteWorkspacesWorkspaceIdInviteMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Returns active workspace invite or null.
  * @summary Get workspace invite
  */
 export const getWorkspacesWorkspaceIdInvite = (
-    workspaceId: string,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  workspaceId: string,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesSingleInviteResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/invite`, method: 'GET', signal
-    },
-      options);
-    }
-  
+  return httpClient<WorkspacesSingleInviteResponse>(
+    { url: `/api/v1/workspaces/${workspaceId}/invite`, method: 'GET', signal },
+    options,
+  );
+};
 
-
-
-export const getGetWorkspacesWorkspaceIdInviteQueryKey = (workspaceId?: string,) => {
-    return [
-    `/api/v1/workspaces/${workspaceId}/invite`
-    ] as const;
-    }
-
-    
-export const getGetWorkspacesWorkspaceIdInviteQueryOptions = <TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+export const getGetWorkspacesWorkspaceIdInviteQueryKey = (
+  workspaceId?: string,
 ) => {
+  return [`/api/v1/workspaces/${workspaceId}/invite`] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getGetWorkspacesWorkspaceIdInviteQueryOptions = <
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetWorkspacesWorkspaceIdInviteQueryKey(workspaceId);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetWorkspacesWorkspaceIdInviteQueryKey(workspaceId);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>
+  > = ({ signal }) =>
+    getWorkspacesWorkspaceIdInvite(workspaceId, requestOptions, signal);
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>> = ({ signal }) => getWorkspacesWorkspaceIdInvite(workspaceId, requestOptions, signal);
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!workspaceId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-      
+export type GetWorkspacesWorkspaceIdInviteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>
+>;
+export type GetWorkspacesWorkspaceIdInviteQueryError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-   return  { queryKey, queryFn, enabled: !!(workspaceId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetWorkspacesWorkspaceIdInviteQueryResult = NonNullable<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>>
-export type GetWorkspacesWorkspaceIdInviteQueryError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetWorkspacesWorkspaceIdInvite<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError, TData>> & Pick<
+export function useGetWorkspacesWorkspaceIdInvite<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdInvite<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdInvite<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdInvite<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdInvite<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get workspace invite
  */
 
-export function useGetWorkspacesWorkspaceIdInvite<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetWorkspacesWorkspaceIdInvite<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdInvite>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetWorkspacesWorkspaceIdInviteQueryOptions(
+    workspaceId,
+    options,
+  );
 
-  const queryOptions = getGetWorkspacesWorkspaceIdInviteQueryOptions(workspaceId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Creates or recreates invite link for workspace.
  * @summary Create workspace invite
  */
 export const postWorkspacesWorkspaceIdInvite = (
-    workspaceId: string,
-    workspacesCreateInviteRequest: WorkspacesCreateInviteRequest,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  workspaceId: string,
+  workspacesCreateInviteRequest: WorkspacesCreateInviteRequest,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesSingleInviteResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/invite`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: workspacesCreateInviteRequest, signal
+  return httpClient<WorkspacesSingleInviteResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/invite`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: workspacesCreateInviteRequest,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPostWorkspacesWorkspaceIdInviteMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>,
+    TError,
+    { workspaceId: string; data: WorkspacesCreateInviteRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>,
+  TError,
+  { workspaceId: string; data: WorkspacesCreateInviteRequest },
+  TContext
+> => {
+  const mutationKey = ['postWorkspacesWorkspaceIdInvite'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostWorkspacesWorkspaceIdInviteMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>, TError,{workspaceId: string;data: WorkspacesCreateInviteRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>, TError,{workspaceId: string;data: WorkspacesCreateInviteRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>,
+    { workspaceId: string; data: WorkspacesCreateInviteRequest }
+  > = (props) => {
+    const { workspaceId, data } = props ?? {};
 
-const mutationKey = ['postWorkspacesWorkspaceIdInvite'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return postWorkspacesWorkspaceIdInvite(workspaceId, data, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostWorkspacesWorkspaceIdInviteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>
+>;
+export type PostWorkspacesWorkspaceIdInviteMutationBody =
+  WorkspacesCreateInviteRequest;
+export type PostWorkspacesWorkspaceIdInviteMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>, {workspaceId: string;data: WorkspacesCreateInviteRequest}> = (props) => {
-          const {workspaceId,data} = props ?? {};
-
-          return  postWorkspacesWorkspaceIdInvite(workspaceId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostWorkspacesWorkspaceIdInviteMutationResult = NonNullable<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>>
-    export type PostWorkspacesWorkspaceIdInviteMutationBody = WorkspacesCreateInviteRequest
-    export type PostWorkspacesWorkspaceIdInviteMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Create workspace invite
  */
-export const usePostWorkspacesWorkspaceIdInvite = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>, TError,{workspaceId: string;data: WorkspacesCreateInviteRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>,
-        TError,
-        {workspaceId: string;data: WorkspacesCreateInviteRequest},
-        TContext
-      > => {
+export const usePostWorkspacesWorkspaceIdInvite = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>,
+      TError,
+      { workspaceId: string; data: WorkspacesCreateInviteRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postWorkspacesWorkspaceIdInvite>>,
+  TError,
+  { workspaceId: string; data: WorkspacesCreateInviteRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getPostWorkspacesWorkspaceIdInviteMutationOptions(options);
 
-      const mutationOptions = getPostWorkspacesWorkspaceIdInviteMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Returns paginated list of workspace members.
  * @summary List workspace members
  */
 export const getWorkspacesWorkspaceIdMembers = (
-    workspaceId: string,
-    params?: GetWorkspacesWorkspaceIdMembersParams,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  workspaceId: string,
+  params?: GetWorkspacesWorkspaceIdMembersParams,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesMembersListResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/members`, method: 'GET',
-        params, signal
+  return httpClient<WorkspacesMembersListResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/members`,
+      method: 'GET',
+      params,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
-
-
-export const getGetWorkspacesWorkspaceIdMembersQueryKey = (workspaceId?: string,
-    params?: GetWorkspacesWorkspaceIdMembersParams,) => {
-    return [
-    `/api/v1/workspaces/${workspaceId}/members`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getGetWorkspacesWorkspaceIdMembersQueryOptions = <TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(workspaceId: string,
-    params?: GetWorkspacesWorkspaceIdMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+export const getGetWorkspacesWorkspaceIdMembersQueryKey = (
+  workspaceId?: string,
+  params?: GetWorkspacesWorkspaceIdMembersParams,
 ) => {
+  return [
+    `/api/v1/workspaces/${workspaceId}/members`,
+    ...(params ? [params] : []),
+  ] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getGetWorkspacesWorkspaceIdMembersQueryOptions = <
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  params?: GetWorkspacesWorkspaceIdMembersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetWorkspacesWorkspaceIdMembersQueryKey(workspaceId,params);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetWorkspacesWorkspaceIdMembersQueryKey(workspaceId, params);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>
+  > = ({ signal }) =>
+    getWorkspacesWorkspaceIdMembers(
+      workspaceId,
+      params,
+      requestOptions,
+      signal,
+    );
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>> = ({ signal }) => getWorkspacesWorkspaceIdMembers(workspaceId,params, requestOptions, signal);
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!workspaceId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-      
+export type GetWorkspacesWorkspaceIdMembersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>
+>;
+export type GetWorkspacesWorkspaceIdMembersQueryError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-   return  { queryKey, queryFn, enabled: !!(workspaceId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetWorkspacesWorkspaceIdMembersQueryResult = NonNullable<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>>
-export type GetWorkspacesWorkspaceIdMembersQueryError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetWorkspacesWorkspaceIdMembers<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string,
-    params: undefined |  GetWorkspacesWorkspaceIdMembersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError, TData>> & Pick<
+export function useGetWorkspacesWorkspaceIdMembers<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  params: undefined | GetWorkspacesWorkspaceIdMembersParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdMembers<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string,
-    params?: GetWorkspacesWorkspaceIdMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdMembers<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  params?: GetWorkspacesWorkspaceIdMembersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdMembers<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string,
-    params?: GetWorkspacesWorkspaceIdMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdMembers<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  params?: GetWorkspacesWorkspaceIdMembersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary List workspace members
  */
 
-export function useGetWorkspacesWorkspaceIdMembers<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string,
-    params?: GetWorkspacesWorkspaceIdMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetWorkspacesWorkspaceIdMembers<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  params?: GetWorkspacesWorkspaceIdMembersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdMembers>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetWorkspacesWorkspaceIdMembersQueryOptions(
+    workspaceId,
+    params,
+    options,
+  );
 
-  const queryOptions = getGetWorkspacesWorkspaceIdMembersQueryOptions(workspaceId,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Soft-deletes workspace member.
  * @summary Delete workspace member
  */
 export const deleteWorkspacesWorkspaceIdMembersMemberId = (
-    workspaceId: string,
-    memberId: string,
- options?: SecondParameter<typeof httpClient>,) => {
-      
-      
-      return httpClient<void>(
-      {url: `/api/v1/workspaces/${workspaceId}/members/${memberId}`, method: 'DELETE'
+  workspaceId: string,
+  memberId: string,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<void>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/members/${memberId}`,
+      method: 'DELETE',
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getDeleteWorkspacesWorkspaceIdMembersMemberIdMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>,
+    TError,
+    { workspaceId: string; memberId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>,
+  TError,
+  { workspaceId: string; memberId: string },
+  TContext
+> => {
+  const mutationKey = ['deleteWorkspacesWorkspaceIdMembersMemberId'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getDeleteWorkspacesWorkspaceIdMembersMemberIdMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>, TError,{workspaceId: string;memberId: string}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>, TError,{workspaceId: string;memberId: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>,
+    { workspaceId: string; memberId: string }
+  > = (props) => {
+    const { workspaceId, memberId } = props ?? {};
 
-const mutationKey = ['deleteWorkspacesWorkspaceIdMembersMemberId'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return deleteWorkspacesWorkspaceIdMembersMemberId(
+      workspaceId,
+      memberId,
+      requestOptions,
+    );
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type DeleteWorkspacesWorkspaceIdMembersMemberIdMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>
+  >;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>, {workspaceId: string;memberId: string}> = (props) => {
-          const {workspaceId,memberId} = props ?? {};
+export type DeleteWorkspacesWorkspaceIdMembersMemberIdMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-          return  deleteWorkspacesWorkspaceIdMembersMemberId(workspaceId,memberId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteWorkspacesWorkspaceIdMembersMemberIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>>
-    
-    export type DeleteWorkspacesWorkspaceIdMembersMemberIdMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Delete workspace member
  */
-export const useDeleteWorkspacesWorkspaceIdMembersMemberId = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>, TError,{workspaceId: string;memberId: string}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>,
-        TError,
-        {workspaceId: string;memberId: string},
-        TContext
-      > => {
+export const useDeleteWorkspacesWorkspaceIdMembersMemberId = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>,
+      TError,
+      { workspaceId: string; memberId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdMembersMemberId>>,
+  TError,
+  { workspaceId: string; memberId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getDeleteWorkspacesWorkspaceIdMembersMemberIdMutationOptions(options);
 
-      const mutationOptions = getDeleteWorkspacesWorkspaceIdMembersMemberIdMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Updates profile fields of workspace member.
  * @summary Update workspace member profile
  */
 export const patchWorkspacesWorkspaceIdMembersMemberId = (
-    workspaceId: string,
-    memberId: string,
-    workspacesUpdateMemberProfileRequest: WorkspacesUpdateMemberProfileRequest,
- options?: SecondParameter<typeof httpClient>,) => {
-      
-      
-      return httpClient<WorkspacesSingleMemberResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/members/${memberId}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: workspacesUpdateMemberProfileRequest
+  workspaceId: string,
+  memberId: string,
+  workspacesUpdateMemberProfileRequest: WorkspacesUpdateMemberProfileRequest,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<WorkspacesSingleMemberResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/members/${memberId}`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: workspacesUpdateMemberProfileRequest,
     },
-      options);
+    options,
+  );
+};
+
+export const getPatchWorkspacesWorkspaceIdMembersMemberIdMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>,
+    TError,
+    {
+      workspaceId: string;
+      memberId: string;
+      data: WorkspacesUpdateMemberProfileRequest;
+    },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>,
+  TError,
+  {
+    workspaceId: string;
+    memberId: string;
+    data: WorkspacesUpdateMemberProfileRequest;
+  },
+  TContext
+> => {
+  const mutationKey = ['patchWorkspacesWorkspaceIdMembersMemberId'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>,
+    {
+      workspaceId: string;
+      memberId: string;
+      data: WorkspacesUpdateMemberProfileRequest;
     }
-  
+  > = (props) => {
+    const { workspaceId, memberId, data } = props ?? {};
 
+    return patchWorkspacesWorkspaceIdMembersMemberId(
+      workspaceId,
+      memberId,
+      data,
+      requestOptions,
+    );
+  };
 
-export const getPatchWorkspacesWorkspaceIdMembersMemberIdMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>, TError,{workspaceId: string;memberId: string;data: WorkspacesUpdateMemberProfileRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>, TError,{workspaceId: string;memberId: string;data: WorkspacesUpdateMemberProfileRequest}, TContext> => {
+  return { mutationFn, ...mutationOptions };
+};
 
-const mutationKey = ['patchWorkspacesWorkspaceIdMembersMemberId'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type PatchWorkspacesWorkspaceIdMembersMemberIdMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>
+  >;
+export type PatchWorkspacesWorkspaceIdMembersMemberIdMutationBody =
+  WorkspacesUpdateMemberProfileRequest;
+export type PatchWorkspacesWorkspaceIdMembersMemberIdMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>, {workspaceId: string;memberId: string;data: WorkspacesUpdateMemberProfileRequest}> = (props) => {
-          const {workspaceId,memberId,data} = props ?? {};
-
-          return  patchWorkspacesWorkspaceIdMembersMemberId(workspaceId,memberId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PatchWorkspacesWorkspaceIdMembersMemberIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>>
-    export type PatchWorkspacesWorkspaceIdMembersMemberIdMutationBody = WorkspacesUpdateMemberProfileRequest
-    export type PatchWorkspacesWorkspaceIdMembersMemberIdMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Update workspace member profile
  */
-export const usePatchWorkspacesWorkspaceIdMembersMemberId = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>, TError,{workspaceId: string;memberId: string;data: WorkspacesUpdateMemberProfileRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>,
-        TError,
-        {workspaceId: string;memberId: string;data: WorkspacesUpdateMemberProfileRequest},
-        TContext
-      > => {
+export const usePatchWorkspacesWorkspaceIdMembersMemberId = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>,
+      TError,
+      {
+        workspaceId: string;
+        memberId: string;
+        data: WorkspacesUpdateMemberProfileRequest;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberId>>,
+  TError,
+  {
+    workspaceId: string;
+    memberId: string;
+    data: WorkspacesUpdateMemberProfileRequest;
+  },
+  TContext
+> => {
+  const mutationOptions =
+    getPatchWorkspacesWorkspaceIdMembersMemberIdMutationOptions(options);
 
-      const mutationOptions = getPatchWorkspacesWorkspaceIdMembersMemberIdMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Changes role of workspace member.
  * @summary Update workspace member role
  */
 export const patchWorkspacesWorkspaceIdMembersMemberIdRole = (
-    workspaceId: string,
-    memberId: string,
-    workspacesUpdateMemberRoleRequest: WorkspacesUpdateMemberRoleRequest,
- options?: SecondParameter<typeof httpClient>,) => {
-      
-      
-      return httpClient<WorkspacesSingleMemberResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/members/${memberId}/role`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: workspacesUpdateMemberRoleRequest
+  workspaceId: string,
+  memberId: string,
+  workspacesUpdateMemberRoleRequest: WorkspacesUpdateMemberRoleRequest,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<WorkspacesSingleMemberResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/members/${memberId}/role`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: workspacesUpdateMemberRoleRequest,
     },
-      options);
+    options,
+  );
+};
+
+export const getPatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>,
+    TError,
+    {
+      workspaceId: string;
+      memberId: string;
+      data: WorkspacesUpdateMemberRoleRequest;
+    },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>,
+  TError,
+  {
+    workspaceId: string;
+    memberId: string;
+    data: WorkspacesUpdateMemberRoleRequest;
+  },
+  TContext
+> => {
+  const mutationKey = ['patchWorkspacesWorkspaceIdMembersMemberIdRole'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>,
+    {
+      workspaceId: string;
+      memberId: string;
+      data: WorkspacesUpdateMemberRoleRequest;
     }
-  
+  > = (props) => {
+    const { workspaceId, memberId, data } = props ?? {};
 
+    return patchWorkspacesWorkspaceIdMembersMemberIdRole(
+      workspaceId,
+      memberId,
+      data,
+      requestOptions,
+    );
+  };
 
-export const getPatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>, TError,{workspaceId: string;memberId: string;data: WorkspacesUpdateMemberRoleRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>, TError,{workspaceId: string;memberId: string;data: WorkspacesUpdateMemberRoleRequest}, TContext> => {
+  return { mutationFn, ...mutationOptions };
+};
 
-const mutationKey = ['patchWorkspacesWorkspaceIdMembersMemberIdRole'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type PatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>
+  >;
+export type PatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationBody =
+  WorkspacesUpdateMemberRoleRequest;
+export type PatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>, {workspaceId: string;memberId: string;data: WorkspacesUpdateMemberRoleRequest}> = (props) => {
-          const {workspaceId,memberId,data} = props ?? {};
-
-          return  patchWorkspacesWorkspaceIdMembersMemberIdRole(workspaceId,memberId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationResult = NonNullable<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>>
-    export type PatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationBody = WorkspacesUpdateMemberRoleRequest
-    export type PatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Update workspace member role
  */
-export const usePatchWorkspacesWorkspaceIdMembersMemberIdRole = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>, TError,{workspaceId: string;memberId: string;data: WorkspacesUpdateMemberRoleRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>,
-        TError,
-        {workspaceId: string;memberId: string;data: WorkspacesUpdateMemberRoleRequest},
-        TContext
-      > => {
+export const usePatchWorkspacesWorkspaceIdMembersMemberIdRole = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>,
+      TError,
+      {
+        workspaceId: string;
+        memberId: string;
+        data: WorkspacesUpdateMemberRoleRequest;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof patchWorkspacesWorkspaceIdMembersMemberIdRole>>,
+  TError,
+  {
+    workspaceId: string;
+    memberId: string;
+    data: WorkspacesUpdateMemberRoleRequest;
+  },
+  TContext
+> => {
+  const mutationOptions =
+    getPatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationOptions(options);
 
-      const mutationOptions = getPatchWorkspacesWorkspaceIdMembersMemberIdRoleMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Returns workspace permissions dictionary.
  * @summary List workspace permissions
  */
 export const getWorkspacesWorkspaceIdPermissions = (
-    workspaceId: string,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  workspaceId: string,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesPermissionsListResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/permissions`, method: 'GET', signal
+  return httpClient<WorkspacesPermissionsListResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/permissions`,
+      method: 'GET',
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
-
-
-export const getGetWorkspacesWorkspaceIdPermissionsQueryKey = (workspaceId?: string,) => {
-    return [
-    `/api/v1/workspaces/${workspaceId}/permissions`
-    ] as const;
-    }
-
-    
-export const getGetWorkspacesWorkspaceIdPermissionsQueryOptions = <TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+export const getGetWorkspacesWorkspaceIdPermissionsQueryKey = (
+  workspaceId?: string,
 ) => {
+  return [`/api/v1/workspaces/${workspaceId}/permissions`] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getGetWorkspacesWorkspaceIdPermissionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetWorkspacesWorkspaceIdPermissionsQueryKey(workspaceId);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetWorkspacesWorkspaceIdPermissionsQueryKey(workspaceId);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>
+  > = ({ signal }) =>
+    getWorkspacesWorkspaceIdPermissions(workspaceId, requestOptions, signal);
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>> = ({ signal }) => getWorkspacesWorkspaceIdPermissions(workspaceId, requestOptions, signal);
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!workspaceId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-      
+export type GetWorkspacesWorkspaceIdPermissionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>
+>;
+export type GetWorkspacesWorkspaceIdPermissionsQueryError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-   return  { queryKey, queryFn, enabled: !!(workspaceId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetWorkspacesWorkspaceIdPermissionsQueryResult = NonNullable<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>>
-export type GetWorkspacesWorkspaceIdPermissionsQueryError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetWorkspacesWorkspaceIdPermissions<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError, TData>> & Pick<
+export function useGetWorkspacesWorkspaceIdPermissions<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdPermissions<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdPermissions<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdPermissions<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdPermissions<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary List workspace permissions
  */
 
-export function useGetWorkspacesWorkspaceIdPermissions<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetWorkspacesWorkspaceIdPermissions<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdPermissions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetWorkspacesWorkspaceIdPermissionsQueryOptions(
+    workspaceId,
+    options,
+  );
 
-  const queryOptions = getGetWorkspacesWorkspaceIdPermissionsQueryOptions(workspaceId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Returns system and custom roles available in the workspace.
  * @summary List workspace roles
  */
 export const getWorkspacesWorkspaceIdRoles = (
-    workspaceId: string,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  workspaceId: string,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesRolesListResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/roles`, method: 'GET', signal
-    },
-      options);
-    }
-  
+  return httpClient<WorkspacesRolesListResponse>(
+    { url: `/api/v1/workspaces/${workspaceId}/roles`, method: 'GET', signal },
+    options,
+  );
+};
 
-
-
-export const getGetWorkspacesWorkspaceIdRolesQueryKey = (workspaceId?: string,) => {
-    return [
-    `/api/v1/workspaces/${workspaceId}/roles`
-    ] as const;
-    }
-
-    
-export const getGetWorkspacesWorkspaceIdRolesQueryOptions = <TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+export const getGetWorkspacesWorkspaceIdRolesQueryKey = (
+  workspaceId?: string,
 ) => {
+  return [`/api/v1/workspaces/${workspaceId}/roles`] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getGetWorkspacesWorkspaceIdRolesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetWorkspacesWorkspaceIdRolesQueryKey(workspaceId);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetWorkspacesWorkspaceIdRolesQueryKey(workspaceId);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>
+  > = ({ signal }) =>
+    getWorkspacesWorkspaceIdRoles(workspaceId, requestOptions, signal);
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>> = ({ signal }) => getWorkspacesWorkspaceIdRoles(workspaceId, requestOptions, signal);
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!workspaceId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-      
+export type GetWorkspacesWorkspaceIdRolesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>
+>;
+export type GetWorkspacesWorkspaceIdRolesQueryError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-   return  { queryKey, queryFn, enabled: !!(workspaceId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetWorkspacesWorkspaceIdRolesQueryResult = NonNullable<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>>
-export type GetWorkspacesWorkspaceIdRolesQueryError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetWorkspacesWorkspaceIdRoles<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError, TData>> & Pick<
+export function useGetWorkspacesWorkspaceIdRoles<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdRoles<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdRoles<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdRoles<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdRoles<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary List workspace roles
  */
 
-export function useGetWorkspacesWorkspaceIdRoles<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetWorkspacesWorkspaceIdRoles<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRoles>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetWorkspacesWorkspaceIdRolesQueryOptions(
+    workspaceId,
+    options,
+  );
 
-  const queryOptions = getGetWorkspacesWorkspaceIdRolesQueryOptions(workspaceId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Creates a custom workspace role with the provided permissions.
  * @summary Create workspace role
  */
 export const postWorkspacesWorkspaceIdRoles = (
-    workspaceId: string,
-    workspacesCreateRoleRequest: WorkspacesCreateRoleRequest,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  workspaceId: string,
+  workspacesCreateRoleRequest: WorkspacesCreateRoleRequest,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesSingleRoleResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/roles`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: workspacesCreateRoleRequest, signal
+  return httpClient<WorkspacesSingleRoleResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/roles`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: workspacesCreateRoleRequest,
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPostWorkspacesWorkspaceIdRolesMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>,
+    TError,
+    { workspaceId: string; data: WorkspacesCreateRoleRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>,
+  TError,
+  { workspaceId: string; data: WorkspacesCreateRoleRequest },
+  TContext
+> => {
+  const mutationKey = ['postWorkspacesWorkspaceIdRoles'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPostWorkspacesWorkspaceIdRolesMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>, TError,{workspaceId: string;data: WorkspacesCreateRoleRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>, TError,{workspaceId: string;data: WorkspacesCreateRoleRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>,
+    { workspaceId: string; data: WorkspacesCreateRoleRequest }
+  > = (props) => {
+    const { workspaceId, data } = props ?? {};
 
-const mutationKey = ['postWorkspacesWorkspaceIdRoles'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return postWorkspacesWorkspaceIdRoles(workspaceId, data, requestOptions);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostWorkspacesWorkspaceIdRolesMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>
+>;
+export type PostWorkspacesWorkspaceIdRolesMutationBody =
+  WorkspacesCreateRoleRequest;
+export type PostWorkspacesWorkspaceIdRolesMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>, {workspaceId: string;data: WorkspacesCreateRoleRequest}> = (props) => {
-          const {workspaceId,data} = props ?? {};
-
-          return  postWorkspacesWorkspaceIdRoles(workspaceId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostWorkspacesWorkspaceIdRolesMutationResult = NonNullable<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>>
-    export type PostWorkspacesWorkspaceIdRolesMutationBody = WorkspacesCreateRoleRequest
-    export type PostWorkspacesWorkspaceIdRolesMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Create workspace role
  */
-export const usePostWorkspacesWorkspaceIdRoles = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>, TError,{workspaceId: string;data: WorkspacesCreateRoleRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>,
-        TError,
-        {workspaceId: string;data: WorkspacesCreateRoleRequest},
-        TContext
-      > => {
+export const usePostWorkspacesWorkspaceIdRoles = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>,
+      TError,
+      { workspaceId: string; data: WorkspacesCreateRoleRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postWorkspacesWorkspaceIdRoles>>,
+  TError,
+  { workspaceId: string; data: WorkspacesCreateRoleRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getPostWorkspacesWorkspaceIdRolesMutationOptions(options);
 
-      const mutationOptions = getPostWorkspacesWorkspaceIdRolesMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Deletes a custom workspace role when it has no assigned members.
  * @summary Delete workspace role
  */
 export const deleteWorkspacesWorkspaceIdRolesRoleId = (
-    workspaceId: string,
-    roleId: number,
- options?: SecondParameter<typeof httpClient>,) => {
-      
-      
-      return httpClient<void>(
-      {url: `/api/v1/workspaces/${workspaceId}/roles/${roleId}`, method: 'DELETE'
+  workspaceId: string,
+  roleId: number,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<void>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/roles/${roleId}`,
+      method: 'DELETE',
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getDeleteWorkspacesWorkspaceIdRolesRoleIdMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>,
+    TError,
+    { workspaceId: string; roleId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>,
+  TError,
+  { workspaceId: string; roleId: number },
+  TContext
+> => {
+  const mutationKey = ['deleteWorkspacesWorkspaceIdRolesRoleId'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getDeleteWorkspacesWorkspaceIdRolesRoleIdMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>, TError,{workspaceId: string;roleId: number}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>, TError,{workspaceId: string;roleId: number}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>,
+    { workspaceId: string; roleId: number }
+  > = (props) => {
+    const { workspaceId, roleId } = props ?? {};
 
-const mutationKey = ['deleteWorkspacesWorkspaceIdRolesRoleId'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return deleteWorkspacesWorkspaceIdRolesRoleId(
+      workspaceId,
+      roleId,
+      requestOptions,
+    );
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type DeleteWorkspacesWorkspaceIdRolesRoleIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>
+>;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>, {workspaceId: string;roleId: number}> = (props) => {
-          const {workspaceId,roleId} = props ?? {};
+export type DeleteWorkspacesWorkspaceIdRolesRoleIdMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-          return  deleteWorkspacesWorkspaceIdRolesRoleId(workspaceId,roleId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteWorkspacesWorkspaceIdRolesRoleIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>>
-    
-    export type DeleteWorkspacesWorkspaceIdRolesRoleIdMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Delete workspace role
  */
-export const useDeleteWorkspacesWorkspaceIdRolesRoleId = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>, TError,{workspaceId: string;roleId: number}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>,
-        TError,
-        {workspaceId: string;roleId: number},
-        TContext
-      > => {
+export const useDeleteWorkspacesWorkspaceIdRolesRoleId = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>,
+      TError,
+      { workspaceId: string; roleId: number },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteWorkspacesWorkspaceIdRolesRoleId>>,
+  TError,
+  { workspaceId: string; roleId: number },
+  TContext
+> => {
+  const mutationOptions =
+    getDeleteWorkspacesWorkspaceIdRolesRoleIdMutationOptions(options);
 
-      const mutationOptions = getDeleteWorkspacesWorkspaceIdRolesRoleIdMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Returns workspace role details with permissions and member count.
  * @summary Get workspace role
  */
 export const getWorkspacesWorkspaceIdRolesRoleId = (
-    workspaceId: string,
-    roleId: number,
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+  workspaceId: string,
+  roleId: number,
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return httpClient<WorkspacesSingleRoleResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/roles/${roleId}`, method: 'GET', signal
+  return httpClient<WorkspacesSingleRoleResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/roles/${roleId}`,
+      method: 'GET',
+      signal,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
-
-
-export const getGetWorkspacesWorkspaceIdRolesRoleIdQueryKey = (workspaceId?: string,
-    roleId?: number,) => {
-    return [
-    `/api/v1/workspaces/${workspaceId}/roles/${roleId}`
-    ] as const;
-    }
-
-    
-export const getGetWorkspacesWorkspaceIdRolesRoleIdQueryOptions = <TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(workspaceId: string,
-    roleId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+export const getGetWorkspacesWorkspaceIdRolesRoleIdQueryKey = (
+  workspaceId?: string,
+  roleId?: number,
 ) => {
+  return [`/api/v1/workspaces/${workspaceId}/roles/${roleId}`] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getGetWorkspacesWorkspaceIdRolesRoleIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  roleId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetWorkspacesWorkspaceIdRolesRoleIdQueryKey(workspaceId,roleId);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetWorkspacesWorkspaceIdRolesRoleIdQueryKey(workspaceId, roleId);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>
+  > = ({ signal }) =>
+    getWorkspacesWorkspaceIdRolesRoleId(
+      workspaceId,
+      roleId,
+      requestOptions,
+      signal,
+    );
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>> = ({ signal }) => getWorkspacesWorkspaceIdRolesRoleId(workspaceId,roleId, requestOptions, signal);
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(workspaceId && roleId),
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-      
+export type GetWorkspacesWorkspaceIdRolesRoleIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>
+>;
+export type GetWorkspacesWorkspaceIdRolesRoleIdQueryError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      
-
-   return  { queryKey, queryFn, enabled: !!(workspaceId && roleId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetWorkspacesWorkspaceIdRolesRoleIdQueryResult = NonNullable<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>>
-export type GetWorkspacesWorkspaceIdRolesRoleIdQueryError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetWorkspacesWorkspaceIdRolesRoleId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string,
-    roleId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError, TData>> & Pick<
+export function useGetWorkspacesWorkspaceIdRolesRoleId<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  roleId: number,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdRolesRoleId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string,
-    roleId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdRolesRoleId<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  roleId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
           TError,
           Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetWorkspacesWorkspaceIdRolesRoleId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string,
-    roleId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetWorkspacesWorkspaceIdRolesRoleId<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  roleId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get workspace role
  */
 
-export function useGetWorkspacesWorkspaceIdRolesRoleId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
- workspaceId: string,
-    roleId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetWorkspacesWorkspaceIdRolesRoleId<
+  TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+>(
+  workspaceId: string,
+  roleId: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getWorkspacesWorkspaceIdRolesRoleId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetWorkspacesWorkspaceIdRolesRoleIdQueryOptions(
+    workspaceId,
+    roleId,
+    options,
+  );
 
-  const queryOptions = getGetWorkspacesWorkspaceIdRolesRoleIdQueryOptions(workspaceId,roleId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Updates mutable fields of a custom workspace role.
  * @summary Update workspace role
  */
 export const putWorkspacesWorkspaceIdRolesRoleId = (
-    workspaceId: string,
-    roleId: number,
-    workspacesUpdateRoleRequest: WorkspacesUpdateRoleRequest,
- options?: SecondParameter<typeof httpClient>,) => {
-      
-      
-      return httpClient<WorkspacesSingleRoleResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/roles/${roleId}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: workspacesUpdateRoleRequest
+  workspaceId: string,
+  roleId: number,
+  workspacesUpdateRoleRequest: WorkspacesUpdateRoleRequest,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<WorkspacesSingleRoleResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/roles/${roleId}`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: workspacesUpdateRoleRequest,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPutWorkspacesWorkspaceIdRolesRoleIdMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>,
+    TError,
+    { workspaceId: string; roleId: number; data: WorkspacesUpdateRoleRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>,
+  TError,
+  { workspaceId: string; roleId: number; data: WorkspacesUpdateRoleRequest },
+  TContext
+> => {
+  const mutationKey = ['putWorkspacesWorkspaceIdRolesRoleId'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const getPutWorkspacesWorkspaceIdRolesRoleIdMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>, TError,{workspaceId: string;roleId: number;data: WorkspacesUpdateRoleRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>, TError,{workspaceId: string;roleId: number;data: WorkspacesUpdateRoleRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>,
+    { workspaceId: string; roleId: number; data: WorkspacesUpdateRoleRequest }
+  > = (props) => {
+    const { workspaceId, roleId, data } = props ?? {};
 
-const mutationKey = ['putWorkspacesWorkspaceIdRolesRoleId'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+    return putWorkspacesWorkspaceIdRolesRoleId(
+      workspaceId,
+      roleId,
+      data,
+      requestOptions,
+    );
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PutWorkspacesWorkspaceIdRolesRoleIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>
+>;
+export type PutWorkspacesWorkspaceIdRolesRoleIdMutationBody =
+  WorkspacesUpdateRoleRequest;
+export type PutWorkspacesWorkspaceIdRolesRoleIdMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>, {workspaceId: string;roleId: number;data: WorkspacesUpdateRoleRequest}> = (props) => {
-          const {workspaceId,roleId,data} = props ?? {};
-
-          return  putWorkspacesWorkspaceIdRolesRoleId(workspaceId,roleId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutWorkspacesWorkspaceIdRolesRoleIdMutationResult = NonNullable<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>>
-    export type PutWorkspacesWorkspaceIdRolesRoleIdMutationBody = WorkspacesUpdateRoleRequest
-    export type PutWorkspacesWorkspaceIdRolesRoleIdMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Update workspace role
  */
-export const usePutWorkspacesWorkspaceIdRolesRoleId = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>, TError,{workspaceId: string;roleId: number;data: WorkspacesUpdateRoleRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>,
-        TError,
-        {workspaceId: string;roleId: number;data: WorkspacesUpdateRoleRequest},
-        TContext
-      > => {
+export const usePutWorkspacesWorkspaceIdRolesRoleId = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>,
+      TError,
+      {
+        workspaceId: string;
+        roleId: number;
+        data: WorkspacesUpdateRoleRequest;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleId>>,
+  TError,
+  { workspaceId: string; roleId: number; data: WorkspacesUpdateRoleRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getPutWorkspacesWorkspaceIdRolesRoleIdMutationOptions(options);
 
-      const mutationOptions = getPutWorkspacesWorkspaceIdRolesRoleIdMutationOptions(options);
+  return useMutation(mutationOptions, queryClient);
+};
 
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 /**
  * Replaces the full permission set of a custom workspace role.
  * @summary Set workspace role permissions
  */
 export const putWorkspacesWorkspaceIdRolesRoleIdPermissions = (
-    workspaceId: string,
-    roleId: number,
-    workspacesSetRolePermissionsRequest: WorkspacesSetRolePermissionsRequest,
- options?: SecondParameter<typeof httpClient>,) => {
-      
-      
-      return httpClient<WorkspacesSingleRoleResponse>(
-      {url: `/api/v1/workspaces/${workspaceId}/roles/${roleId}/permissions`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: workspacesSetRolePermissionsRequest
+  workspaceId: string,
+  roleId: number,
+  workspacesSetRolePermissionsRequest: WorkspacesSetRolePermissionsRequest,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<WorkspacesSingleRoleResponse>(
+    {
+      url: `/api/v1/workspaces/${workspaceId}/roles/${roleId}/permissions`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: workspacesSetRolePermissionsRequest,
     },
-      options);
-    }
-  
+    options,
+  );
+};
 
+export const getPutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationOptions =
+  <
+    TError =
+      | ToolsErrorResponse
+      | ToolsErrorResponse
+      | ToolsErrorResponse
+      | ToolsErrorResponse
+      | ToolsErrorResponse
+      | ToolsErrorResponse,
+    TContext = unknown,
+  >(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>
+      >,
+      TError,
+      {
+        workspaceId: string;
+        roleId: number;
+        data: WorkspacesSetRolePermissionsRequest;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  }): UseMutationOptions<
+    Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>>,
+    TError,
+    {
+      workspaceId: string;
+      roleId: number;
+      data: WorkspacesSetRolePermissionsRequest;
+    },
+    TContext
+  > => {
+    const mutationKey = ['putWorkspacesWorkspaceIdRolesRoleIdPermissions'];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
-export const getPutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationOptions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>>, TError,{workspaceId: string;roleId: number;data: WorkspacesSetRolePermissionsRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
-): UseMutationOptions<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>>, TError,{workspaceId: string;roleId: number;data: WorkspacesSetRolePermissionsRequest}, TContext> => {
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>
+      >,
+      {
+        workspaceId: string;
+        roleId: number;
+        data: WorkspacesSetRolePermissionsRequest;
+      }
+    > = (props) => {
+      const { workspaceId, roleId, data } = props ?? {};
 
-const mutationKey = ['putWorkspacesWorkspaceIdRolesRoleIdPermissions'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+      return putWorkspacesWorkspaceIdRolesRoleIdPermissions(
+        workspaceId,
+        roleId,
+        data,
+        requestOptions,
+      );
+    };
 
-      
+    return { mutationFn, ...mutationOptions };
+  };
 
+export type PutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>>
+  >;
+export type PutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationBody =
+  WorkspacesSetRolePermissionsRequest;
+export type PutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>>, {workspaceId: string;roleId: number;data: WorkspacesSetRolePermissionsRequest}> = (props) => {
-          const {workspaceId,roleId,data} = props ?? {};
-
-          return  putWorkspacesWorkspaceIdRolesRoleIdPermissions(workspaceId,roleId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationResult = NonNullable<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>>>
-    export type PutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationBody = WorkspacesSetRolePermissionsRequest
-    export type PutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
-
-    /**
+/**
  * @summary Set workspace role permissions
  */
-export const usePutWorkspacesWorkspaceIdRolesRoleIdPermissions = <TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>>, TError,{workspaceId: string;roleId: number;data: WorkspacesSetRolePermissionsRequest}, TContext>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>>,
-        TError,
-        {workspaceId: string;roleId: number;data: WorkspacesSetRolePermissionsRequest},
-        TContext
-      > => {
+export const usePutWorkspacesWorkspaceIdRolesRoleIdPermissions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>
+      >,
+      TError,
+      {
+        workspaceId: string;
+        roleId: number;
+        data: WorkspacesSetRolePermissionsRequest;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putWorkspacesWorkspaceIdRolesRoleIdPermissions>>,
+  TError,
+  {
+    workspaceId: string;
+    roleId: number;
+    data: WorkspacesSetRolePermissionsRequest;
+  },
+  TContext
+> => {
+  const mutationOptions =
+    getPutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationOptions(options);
 
-      const mutationOptions = getPutWorkspacesWorkspaceIdRolesRoleIdPermissionsMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    
+  return useMutation(mutationOptions, queryClient);
+};

@@ -8,51 +8,51 @@ import {
   Text,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
-import { useEffect } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { notifications } from '@mantine/notifications';
+import { useEffect } from 'react';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import {
   getGetApiV1AdminUsersIdQueryKey,
   getGetApiV1AdminUsersQueryKey,
   useDeleteApiV1AdminUsersId,
   useGetApiV1AdminUsersId,
   usePutApiV1AdminUsersId,
-} from "../../shared/api/generated/smetchik";
+} from '../../shared/api/generated/smetchik';
 import type {
   AdminUsersListResponse,
   GetApiV1AdminUsersId200,
-} from "../../shared/api/generated/schemas";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { queryClient } from "../../shared/api/queryClient";
-import { ROUTES } from "../../shared/constants/routes";
+} from '../../shared/api/generated/schemas';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { queryClient } from '../../shared/api/queryClient';
+import { ROUTES } from '../../shared/constants/routes';
 
 const AdminUserDetailPage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const form = useForm({
     initialValues: {
-      phone: "",
-      name: "",
-      surname: "",
-      email: "",
+      phone: '',
+      name: '',
+      surname: '',
+      email: '',
     },
     validate: {
-      phone: (value) => (value.trim().length === 0 ? "Введите телефон" : null),
-      name: (value) => (value.trim().length === 0 ? "Введите имя" : null),
+      phone: (value) => (value.trim().length === 0 ? 'Введите телефон' : null),
+      name: (value) => (value.trim().length === 0 ? 'Введите имя' : null),
       email: (value) => {
         if (value.trim().length === 0) {
           return null;
         }
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
           ? null
-          : "Некорректный email";
+          : 'Некорректный email';
       },
     },
   });
 
-  const { data, isLoading, isError } = useGetApiV1AdminUsersId(userId ?? "", {
+  const { data, isLoading, isError } = useGetApiV1AdminUsersId(userId ?? '', {
     query: {
       enabled: !!userId,
     },
@@ -65,10 +65,10 @@ const AdminUserDetailPage = () => {
       return;
     }
     form.setValues({
-      phone: user.phone ?? "",
-      name: user.name ?? "",
-      surname: user.surname ?? "",
-      email: user.email ?? "",
+      phone: user.phone ?? '',
+      name: user.name ?? '',
+      surname: user.surname ?? '',
+      email: user.email ?? '',
     });
   }, [user?.email, user?.id, user?.name, user?.phone, user?.surname]);
 
@@ -97,15 +97,15 @@ const AdminUserDetailPage = () => {
           );
         }
         notifications.show({
-          color: "teal",
-          title: "Пользователь обновлён",
-          message: "Изменения сохранены.",
+          color: 'teal',
+          title: 'Пользователь обновлён',
+          message: 'Изменения сохранены.',
         });
       },
       onError: (error) => {
         notifications.show({
-          color: "red",
-          title: "Ошибка",
+          color: 'red',
+          title: 'Ошибка',
           message: getErrorMessage(error),
         });
       },
@@ -137,16 +137,16 @@ const AdminUserDetailPage = () => {
           },
         );
         notifications.show({
-          color: "teal",
-          title: "Пользователь удалён",
-          message: "Пользователь больше недоступен.",
+          color: 'teal',
+          title: 'Пользователь удалён',
+          message: 'Пользователь больше недоступен.',
         });
         navigate(ROUTES.ADMIN_USERS, { replace: true });
       },
       onError: (error) => {
         notifications.show({
-          color: "red",
-          title: "Ошибка",
+          color: 'red',
+          title: 'Ошибка',
           message: getErrorMessage(error),
         });
       },
@@ -191,7 +191,7 @@ const AdminUserDetailPage = () => {
       return;
     }
     const confirmed = window.confirm(
-      "Удалить пользователя? Это действие нельзя отменить.",
+      'Удалить пользователя? Это действие нельзя отменить.',
     );
     if (!confirmed) {
       return;
@@ -216,26 +216,26 @@ const AdminUserDetailPage = () => {
               placeholder="79001234567"
               type="tel"
               autoComplete="tel"
-              {...form.getInputProps("phone")}
+              {...form.getInputProps('phone')}
             />
             <TextInput
               label="Имя"
               placeholder="Иван"
               autoComplete="given-name"
-              {...form.getInputProps("name")}
+              {...form.getInputProps('name')}
             />
             <TextInput
               label="Фамилия"
               placeholder="Петров"
               autoComplete="family-name"
-              {...form.getInputProps("surname")}
+              {...form.getInputProps('surname')}
             />
             <TextInput
               label="Email"
               placeholder="ivan@example.com"
               type="email"
               autoComplete="email"
-              {...form.getInputProps("email")}
+              {...form.getInputProps('email')}
             />
             <Group justify="space-between">
               <Button type="submit" loading={updateMutation.isPending}>
@@ -260,14 +260,14 @@ const AdminUserDetailPage = () => {
 const getErrorMessage = (error: unknown) => {
   if (error instanceof HttpClientError) {
     const data = error.data as { error?: string } | undefined;
-    return data?.error ?? "Не удалось выполнить действие";
+    return data?.error ?? 'Не удалось выполнить действие';
   }
 
   if (error instanceof Error) {
     return error.message;
   }
 
-  return "Не удалось выполнить действие. Попробуйте еще раз.";
+  return 'Не удалось выполнить действие. Попробуйте еще раз.';
 };
 
 export default AdminUserDetailPage;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Alert,
   Anchor,
@@ -10,31 +10,31 @@ import {
   Text,
   TextInput,
   Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
 import {
   IconAlertCircle,
   IconCircleCheck,
   IconLock,
   IconMail,
-} from "@tabler/icons-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { usePostAuthLogin } from "../../shared/api/generated/smetchik";
-import { HttpClientError } from "../../shared/api/httpClient";
-import { ROUTES } from "../../shared/constants/routes";
-import { usePrimaryColor } from "../../providers/PrimaryColorProvider";
+} from '@tabler/icons-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { usePostAuthLogin } from '../../shared/api/generated/smetchik';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { ROUTES } from '../../shared/constants/routes';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import {
   AuthFormWrapper,
   AuthPageLayout,
   authLayoutClasses as classes,
-} from "./shared/AuthLayout";
+} from './shared/AuthLayout';
 
 const ERROR_MESSAGES: Record<string, string> = {
-  INVALID_CREDENTIALS: "Неверный e-mail или пароль",
-  USER_NOT_FOUND: "Пользователь с таким e-mail не найден",
-  USER_BLOCKED: "Аккаунт заблокирован. Обратитесь в поддержку",
+  INVALID_CREDENTIALS: 'Неверный e-mail или пароль',
+  USER_NOT_FOUND: 'Пользователь с таким e-mail не найден',
+  USER_BLOCKED: 'Аккаунт заблокирован. Обратитесь в поддержку',
   TOO_MANY_REQUESTS:
-    "Слишком много попыток. Подождите немного и попробуйте снова",
+    'Слишком много попыток. Подождите немного и попробуйте снова',
 };
 
 const getErrorMessage = (error: unknown): string => {
@@ -43,10 +43,10 @@ const getErrorMessage = (error: unknown): string => {
     if (data?.code && data.code in ERROR_MESSAGES) {
       return ERROR_MESSAGES[data.code];
     }
-    return data?.error ?? "Не удалось войти. Попробуйте ещё раз.";
+    return data?.error ?? 'Не удалось войти. Попробуйте ещё раз.';
   }
   if (error instanceof Error) return error.message;
-  return "Не удалось войти. Попробуйте ещё раз.";
+  return 'Не удалось войти. Попробуйте ещё раз.';
 };
 
 const LoginForm = () => {
@@ -64,18 +64,18 @@ const LoginForm = () => {
 
   const form = useForm({
     initialValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
     validate: {
       email: (value) => {
-        if (value.trim().length === 0) return "Введите e-mail";
+        if (value.trim().length === 0) return 'Введите e-mail';
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
           ? null
-          : "Некорректный e-mail";
+          : 'Некорректный e-mail';
       },
       password: (value) =>
-        value.trim().length === 0 ? "Введите пароль" : null,
+        value.trim().length === 0 ? 'Введите пароль' : null,
     },
   });
 
@@ -136,14 +136,14 @@ const LoginForm = () => {
             autoComplete="email"
             styles={{
               label: {
-                marginBottom: "var(--mantine-spacing-xxs)",
+                marginBottom: 'var(--mantine-spacing-xxs)',
               },
-              input: { paddingLeft: "36px" },
+              input: { paddingLeft: '36px' },
               section: {
-                "--left-section-start": "5px",
+                '--left-section-start': '5px',
               },
             }}
-            {...form.getInputProps("email")}
+            {...form.getInputProps('email')}
           />
 
           <PasswordInput
@@ -169,17 +169,17 @@ const LoginForm = () => {
             leftSection={<IconLock size={16} />}
             styles={{
               section: {
-                "--left-section-start": "5px",
-                "--right-section-end": "5px",
+                '--left-section-start': '5px',
+                '--right-section-end': '5px',
               },
               label: {
-                marginBottom: "var(--mantine-spacing-xxs)",
-                width: "100%",
+                marginBottom: 'var(--mantine-spacing-xxs)',
+                width: '100%',
               },
-              innerInput: { paddingLeft: "36px" },
+              innerInput: { paddingLeft: '36px' },
             }}
             autoComplete="current-password"
-            {...form.getInputProps("password")}
+            {...form.getInputProps('password')}
           />
 
           <Button

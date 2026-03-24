@@ -1,5 +1,5 @@
-import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ActionIcon,
   AppShell,
@@ -8,22 +8,22 @@ import {
   NavLink,
   Stack,
   Text,
-} from "@mantine/core";
+} from '@mantine/core';
 import {
   cloneElement,
   isValidElement,
   useEffect,
   useRef,
   useState,
-} from "react";
-import { Link } from "react-router-dom";
+} from 'react';
+import { Link } from 'react-router-dom';
 
-import { useWorkspace } from "../../../providers/WorkspaceProvider";
-import { getNavItems } from "./constants";
+import { useWorkspace } from '../../../providers/WorkspaceProvider';
+import { getNavItems } from './constants';
 import {
   IconLayoutSidebarLeftExpand,
   IconLayoutSidebarRightExpand,
-} from "@tabler/icons-react";
+} from '@tabler/icons-react';
 
 type ProtectedSidebarProps = {
   pathname: string;
@@ -43,7 +43,7 @@ const ProtectedSidebar = ({
   const [hovered, setHovered] = useState(false);
   const collapseTimeoutRef = useRef<number | null>(null);
   const { activeWorkspaceId } = useWorkspace();
-  const navItems = getNavItems(activeWorkspaceId ?? "");
+  const navItems = getNavItems(activeWorkspaceId ?? '');
   const isHoverExpanded = collapsed && hovered;
   const isExpandedView = !collapsed || isHoverExpanded;
 
@@ -80,27 +80,27 @@ const ProtectedSidebar = ({
         }, HOVER_COLLAPSE_DELAY_MS);
       }}
       style={{
-        background: collapsed ? "transparent" : "var(--app-sidebar-bg)",
-        borderRight: collapsed ? "none" : "1px solid var(--app-border)",
-        overflow: "visible",
+        background: collapsed ? 'transparent' : 'var(--app-sidebar-bg)',
+        borderRight: collapsed ? 'none' : '1px solid var(--app-border)',
+        overflow: 'visible',
       }}
     >
       <Box
         style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
           width: isExpandedView ? 248 : 64,
-          position: collapsed ? "absolute" : "relative",
+          position: collapsed ? 'absolute' : 'relative',
           top: 0,
           left: 0,
-          background: "var(--app-sidebar-bg)",
-          borderRight: "1px solid var(--app-border)",
+          background: 'var(--app-sidebar-bg)',
+          borderRight: '1px solid var(--app-border)',
           boxShadow: isHoverExpanded
-            ? "0 12px 30px rgba(0, 0, 0, 0.12)"
-            : "none",
+            ? '0 12px 30px rgba(0, 0, 0, 0.12)'
+            : 'none',
           zIndex: isHoverExpanded ? 50 : 1,
-          transition: "width 120ms ease",
+          transition: 'width 120ms ease',
         }}
       >
         <Stack style={{ flex: 1 }} pt="16px">
@@ -115,7 +115,7 @@ const ProtectedSidebar = ({
 
               return (
                 <NavLink
-                  p={isExpandedView ? "6px 10px" : "7px"}
+                  p={isExpandedView ? '6px 10px' : '7px'}
                   key={route}
                   component={Link}
                   to={route}
@@ -123,16 +123,16 @@ const ProtectedSidebar = ({
                     !isExpandedView ? (
                       <Box
                         style={{
-                          width: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
                         {iconNode}
                       </Box>
                     ) : (
-                      <Text pl={"4px"} fz="16px">
+                      <Text pl={'4px'} fz="16px">
                         {label}
                       </Text>
                     )
@@ -144,7 +144,7 @@ const ProtectedSidebar = ({
                     ) : undefined
                   }
                   style={
-                    !isExpandedView ? { justifyContent: "center" } : undefined
+                    !isExpandedView ? { justifyContent: 'center' } : undefined
                   }
                   active={pathname.startsWith(route)}
                 />
@@ -154,7 +154,7 @@ const ProtectedSidebar = ({
         </Stack>
 
         {!lockCollapsed && (
-          <Group justify={!isExpandedView ? "center" : "end"} p="12px">
+          <Group justify={!isExpandedView ? 'center' : 'end'} p="12px">
             <ActionIcon
               variant="subtle"
               color="gray"

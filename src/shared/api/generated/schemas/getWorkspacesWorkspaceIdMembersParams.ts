@@ -7,20 +7,20 @@
  */
 
 export type GetWorkspacesWorkspaceIdMembersParams = {
-/**
- * Page size
- */
-limit?: number;
-/**
- * Page offset
- */
-offset?: number;
-/**
- * Sort field: full_name, phone, email, telegram, position, role
- */
-sort_by?: string;
-/**
- * Sort direction: asc, desc
- */
-sort_dir?: string;
+  /**
+   * Page size
+   */
+  limit?: number;
+  /**
+   * Page offset
+   */
+  offset?: number;
+  /**
+   * Sort field: full_name, phone, email, telegram, position, role
+   */
+  sort_by?: string;
+  /**
+   * Sort direction: asc, desc
+   */
+  sort_dir?: string;
 };

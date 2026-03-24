@@ -2,8 +2,8 @@ import {
   ArrowRight01Icon,
   Cancel01Icon,
   HelpCircleIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+} from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ActionIcon,
   Avatar,
@@ -15,14 +15,14 @@ import {
   Stack,
   Text,
   UnstyledButton,
-} from "@mantine/core";
-import { Link } from "react-router-dom";
+} from '@mantine/core';
+import { Link } from 'react-router-dom';
 
-import { usePrimaryColor } from "../../../providers/PrimaryColorProvider";
-import type { WorkspacesWorkspaceResponse } from "../../../shared/api/generated/schemas";
-import { ROUTES, buildRoute } from "../../../shared/constants/routes";
-import { getNavItems } from "./constants";
-import WorkspaceMenu from "./WorkspaceMenu";
+import { usePrimaryColor } from '../../../providers/PrimaryColorProvider';
+import type { WorkspacesWorkspaceResponse } from '../../../shared/api/generated/schemas';
+import { ROUTES, buildRoute } from '../../../shared/constants/routes';
+import { getNavItems } from './constants';
+import WorkspaceMenu from './WorkspaceMenu';
 
 type ProtectedMobileDrawerProps = {
   opened: boolean;
@@ -59,7 +59,7 @@ const ProtectedMobileDrawer = ({
         align="center"
         px={16}
         py={14}
-        style={{ borderBottom: "1px solid var(--app-border)" }}
+        style={{ borderBottom: '1px solid var(--app-border)' }}
       >
         <Text fw={600} size="md">
           Меню
@@ -74,13 +74,13 @@ const ProtectedMobileDrawer = ({
         </ActionIcon>
       </Group>
 
-      <Box style={{ overflowY: "auto", height: "calc(100% - 53px)" }}>
+      <Box style={{ overflowY: 'auto', height: 'calc(100% - 53px)' }}>
         <UnstyledButton
           component={Link}
           to={buildRoute(ROUTES.PROFILE_COMMON, {
-            workspaceId: activeWorkspace?.id ?? "",
+            workspaceId: activeWorkspace?.id ?? '',
           })}
-          style={{ display: "block", width: "100%", padding: "16px" }}
+          style={{ display: 'block', width: '100%', padding: '16px' }}
         >
           <Group gap={12}>
             <Avatar color={primaryColor} variant="filled" radius="xl" size={40}>
@@ -105,7 +105,7 @@ const ProtectedMobileDrawer = ({
             c="dimmed"
             fw={600}
             mb={8}
-            style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
+            style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}
           >
             Пространство
           </Text>
@@ -125,12 +125,12 @@ const ProtectedMobileDrawer = ({
             c="dimmed"
             fw={600}
             mb={8}
-            style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
+            style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}
           >
             Навигация
           </Text>
           <Stack gap={2}>
-            {getNavItems(activeWorkspace?.id ?? "").map(
+            {getNavItems(activeWorkspace?.id ?? '').map(
               ({ label, icon, route, chevron }) => (
                 <NavLink
                   key={route}
@@ -159,7 +159,7 @@ const ProtectedMobileDrawer = ({
             c="dimmed"
             fw={600}
             mb={8}
-            style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
+            style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}
           >
             Помощь
           </Text>
