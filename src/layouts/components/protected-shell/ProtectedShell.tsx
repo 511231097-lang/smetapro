@@ -1,5 +1,5 @@
 import { AppShell } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -14,12 +14,18 @@ type ProtectedShellProps = {
   user: AuthSuccessResponse;
 };
 
+const FORCED_COLLAPSED_WIDTH = 850;
+
 const ProtectedShell = ({ user }: ProtectedShellProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpened, { open: openMobileMenu, close: closeMobileMenu }] =
     useDisclosure(false);
   const [sidebarCollapsed, { toggle: toggleSidebar }] = useDisclosure(false);
+  const forceCollapsed = useMediaQuery(
+    `(max-width: ${FORCED_COLLAPSED_WIDTH}px)`,
+  );
+  const effectiveCollapsed = sidebarCollapsed || forceCollapsed;
   const { activeWorkspace, workspaceList, setActiveWorkspaceId } =
     useWorkspace();
 
@@ -36,7 +42,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
       <AppShell
         header={{ height: 59 }}
         navbar={{
-          width: sidebarCollapsed ? 64 : 248,
+          width: effectiveCollapsed ? 64 : 248,
           breakpoint: "sm",
           collapsed: { mobile: true, desktop: false },
         }}
@@ -66,7 +72,8 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
 
         <ProtectedSidebar
           pathname={location.pathname}
-          collapsed={sidebarCollapsed}
+          collapsed={effectiveCollapsed}
+          lockCollapsed={forceCollapsed}
           onToggleSidebar={toggleSidebar}
         />
 
