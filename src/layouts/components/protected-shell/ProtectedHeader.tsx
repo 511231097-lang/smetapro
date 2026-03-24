@@ -15,11 +15,14 @@ import {
   Text,
   TextInput,
   UnstyledButton,
+  useComputedColorScheme,
+  useMantineColorScheme,
 } from "@mantine/core";
 import {
   IconInfoCircle,
   IconLogout,
   IconMoon,
+  IconSun,
   IconUser,
 } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
@@ -55,10 +58,13 @@ const ProtectedHeader = ({
   onGoToProfile,
   onLogout,
 }: ProtectedHeaderProps) => {
+  const { toggleColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme("light");
+  const isDark = computedColorScheme === "dark";
   return (
     <AppShell.Header
       style={{
-        background: "#fff",
+        background: "var(--app-header-bg)",
         borderBottom: "1px solid var(--app-border)",
       }}
     >
@@ -72,7 +78,11 @@ const ProtectedHeader = ({
               flexShrink: 0,
             }}
           >
-            <img src="/logo_light.svg" alt="СМЕТЧИК ПРО" height={19} />
+            <img
+              src={isDark ? "/logo_dark.svg" : "/logo_light.svg"}
+              alt="СМЕТЧИК ПРО"
+              height={19}
+            />
           </Link>
 
           <WorkspaceMenu
@@ -150,7 +160,7 @@ const ProtectedHeader = ({
             styles={{
               dropdown: {
                 padding: 4,
-                border: "1px solid #e9ecef",
+                border: "1px solid var(--mantine-color-default-border)",
                 borderRadius: 4,
               },
               item: {
@@ -186,8 +196,13 @@ const ProtectedHeader = ({
               <Menu.Item leftSection={<IconInfoCircle size={12} />}>
                 Справочник
               </Menu.Item>
-              <Menu.Item leftSection={<IconMoon size={12} />}>
-                Темная тема
+              <Menu.Item
+                leftSection={
+                  isDark ? <IconSun size={12} /> : <IconMoon size={12} />
+                }
+                onClick={() => toggleColorScheme()}
+              >
+                {isDark ? "Светлая тема" : "Темная тема"}
               </Menu.Item>
               <Menu.Divider />
               <Menu.Item

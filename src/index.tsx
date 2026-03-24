@@ -2,7 +2,11 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "./App.css";
 
-import { createTheme, MantineProvider } from "@mantine/core";
+import {
+  type CSSVariablesResolver,
+  createTheme,
+  MantineProvider,
+} from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
@@ -13,6 +17,15 @@ import AuthProvider from "./providers/AuthProvider";
 import { queryClient } from "./shared/api/queryClient";
 
 const fontFamily = '"Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif';
+
+const cssVariablesResolver: CSSVariablesResolver = () => ({
+  variables: {},
+  light: {},
+  dark: {
+    "--mantine-color-body": "#2C2E33",
+    "--mantine-color-default-border": "#495057",
+  },
+});
 
 const theme = createTheme({
   primaryColor: "teal",
@@ -390,7 +403,11 @@ if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
     <React.StrictMode>
-      <MantineProvider defaultColorScheme="light" theme={theme}>
+      <MantineProvider
+        defaultColorScheme="auto"
+        theme={theme}
+        cssVariablesResolver={cssVariablesResolver}
+      >
         <Notifications position="top-right" />
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>

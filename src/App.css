@@ -1,12 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Rubik:wght@700&display=swap");
 
 :root {
-  color-scheme: light;
   --app-bg: #f6f3ee;
   --app-panel: #ffffff;
   --app-border: #e2ddd2;
   --app-accent: #0c6b5f;
   --app-accent-soft: #dff1ec;
+  --app-header-bg: #ffffff;
+  --app-sidebar-bg: #ffffff;
+}
+
+[data-mantine-color-scheme="dark"] {
+  --app-border: #495057;
+  --app-header-bg: #343a40;
+  --app-sidebar-bg: #272c32;
 }
 
 * {
@@ -24,4 +31,13 @@ body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #1c1a17;
   background-color: var(--mantine-color-gray-1);
+}
+
+[data-mantine-color-scheme="dark"] body {
+  color: #c9c9c9;
+  background-color: #212529;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-AppShell-main {
+  background-color: #212529;
 }

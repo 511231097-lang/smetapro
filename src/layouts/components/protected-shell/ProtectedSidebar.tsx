@@ -29,7 +29,7 @@ const ProtectedSidebar = ({
   return (
     <AppShell.Navbar
       style={{
-        background: "#fff",
+        background: "var(--app-sidebar-bg)",
         borderRight: "1px solid var(--app-border)",
       }}
     >

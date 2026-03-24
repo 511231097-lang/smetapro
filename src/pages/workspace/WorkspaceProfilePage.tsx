@@ -303,7 +303,6 @@ const WorkspaceGeneralPage = () => {
               alignItems: "center",
               justifyContent: "center",
               gap: 16,
-              background: "white",
             }}
           >
             <Title order={4} ta="center">
