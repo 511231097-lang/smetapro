@@ -74,7 +74,13 @@ const WorkspaceMenu = ({
             <Title size="xs" fw={400} w="100%">
               {activeWorkspace?.name ?? '—'}
             </Title>
-            <ChevronIcon width={12} height={12} />
+            <ChevronIcon
+              width={12}
+              height={12}
+              style={{ minWidth: 12, minHeight: 12, flexShrink: 0 }}
+              aria-hidden="true"
+              focusable="false"
+            />
           </Group>
         </UnstyledButton>
       </Menu.Target>
