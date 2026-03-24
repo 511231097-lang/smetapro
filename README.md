@@ -1,5 +1,7 @@
 # Rsbuild project
 
+![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/511231097-lang/smetapro/badges/coverage.json)
+
 ## Setup
 
 Install the dependencies:
