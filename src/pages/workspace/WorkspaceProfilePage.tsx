@@ -142,7 +142,7 @@ const WorkspaceProfilePage = () => {
         }
         navigate(
           buildRoute(ROUTES.PROJECTS, {
-            workspaceId: remaining[0]?.id ?? '',
+            workspaceId: remaining[0]?.id ?? "",
           }),
           { replace: true },
         );

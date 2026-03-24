@@ -25,7 +25,7 @@ const ProtectedSidebar = ({
   onToggleSidebar,
 }: ProtectedSidebarProps) => {
   const { activeWorkspaceId } = useWorkspace();
-  const navItems = getNavItems(activeWorkspaceId ?? '');
+  const navItems = getNavItems(activeWorkspaceId ?? "");
   return (
     <AppShell.Navbar
       style={{

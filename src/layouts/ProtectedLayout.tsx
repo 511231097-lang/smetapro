@@ -1,14 +1,14 @@
-import { Center, Loader, Stack } from '@mantine/core';
-import { useMemo } from 'react';
-import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { Center, Loader, Stack } from "@mantine/core";
+import { useMemo } from "react";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 
-import { WorkspaceProvider } from '../providers/WorkspaceProvider';
+import { WorkspaceProvider } from "../providers/WorkspaceProvider";
 import {
   useGetAuthMe,
   useGetWorkspaces,
-} from '../shared/api/generated/smetchik';
-import { ROUTES, buildRoute } from '../shared/constants/routes';
-import ProtectedShell from './components/protected-shell/ProtectedShell';
+} from "../shared/api/generated/smetchik";
+import { ROUTES, buildRoute } from "../shared/constants/routes";
+import ProtectedShell from "./components/protected-shell/ProtectedShell";
 
 const ProtectedLayout = () => {
   const location = useLocation();
@@ -50,7 +50,9 @@ const ProtectedLayout = () => {
   if (!workspaceId && workspaceList.length > 0) {
     return (
       <Navigate
-        to={buildRoute(ROUTES.PROJECTS, { workspaceId: workspaceList[0].id ?? '' })}
+        to={buildRoute(ROUTES.PROJECTS, {
+          workspaceId: workspaceList[0].id ?? "",
+        })}
         replace
       />
     );
@@ -62,7 +64,9 @@ const ProtectedLayout = () => {
     if (!validWorkspace) {
       return (
         <Navigate
-          to={buildRoute(ROUTES.PROJECTS, { workspaceId: workspaceList[0].id ?? '' })}
+          to={buildRoute(ROUTES.PROJECTS, {
+            workspaceId: workspaceList[0].id ?? "",
+          })}
           replace
         />
       );
@@ -70,7 +74,10 @@ const ProtectedLayout = () => {
   }
 
   return (
-    <WorkspaceProvider workspaces={workspaceList} activeWorkspaceId={workspaceId ?? null}>
+    <WorkspaceProvider
+      workspaces={workspaceList}
+      activeWorkspaceId={workspaceId ?? null}
+    >
       <ProtectedShell user={user} />
     </WorkspaceProvider>
   );

@@ -110,7 +110,7 @@ const CreateWorkspacePage = () => {
 
         navigate(
           buildRoute(ROUTES.PROJECTS, {
-            workspaceId: createdWorkspace?.id ?? '',
+            workspaceId: createdWorkspace?.id ?? "",
           }),
           { replace: true },
         );

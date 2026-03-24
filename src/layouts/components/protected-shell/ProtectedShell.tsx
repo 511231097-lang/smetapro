@@ -1,14 +1,14 @@
-import { AppShell } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { AppShell } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { useWorkspace } from '../../../providers/WorkspaceProvider';
-import type { AuthSuccessResponse } from '../../../shared/api/generated/schemas';
-import { ROUTES, buildRoute } from '../../../shared/constants/routes';
-import ProtectedHeader from './ProtectedHeader';
-import ProtectedMobileDrawer from './ProtectedMobileDrawer';
-import ProtectedSidebar from './ProtectedSidebar';
+import { useWorkspace } from "../../../providers/WorkspaceProvider";
+import type { AuthSuccessResponse } from "../../../shared/api/generated/schemas";
+import { ROUTES, buildRoute } from "../../../shared/constants/routes";
+import ProtectedHeader from "./ProtectedHeader";
+import ProtectedMobileDrawer from "./ProtectedMobileDrawer";
+import ProtectedSidebar from "./ProtectedSidebar";
 
 type ProtectedShellProps = {
   user: AuthSuccessResponse;
@@ -25,8 +25,8 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
   const { activeWorkspace, workspaceList, setActiveWorkspaceId } =
     useWorkspace();
 
-  const email = user?.user?.email ?? '';
-  const initials = email.slice(0, 2).toUpperCase() || 'U';
+  const email = user?.user?.email ?? "";
+  const initials = email.slice(0, 2).toUpperCase() || "U";
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: location is intentional trigger
   useEffect(() => {
@@ -39,7 +39,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
         header={{ height: 59 }}
         navbar={{
           width: 248,
-          breakpoint: 'sm',
+          breakpoint: "sm",
           collapsed: { mobile: true, desktop: sidebarCollapsed },
         }}
       >
@@ -56,14 +56,14 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
           onGoToProfile={() =>
             navigate(
               buildRoute(ROUTES.PROFILE_COMMON, {
-                workspaceId: activeWorkspace?.id ?? '',
+                workspaceId: activeWorkspace?.id ?? "",
               }),
             )
           }
           onLogout={() =>
             navigate(
               buildRoute(ROUTES.LOGOUT, {
-                workspaceId: activeWorkspace?.id ?? '',
+                workspaceId: activeWorkspace?.id ?? "",
               }),
             )
           }

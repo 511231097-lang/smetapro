@@ -148,22 +148,24 @@ const ProtectedMobileDrawer = ({
             Навигация
           </Text>
           <Stack gap={2}>
-            {getNavItems(activeWorkspace?.id ?? '').map(({ label, icon, route, chevron }) => (
-              <NavLink
-                key={route}
-                component={Link}
-                to={route}
-                label={label}
-                leftSection={icon}
-                rightSection={
-                  chevron ? (
-                    <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
-                  ) : undefined
-                }
-                active={pathname.startsWith(route)}
-                style={{ borderRadius: 6 }}
-              />
-            ))}
+            {getNavItems(activeWorkspace?.id ?? "").map(
+              ({ label, icon, route, chevron }) => (
+                <NavLink
+                  key={route}
+                  component={Link}
+                  to={route}
+                  label={label}
+                  leftSection={icon}
+                  rightSection={
+                    chevron ? (
+                      <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+                    ) : undefined
+                  }
+                  active={pathname.startsWith(route)}
+                  style={{ borderRadius: 6 }}
+                />
+              ),
+            )}
           </Stack>
         </Box>
 

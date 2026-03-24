@@ -104,7 +104,7 @@ const EditProjectPage = () => {
         });
         removeProjectQueries(workspaceId);
         navigate(
-          buildRoute(ROUTES.PROJECTS, { workspaceId: urlWorkspaceId ?? '' }),
+          buildRoute(ROUTES.PROJECTS, { workspaceId: urlWorkspaceId ?? "" }),
           { replace: true },
         );
       },
@@ -128,7 +128,7 @@ const EditProjectPage = () => {
         });
         removeProjectQueries(workspaceId);
         navigate(
-          buildRoute(ROUTES.PROJECTS, { workspaceId: urlWorkspaceId ?? '' }),
+          buildRoute(ROUTES.PROJECTS, { workspaceId: urlWorkspaceId ?? "" }),
           { replace: true },
         );
       },
@@ -143,7 +143,12 @@ const EditProjectPage = () => {
   });
 
   if (!projectId) {
-    return <Navigate to={buildRoute(ROUTES.PROJECTS, { workspaceId: urlWorkspaceId ?? '' })} replace />;
+    return (
+      <Navigate
+        to={buildRoute(ROUTES.PROJECTS, { workspaceId: urlWorkspaceId ?? "" })}
+        replace
+      />
+    );
   }
 
   if (isLoading) {
