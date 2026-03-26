@@ -8,12 +8,18 @@
   --app-accent-soft: #dff1ec;
   --app-header-bg: #ffffff;
   --app-sidebar-bg: #ffffff;
+  --app-scrollbar-size: 10px;
+  --app-scrollbar-thumb: var(--mantine-color-default-border);
+  --app-scrollbar-thumb-hover: var(--mantine-color-default-border);
+  --app-scrollbar-track: transparent;
 }
 
 [data-mantine-color-scheme="dark"] {
   --app-border: #495057;
   --app-header-bg: #343a40;
   --app-sidebar-bg: #272c32;
+  --app-scrollbar-thumb: var(--mantine-color-default-border);
+  --app-scrollbar-thumb-hover: var(--mantine-color-default-border);
 }
 
 * {
@@ -24,6 +30,16 @@ html,
 body,
 #root {
   height: 100%;
+}
+
+html {
+  overflow-y: auto;
+}
+
+@supports (overflow-y: overlay) {
+  html {
+    overflow-y: overlay;
+  }
 }
 
 body {
@@ -40,4 +56,33 @@ body {
 
 [data-mantine-color-scheme="dark"] .mantine-AppShell-main {
   background-color: #212529;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-scrollbar-thumb) var(--app-scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: var(--app-scrollbar-size);
+  height: var(--app-scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--app-scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--app-scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--app-scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }

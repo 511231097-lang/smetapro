@@ -8,18 +8,14 @@ import {
   NavLink,
   Stack,
   Text,
+  Tooltip,
+  useComputedColorScheme,
 } from '@mantine/core';
 import {
   IconLayoutSidebarLeftExpand,
   IconLayoutSidebarRightExpand,
 } from '@tabler/icons-react';
-import {
-  cloneElement,
-  isValidElement,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { cloneElement, isValidElement } from 'react';
 import { Link } from 'react-router-dom';
 import { useWorkspace } from '../../../providers/WorkspaceProvider';
 import { getNavItems } from './constants';
@@ -31,67 +27,24 @@ type ProtectedSidebarProps = {
   onToggleSidebar: () => void;
 };
 
-const HOVER_COLLAPSE_DELAY_MS = 300;
-
 const ProtectedSidebar = ({
   pathname,
   collapsed,
   lockCollapsed = false,
   onToggleSidebar,
 }: ProtectedSidebarProps) => {
-  const [hovered, setHovered] = useState(false);
-  const collapseTimeoutRef = useRef<number | null>(null);
-  const previousPathnameRef = useRef(pathname);
   const { activeWorkspaceId } = useWorkspace();
   const navItems = getNavItems(activeWorkspaceId ?? '');
-  const isHoverExpanded = collapsed && hovered;
-  const isExpandedView = !collapsed || isHoverExpanded;
-
-  useEffect(() => {
-    if (collapsed) {
-      setHovered(false);
-    }
-  }, [collapsed]);
-
-  useEffect(() => {
-    const hasPathChanged = previousPathnameRef.current !== pathname;
-    previousPathnameRef.current = pathname;
-
-    if (collapsed && hasPathChanged) {
-      setHovered(false);
-    }
-  }, [collapsed, pathname]);
-
-  useEffect(() => {
-    return () => {
-      if (collapseTimeoutRef.current !== null) {
-        window.clearTimeout(collapseTimeoutRef.current);
-      }
-    };
-  }, []);
+  const isExpandedView = !collapsed;
+  const colorScheme = useComputedColorScheme('light', {
+    getInitialValueInEffect: true,
+  });
 
   return (
     <AppShell.Navbar
-      onMouseEnter={() => {
-        if (collapseTimeoutRef.current !== null) {
-          window.clearTimeout(collapseTimeoutRef.current);
-          collapseTimeoutRef.current = null;
-        }
-        if (collapsed) setHovered(true);
-      }}
-      onMouseLeave={() => {
-        if (collapseTimeoutRef.current !== null) {
-          window.clearTimeout(collapseTimeoutRef.current);
-        }
-        collapseTimeoutRef.current = window.setTimeout(() => {
-          setHovered(false);
-          collapseTimeoutRef.current = null;
-        }, HOVER_COLLAPSE_DELAY_MS);
-      }}
       style={{
-        background: collapsed ? 'transparent' : 'var(--app-sidebar-bg)',
-        borderRight: collapsed ? 'none' : '1px solid var(--app-border)',
-        overflow: 'visible',
+        background: 'var(--app-sidebar-bg)',
+        borderRight: '1px solid var(--app-border)',
       }}
     >
       <Box
@@ -100,15 +53,7 @@ const ProtectedSidebar = ({
           flexDirection: 'column',
           height: '100%',
           width: isExpandedView ? 248 : 64,
-          position: collapsed ? 'absolute' : 'relative',
-          top: 0,
-          left: 0,
           background: 'var(--app-sidebar-bg)',
-          borderRight: '1px solid var(--app-border)',
-          boxShadow: isHoverExpanded
-            ? '0 12px 30px rgba(0, 0, 0, 0.12)'
-            : 'none',
-          zIndex: isHoverExpanded ? 50 : 1,
           transition: 'width 120ms ease',
         }}
       >
@@ -121,8 +66,7 @@ const ProtectedSidebar = ({
                       size: 20,
                     } as Record<string, unknown>)
                   : icon;
-
-              return (
+              const navLink = (
                 <NavLink
                   p={isExpandedView ? '6px 10px' : '7px'}
                   key={route}
@@ -157,6 +101,33 @@ const ProtectedSidebar = ({
                   }
                   active={pathname.startsWith(route)}
                 />
+              );
+
+              if (isExpandedView) return navLink;
+
+              return (
+                <Tooltip
+                  key={route}
+                  label={label}
+                  position="right"
+                  withArrow={false}
+                  openDelay={120}
+                  offset={0}
+                  withinPortal
+                  styles={{
+                    tooltip: {
+                      height: 34,
+                      padding: '0 10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: 'var(--app-sidebar-bg)',
+                      color: colorScheme === 'dark' ? '#fff' : '#000',
+                      borderRadius: 4,
+                    },
+                  }}
+                >
+                  <Box>{navLink}</Box>
+                </Tooltip>
               );
             })}
           </Stack>

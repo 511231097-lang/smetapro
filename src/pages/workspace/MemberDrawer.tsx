@@ -3,7 +3,6 @@ import {
   Button,
   Drawer,
   Group,
-  ScrollArea,
   Select,
   Stack,
   Text,
@@ -135,13 +134,33 @@ const MemberDrawer = ({
   const handleSave = form.onSubmit(async (values) => {
     if (!member?.id) return;
 
-    const profileChanged =
-      values.name !== (member.name ?? '') ||
-      values.surname !== (member.surname ?? '') ||
-      values.phone !== (member.phone ?? '') ||
-      values.email !== (member.email ?? '') ||
-      values.telegram !== (member.telegram ?? '') ||
-      values.position !== (member.position ?? '');
+    const profileData: {
+      email?: string;
+      name?: string;
+      phone?: string;
+      position?: string;
+      surname?: string;
+      telegram?: string;
+    } = {};
+    if (values.name !== (member.name ?? '')) {
+      profileData.name = values.name;
+    }
+    if (values.surname !== (member.surname ?? '')) {
+      profileData.surname = values.surname;
+    }
+    if (values.phone !== (member.phone ?? '')) {
+      profileData.phone = values.phone;
+    }
+    if (values.email !== (member.email ?? '')) {
+      profileData.email = values.email;
+    }
+    if (values.telegram !== (member.telegram ?? '')) {
+      profileData.telegram = values.telegram;
+    }
+    if (values.position !== (member.position ?? '')) {
+      profileData.position = values.position;
+    }
+    const profileChanged = Object.keys(profileData).length > 0;
 
     const roleChanged = values.role_code !== (member.role?.code ?? '');
 
@@ -152,14 +171,7 @@ const MemberDrawer = ({
         patchMember.mutateAsync({
           workspaceId,
           memberId: member.id,
-          data: {
-            name: values.name || undefined,
-            surname: values.surname || undefined,
-            phone: values.phone || undefined,
-            email: values.email || undefined,
-            telegram: values.telegram || undefined,
-            position: values.position || undefined,
-          },
+          data: profileData,
         }),
       );
     }
@@ -212,25 +224,39 @@ const MemberDrawer = ({
             {title}
           </Text>
         }
-        scrollAreaComponent={ScrollArea.Autosize}
         styles={{
+          content: {
+            display: 'flex',
+            flexDirection: 'column',
+          },
           body: {
             display: 'flex',
             flexDirection: 'column',
-            height: '100%',
+            flex: 1,
+            minHeight: 0,
+            overflow: 'hidden',
             padding: 0,
           },
           header: {
-            borderBottom: '1px solid var(--mantine-color-gray-2)',
+            borderBottom: '1px solid var(--mantine-color-default-border)',
             paddingBottom: 12,
           },
         }}
       >
         <form
           onSubmit={handleSave}
-          style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            minHeight: 0,
+          }}
         >
-          <Stack gap="md" p={20} style={{ flex: 1 }}>
+          <Stack
+            gap="md"
+            p={20}
+            style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}
+          >
             {/* Avatar row */}
             <Group gap="md" align="center">
               <Avatar size={56} radius="xl" color={primaryColor}>
@@ -284,8 +310,10 @@ const MemberDrawer = ({
             p={20}
             justify="stretch"
             style={{
-              borderTop: '1px solid var(--mantine-color-gray-2)',
+              borderTop: '1px solid var(--mantine-color-default-border)',
               gap: 12,
+              marginTop: 'auto',
+              flexShrink: 0,
             }}
           >
             <Button

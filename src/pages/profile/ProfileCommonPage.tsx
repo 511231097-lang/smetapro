@@ -8,7 +8,6 @@ import {
   Loader,
   Modal,
   Paper,
-  Select,
   SimpleGrid,
   Stack,
   Text,
@@ -27,19 +26,6 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import { useGetAuthMe } from '../../shared/api/generated/smetchik';
-
-const TIMEZONE_OPTIONS = [
-  { value: 'UTC+0', label: 'UTC+0 (Лондон)' },
-  { value: 'UTC+3', label: '+3 (Москва)' },
-  { value: 'UTC+4', label: '+4 (Самара)' },
-  { value: 'UTC+5', label: '+5 (Екатеринбург)' },
-  { value: 'UTC+6', label: '+6 (Омск)' },
-  { value: 'UTC+7', label: '+7 (Новосибирск)' },
-  { value: 'UTC+8', label: '+8 (Иркутск)' },
-  { value: 'UTC+9', label: '+9 (Якутск)' },
-  { value: 'UTC+10', label: '+10 (Владивосток)' },
-  { value: 'UTC+12', label: '+12 (Камчатка)' },
-];
 
 const ProfileCommonPage = () => {
   const { data: userResp, isLoading, isError } = useGetAuthMe({});
@@ -61,7 +47,6 @@ const ProfileCommonPage = () => {
       surname: '',
       email: '',
       phone: '',
-      timezone: 'UTC+3',
     },
   });
   const { setValues } = form;
@@ -169,14 +154,6 @@ const ProfileCommonPage = () => {
                     {...form.getInputProps('phone')}
                   />
                 </SimpleGrid>
-
-                <Select
-                  label="Часовой пояс"
-                  data={TIMEZONE_OPTIONS}
-                  allowDeselect={false}
-                  style={{ maxWidth: 'calc(50% - 6px)' }}
-                  {...form.getInputProps('timezone')}
-                />
 
                 <Group justify="flex-end" mt={4}>
                   <Button type="submit" disabled={!form.isDirty()}>
