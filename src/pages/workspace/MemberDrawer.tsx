@@ -58,13 +58,18 @@ const MemberDrawer = ({
   const memberTelegram = member?.telegram ?? '';
   const memberPosition = member?.position ?? '';
   const memberRoleCode = member?.role?.code ?? '';
+  const isOwnerMember = isOwnerRoleCode(memberRoleCode);
   const { data: rolesData } = useGetWorkspacesWorkspaceIdRoles(workspaceId, {
     query: { enabled: !!workspaceId },
   });
 
   const roleOptions =
     rolesData?.roles
-      ?.filter((role) => !isOwnerRoleCode(role.code))
+      ?.filter((role) =>
+        isOwnerMember
+          ? isOwnerRoleCode(role.code)
+          : !isOwnerRoleCode(role.code),
+      )
       .map((role) => ({
         value: role.code ?? '',
         label: role.name ?? role.code ?? '',
@@ -256,6 +261,7 @@ const MemberDrawer = ({
               label="Роль"
               data={roleOptions}
               allowDeselect={false}
+              disabled={isOwnerMember}
               {...form.getInputProps('role_code')}
             />
 

@@ -19,7 +19,7 @@ import { useForm } from '@mantine/form';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconAlertTriangle, IconTrash } from '@tabler/icons-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
 import type { WorkspacesSingleWorkspaceResponse } from '../../shared/api/generated/schemas/workspacesSingleWorkspaceResponse';
@@ -56,6 +56,13 @@ type WorkspaceFormValues = {
   description: string;
   name: string;
 };
+
+const normalizeWorkspaceFormValues = (
+  values: WorkspaceFormValues,
+): WorkspaceFormValues => ({
+  name: values.name.trim(),
+  description: values.description.trim(),
+});
 
 const DeleteModal = ({
   opened,
@@ -168,20 +175,19 @@ const WorkspaceGeneralPage = () => {
   useEffect(() => {
     if (!workspaceSyncId) return;
 
-    const nextValues: WorkspaceFormValues = {
+    const nextValues = normalizeWorkspaceFormValues({
       name: workspaceName,
       description: workspaceDescription,
-    };
+    });
     setValues(nextValues);
     setSavedValues(nextValues);
   }, [setValues, workspaceSyncId, workspaceName, workspaceDescription]);
 
-  const hasChanges = useMemo(
-    () =>
-      form.values.name !== savedValues.name ||
-      form.values.description !== savedValues.description,
-    [form.values.name, form.values.description, savedValues],
-  );
+  const currentValues = normalizeWorkspaceFormValues(form.values);
+  const currentSavedValues = normalizeWorkspaceFormValues(savedValues);
+  const hasChanges =
+    currentValues.name !== currentSavedValues.name ||
+    currentValues.description !== currentSavedValues.description;
 
   const updateMutation = usePutWorkspacesWorkspaceId({
     mutation: {
@@ -215,10 +221,12 @@ const WorkspaceGeneralPage = () => {
           queryClient.setQueryData<
             WorkspacesSingleWorkspaceResponse | undefined
           >(detailKey, { workspace: updated });
-          setSavedValues({
+          const nextValues = normalizeWorkspaceFormValues({
             name: updated?.name ?? '',
             description: updated?.description ?? '',
           });
+          setValues(nextValues);
+          setSavedValues(nextValues);
           form.resetDirty();
         }
       },
@@ -299,12 +307,13 @@ const WorkspaceGeneralPage = () => {
 
   const handleSubmit = form.onSubmit((values) => {
     if (!hasChanges) return;
+    const normalizedValues = normalizeWorkspaceFormValues(values);
 
     updateMutation.mutate({
       workspaceId,
       data: {
-        name: values.name.trim(),
-        description: values.description.trim() || undefined,
+        name: normalizedValues.name,
+        description: normalizedValues.description || undefined,
       },
     });
   });
