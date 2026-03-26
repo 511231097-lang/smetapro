@@ -9,7 +9,6 @@ import {
   Stack,
   Text,
   Tooltip,
-  useComputedColorScheme,
 } from '@mantine/core';
 import {
   IconLayoutSidebarLeftExpand,
@@ -36,9 +35,6 @@ const ProtectedSidebar = ({
   const { activeWorkspaceId } = useWorkspace();
   const navItems = getNavItems(activeWorkspaceId ?? '');
   const isExpandedView = !collapsed;
-  const colorScheme = useComputedColorScheme('light', {
-    getInitialValueInEffect: true,
-  });
 
   return (
     <AppShell.Navbar
@@ -99,6 +95,7 @@ const ProtectedSidebar = ({
                   style={
                     !isExpandedView ? { justifyContent: 'center' } : undefined
                   }
+                  aria-label={!isExpandedView ? label : undefined}
                   active={pathname.startsWith(route)}
                 />
               );
@@ -121,12 +118,12 @@ const ProtectedSidebar = ({
                       display: 'flex',
                       alignItems: 'center',
                       background: 'var(--app-sidebar-bg)',
-                      color: colorScheme === 'dark' ? '#fff' : '#000',
+                      color: 'var(--app-sidebar-tooltip-text)',
                       borderRadius: 4,
                     },
                   }}
                 >
-                  <Box>{navLink}</Box>
+                  {navLink}
                 </Tooltip>
               );
             })}

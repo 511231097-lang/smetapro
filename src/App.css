@@ -8,6 +8,7 @@
   --app-accent-soft: #dff1ec;
   --app-header-bg: #ffffff;
   --app-sidebar-bg: #ffffff;
+  --app-sidebar-tooltip-text: #000;
   --app-scrollbar-size: 10px;
   --app-scrollbar-thumb: var(--mantine-color-default-border);
   --app-scrollbar-thumb-hover: var(--mantine-color-default-border);
@@ -18,6 +19,7 @@
   --app-border: #495057;
   --app-header-bg: #343a40;
   --app-sidebar-bg: #272c32;
+  --app-sidebar-tooltip-text: #fff;
   --app-scrollbar-thumb: var(--mantine-color-default-border);
   --app-scrollbar-thumb-hover: var(--mantine-color-default-border);
 }

@@ -13,7 +13,10 @@ import { notifications } from '@mantine/notifications';
 import { IconTrash, IconUpload } from '@tabler/icons-react';
 import { useEffect } from 'react';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
-import type { WorkspacesMemberResponse } from '../../shared/api/generated/schemas';
+import type {
+  WorkspacesMemberResponse,
+  WorkspacesUpdateMemberProfileRequest,
+} from '../../shared/api/generated/schemas';
 import {
   getGetWorkspacesWorkspaceIdMembersQueryKey,
   useGetWorkspacesWorkspaceIdRoles,
@@ -134,14 +137,7 @@ const MemberDrawer = ({
   const handleSave = form.onSubmit(async (values) => {
     if (!member?.id) return;
 
-    const profileData: {
-      email?: string;
-      name?: string;
-      phone?: string;
-      position?: string;
-      surname?: string;
-      telegram?: string;
-    } = {};
+    const profileData: WorkspacesUpdateMemberProfileRequest = {};
     if (values.name !== (member.name ?? '')) {
       profileData.name = values.name;
     }
