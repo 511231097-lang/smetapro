@@ -181,7 +181,7 @@ const WorkspaceMenu = ({
               variant="filled"
               style={{ flexShrink: 0 }}
             >
-              <Text c="white">+</Text>
+              <Text c="var(--mantine-color-text)">+</Text>
             </Avatar>
             <Text size="sm">Новое пространство</Text>
           </Group>
