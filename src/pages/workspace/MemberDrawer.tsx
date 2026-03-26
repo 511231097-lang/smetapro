@@ -23,9 +23,11 @@ import {
 } from '../../shared/api/generated/smetchik';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { queryClient } from '../../shared/api/queryClient';
+import { isOwnerRoleCode } from '../../shared/constants/roles';
 import { getInitials } from '../../shared/utils/getInitials';
 
 type Props = {
+  canDelete: boolean;
   member: WorkspacesMemberResponse | null;
   workspaceId: string;
   onClose: () => void;
@@ -40,7 +42,13 @@ const getErrorMessage = (error: unknown) => {
   return 'Не удалось выполнить действие';
 };
 
-const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
+const MemberDrawer = ({
+  canDelete,
+  member,
+  workspaceId,
+  onClose,
+  onDelete,
+}: Props) => {
   const { primaryColor } = usePrimaryColor();
   const memberId = member?.id ?? '';
   const memberName = member?.name ?? '';
@@ -50,15 +58,22 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
   const memberTelegram = member?.telegram ?? '';
   const memberPosition = member?.position ?? '';
   const memberRoleCode = member?.role?.code ?? '';
+  const isOwnerMember = isOwnerRoleCode(memberRoleCode);
   const { data: rolesData } = useGetWorkspacesWorkspaceIdRoles(workspaceId, {
     query: { enabled: !!workspaceId },
   });
 
   const roleOptions =
-    rolesData?.roles?.map((r) => ({
-      value: r.code ?? '',
-      label: r.name ?? r.code ?? '',
-    })) ?? [];
+    rolesData?.roles
+      ?.filter((role) =>
+        isOwnerMember
+          ? isOwnerRoleCode(role.code)
+          : !isOwnerRoleCode(role.code),
+      )
+      .map((role) => ({
+        value: role.code ?? '',
+        label: role.name ?? role.code ?? '',
+      })) ?? [];
 
   const form = useForm({
     initialValues: {
@@ -246,6 +261,7 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
               label="Роль"
               data={roleOptions}
               allowDeselect={false}
+              disabled={isOwnerMember}
               {...form.getInputProps('role_code')}
             />
 
@@ -255,6 +271,7 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
               color="red"
               leftSection={<IconTrash size={16} />}
               style={{ alignSelf: 'flex-start' }}
+              disabled={!canDelete}
               onClick={() => member && onDelete(member)}
               type="button"
             >

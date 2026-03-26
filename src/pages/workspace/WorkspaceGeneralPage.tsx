@@ -52,6 +52,18 @@ type DeleteModalProps = {
   onConfirm: () => void;
 };
 
+type WorkspaceFormValues = {
+  description: string;
+  name: string;
+};
+
+const normalizeWorkspaceFormValues = (
+  values: WorkspaceFormValues,
+): WorkspaceFormValues => ({
+  name: values.name.trim(),
+  description: values.description.trim(),
+});
+
 const DeleteModal = ({
   opened,
   isPending,
@@ -131,6 +143,10 @@ const WorkspaceGeneralPage = () => {
   const [deleteOpened, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [savedValues, setSavedValues] = useState<WorkspaceFormValues>({
+    name: '',
+    description: '',
+  });
   const colorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,
   });
@@ -159,11 +175,19 @@ const WorkspaceGeneralPage = () => {
   useEffect(() => {
     if (!workspaceSyncId) return;
 
-    setValues({
+    const nextValues = normalizeWorkspaceFormValues({
       name: workspaceName,
       description: workspaceDescription,
     });
+    setValues(nextValues);
+    setSavedValues(nextValues);
   }, [setValues, workspaceSyncId, workspaceName, workspaceDescription]);
+
+  const currentValues = normalizeWorkspaceFormValues(form.values);
+  const currentSavedValues = normalizeWorkspaceFormValues(savedValues);
+  const hasChanges =
+    currentValues.name !== currentSavedValues.name ||
+    currentValues.description !== currentSavedValues.description;
 
   const updateMutation = usePutWorkspacesWorkspaceId({
     mutation: {
@@ -197,6 +221,12 @@ const WorkspaceGeneralPage = () => {
           queryClient.setQueryData<
             WorkspacesSingleWorkspaceResponse | undefined
           >(detailKey, { workspace: updated });
+          const nextValues = normalizeWorkspaceFormValues({
+            name: updated?.name ?? '',
+            description: updated?.description ?? '',
+          });
+          setValues(nextValues);
+          setSavedValues(nextValues);
           form.resetDirty();
         }
       },
@@ -276,11 +306,14 @@ const WorkspaceGeneralPage = () => {
   }
 
   const handleSubmit = form.onSubmit((values) => {
+    if (!hasChanges) return;
+    const normalizedValues = normalizeWorkspaceFormValues(values);
+
     updateMutation.mutate({
       workspaceId,
       data: {
-        name: values.name.trim(),
-        description: values.description.trim() || undefined,
+        name: normalizedValues.name,
+        description: normalizedValues.description || undefined,
       },
     });
   });
@@ -402,7 +435,7 @@ const WorkspaceGeneralPage = () => {
                 <Button
                   type="submit"
                   loading={updateMutation.isPending}
-                  disabled={!form.isDirty()}
+                  disabled={!hasChanges}
                   fullWidth={isMobile}
                 >
                   Сохранить
