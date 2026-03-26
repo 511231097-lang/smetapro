@@ -9,7 +9,6 @@ import {
   Text,
   Title,
   UnstyledButton,
-  useComputedColorScheme,
 } from '@mantine/core';
 import { IconCube3dSphere } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -34,9 +33,6 @@ const WorkspaceMenu = ({
   mobile = false,
 }: WorkspaceMenuProps) => {
   const { primaryColor } = usePrimaryColor();
-  const colorScheme = useComputedColorScheme('light', {
-    getInitialValueInEffect: true,
-  });
   const [opened, setOpened] = useState(false);
   const otherWorkspaces = workspaceList.filter(
     (workspace) => workspace.id !== activeWorkspace?.id,
@@ -181,15 +177,11 @@ const WorkspaceMenu = ({
             <Avatar
               size={24}
               radius={4}
-              bg={
-                colorScheme === 'dark'
-                  ? 'var(--mantine-color-gray-8)'
-                  : 'var(--mantine-color-gray-4)'
-              }
+              bg="var(--mantine-color-default-border)"
               variant="filled"
               style={{ flexShrink: 0 }}
             >
-              <Text c="white">+</Text>
+              <Text c="var(--mantine-color-text)">+</Text>
             </Avatar>
             <Text size="sm">Новое пространство</Text>
           </Group>

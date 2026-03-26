@@ -12,7 +12,6 @@ import {
   Textarea,
   TextInput,
   Title,
-  useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -146,9 +145,6 @@ const WorkspaceGeneralPage = () => {
   const [savedValues, setSavedValues] = useState<WorkspaceFormValues>({
     name: '',
     description: '',
-  });
-  const colorScheme = useComputedColorScheme('light', {
-    getInitialValueInEffect: true,
   });
 
   const form = useForm({
@@ -368,10 +364,7 @@ const WorkspaceGeneralPage = () => {
                 borderRadius: 30,
                 overflow: 'hidden',
                 cursor: 'pointer',
-                background:
-                  colorScheme === 'dark'
-                    ? 'var(--mantine-color-gray-9)'
-                    : 'var(--mantine-color-gray-2)',
+                background: 'var(--mantine-color-default-border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

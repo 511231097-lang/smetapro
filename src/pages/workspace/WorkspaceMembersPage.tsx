@@ -334,7 +334,7 @@ const WorkspaceMembersPage = () => {
                 px={16}
                 style={{
                   height: 44,
-                  borderBottom: '1px solid var(--mantine-color-gray-2)',
+                  borderBottom: '1px solid var(--mantine-color-default-border)',
                 }}
               >
                 <Group gap={8}>
@@ -509,7 +509,8 @@ const WorkspaceMembersPage = () => {
                               component="span"
                               style={{
                                 textDecoration: 'underline',
-                                textDecorationColor: '#ced4da',
+                                textDecorationColor:
+                                  'var(--mantine-color-default-border)',
                               }}
                             >
                               {[m.name, m.surname].filter(Boolean).join(' ') ||
@@ -662,7 +663,8 @@ const WorkspaceMembersPage = () => {
                             component="span"
                             style={{
                               textDecoration: 'underline',
-                              textDecorationColor: '#ced4da',
+                              textDecorationColor:
+                                'var(--mantine-color-default-border)',
                             }}
                           >
                             {fullName}
