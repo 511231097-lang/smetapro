@@ -31,7 +31,7 @@ import {
   IconTrash,
   IconX,
 } from '@tabler/icons-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import type {
@@ -50,6 +50,7 @@ import {
 } from '../../shared/api/generated/smetchik';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { queryClient } from '../../shared/api/queryClient';
+import { isOwnerRoleCode } from '../../shared/constants/roles';
 import { getInitials } from '../../shared/utils/getInitials';
 import MemberDrawer from './MemberDrawer';
 import WorkspaceInviteWidget from './WorkspaceInviteWidget';
@@ -106,6 +107,11 @@ const WorkspaceMembersPage = () => {
   const { data: me } = useGetAuthMe({});
   const isMe = (m: WorkspacesMemberResponse) =>
     !!me?.user?.id && m.user_id === me.user.id;
+  const isOwner = (m: WorkspacesMemberResponse) =>
+    isOwnerRoleCode(m.role?.code);
+  const canLeaveWorkspace = (m: WorkspacesMemberResponse) =>
+    isMe(m) && !isOwner(m);
+  const canDeleteMember = (m: WorkspacesMemberResponse) => !isOwner(m);
 
   const deleteMutation = useDeleteWorkspacesWorkspaceIdMembersMemberId({
     mutation: {
@@ -130,6 +136,11 @@ const WorkspaceMembersPage = () => {
   const { data: rolesData } = useGetWorkspacesWorkspaceIdRoles(
     workspaceId ?? '',
     { query: { enabled: !!workspaceId } },
+  );
+  const inviteRoles = useMemo(
+    () =>
+      (rolesData?.roles ?? []).filter((role) => !isOwnerRoleCode(role.code)),
+    [rolesData?.roles],
   );
 
   const { data: membersData, isLoading: membersLoading } =
@@ -177,22 +188,34 @@ const WorkspaceMembersPage = () => {
     if (remaining === 0) setIsExpanded(false);
   }, [remaining]);
 
-  // Initialize selected role from existing invite or first available role
+  // Keep selected role aligned with available non-owner roles for invites.
   useEffect(() => {
-    if (selectedRole === null) {
-      const fromInvite = invite?.role?.code;
-      const fromRoles = rolesData?.roles?.[0]?.code;
-      if (fromInvite) setSelectedRole(fromInvite);
-      else if (fromRoles) setSelectedRole(fromRoles);
+    if (selectedRole !== null) {
+      const isAvailable = inviteRoles.some(
+        (role) => role.code === selectedRole,
+      );
+      if (!isAvailable) setSelectedRole(inviteRoles[0]?.code ?? null);
+      return;
     }
-  }, [invite, rolesData, selectedRole]);
 
-  const roleOptions =
-    rolesData?.roles?.map((r) => ({
-      value: r.code ?? '',
-      label: `Роль: ${r.name ?? r.code}`,
-      name: r.name ?? r.code ?? '',
-    })) ?? [];
+    const fromInvite = invite?.role?.code;
+    const isInviteRoleAvailable =
+      fromInvite != null &&
+      inviteRoles.some((role) => role.code === fromInvite);
+
+    if (isInviteRoleAvailable) {
+      setSelectedRole(fromInvite);
+      return;
+    }
+
+    setSelectedRole(inviteRoles[0]?.code ?? null);
+  }, [invite, inviteRoles, selectedRole]);
+
+  const roleOptions = inviteRoles.map((r) => ({
+    value: r.code ?? '',
+    label: `Роль: ${r.name ?? r.code}`,
+    name: r.name ?? r.code ?? '',
+  }));
 
   const allRoles = rolesData?.roles ?? [];
   const isFilterActive = filterRoleCodes.length > 0;
@@ -543,7 +566,10 @@ const WorkspaceMembersPage = () => {
                           <Menu.Dropdown p={4}>
                             <Menu.Item
                               leftSection={<IconPencil size={12} />}
-                              onClick={() => setSelectedMember(m)}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setSelectedMember(m);
+                              }}
                             >
                               Редактировать
                             </Menu.Item>
@@ -551,9 +577,14 @@ const WorkspaceMembersPage = () => {
                               <Menu.Item
                                 leftSection={<IconLogout size={12} />}
                                 color="red"
-                                onClick={() =>
-                                  setConfirmAction({ member: m, isLeave: true })
-                                }
+                                disabled={!canLeaveWorkspace(m)}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  setConfirmAction({
+                                    member: m,
+                                    isLeave: true,
+                                  });
+                                }}
                               >
                                 Покинуть пространство
                               </Menu.Item>
@@ -561,12 +592,14 @@ const WorkspaceMembersPage = () => {
                               <Menu.Item
                                 leftSection={<IconTrash size={12} />}
                                 color="red"
-                                onClick={() =>
+                                disabled={!canDeleteMember(m)}
+                                onClick={(event) => {
+                                  event.stopPropagation();
                                   setConfirmAction({
                                     member: m,
                                     isLeave: false,
-                                  })
-                                }
+                                  });
+                                }}
                               >
                                 Удалить
                               </Menu.Item>
@@ -673,7 +706,10 @@ const WorkspaceMembersPage = () => {
                         <Menu.Dropdown p={4}>
                           <Menu.Item
                             leftSection={<IconPencil size={12} />}
-                            onClick={() => setSelectedMember(m)}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setSelectedMember(m);
+                            }}
                           >
                             Редактировать
                           </Menu.Item>
@@ -681,9 +717,11 @@ const WorkspaceMembersPage = () => {
                             <Menu.Item
                               leftSection={<IconLogout size={12} />}
                               color="red"
-                              onClick={() =>
-                                setConfirmAction({ member: m, isLeave: true })
-                              }
+                              disabled={!canLeaveWorkspace(m)}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setConfirmAction({ member: m, isLeave: true });
+                              }}
                             >
                               Покинуть пространство
                             </Menu.Item>
@@ -691,9 +729,11 @@ const WorkspaceMembersPage = () => {
                             <Menu.Item
                               leftSection={<IconTrash size={12} />}
                               color="red"
-                              onClick={() =>
-                                setConfirmAction({ member: m, isLeave: false })
-                              }
+                              disabled={!canDeleteMember(m)}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setConfirmAction({ member: m, isLeave: false });
+                              }}
                             >
                               Удалить
                             </Menu.Item>
@@ -767,6 +807,31 @@ const WorkspaceMembersPage = () => {
               loading={deleteMutation.isPending}
               onClick={() => {
                 if (!confirmAction || !workspaceId) return;
+
+                if (
+                  confirmAction.isLeave &&
+                  isOwnerRoleCode(confirmAction.member.role?.code)
+                ) {
+                  notifications.show({
+                    color: 'red',
+                    message: 'Владелец не может покинуть пространство',
+                  });
+                  setConfirmAction(null);
+                  return;
+                }
+
+                if (
+                  !confirmAction.isLeave &&
+                  isOwnerRoleCode(confirmAction.member.role?.code)
+                ) {
+                  notifications.show({
+                    color: 'red',
+                    message: 'Нельзя удалить владельца пространства',
+                  });
+                  setConfirmAction(null);
+                  return;
+                }
+
                 deleteMutation.mutate({
                   workspaceId,
                   memberId: confirmAction.member.id ?? '',
@@ -783,8 +848,16 @@ const WorkspaceMembersPage = () => {
       <MemberDrawer
         member={selectedMember}
         workspaceId={workspaceId ?? ''}
+        canDelete={selectedMember ? canDeleteMember(selectedMember) : false}
         onClose={() => setSelectedMember(null)}
         onDelete={(m) => {
+          if (!canDeleteMember(m)) {
+            notifications.show({
+              color: 'red',
+              message: 'Нельзя удалить владельца пространства',
+            });
+            return;
+          }
           setSelectedMember(null);
           setConfirmAction({ member: m, isLeave: false });
         }}

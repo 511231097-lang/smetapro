@@ -23,9 +23,11 @@ import {
 } from '../../shared/api/generated/smetchik';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { queryClient } from '../../shared/api/queryClient';
+import { isOwnerRoleCode } from '../../shared/constants/roles';
 import { getInitials } from '../../shared/utils/getInitials';
 
 type Props = {
+  canDelete: boolean;
   member: WorkspacesMemberResponse | null;
   workspaceId: string;
   onClose: () => void;
@@ -40,7 +42,13 @@ const getErrorMessage = (error: unknown) => {
   return 'Не удалось выполнить действие';
 };
 
-const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
+const MemberDrawer = ({
+  canDelete,
+  member,
+  workspaceId,
+  onClose,
+  onDelete,
+}: Props) => {
   const { primaryColor } = usePrimaryColor();
   const memberId = member?.id ?? '';
   const memberName = member?.name ?? '';
@@ -55,10 +63,12 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
   });
 
   const roleOptions =
-    rolesData?.roles?.map((r) => ({
-      value: r.code ?? '',
-      label: r.name ?? r.code ?? '',
-    })) ?? [];
+    rolesData?.roles
+      ?.filter((role) => !isOwnerRoleCode(role.code))
+      .map((role) => ({
+        value: role.code ?? '',
+        label: role.name ?? role.code ?? '',
+      })) ?? [];
 
   const form = useForm({
     initialValues: {
@@ -255,6 +265,7 @@ const MemberDrawer = ({ member, workspaceId, onClose, onDelete }: Props) => {
               color="red"
               leftSection={<IconTrash size={16} />}
               style={{ alignSelf: 'flex-start' }}
+              disabled={!canDelete}
               onClick={() => member && onDelete(member)}
               type="button"
             >

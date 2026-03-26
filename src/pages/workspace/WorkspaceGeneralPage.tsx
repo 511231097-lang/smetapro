@@ -19,7 +19,7 @@ import { useForm } from '@mantine/form';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconAlertTriangle, IconTrash } from '@tabler/icons-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
 import type { WorkspacesSingleWorkspaceResponse } from '../../shared/api/generated/schemas/workspacesSingleWorkspaceResponse';
@@ -50,6 +50,11 @@ type DeleteModalProps = {
   isPending: boolean;
   onClose: () => void;
   onConfirm: () => void;
+};
+
+type WorkspaceFormValues = {
+  description: string;
+  name: string;
 };
 
 const DeleteModal = ({
@@ -131,6 +136,10 @@ const WorkspaceGeneralPage = () => {
   const [deleteOpened, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [savedValues, setSavedValues] = useState<WorkspaceFormValues>({
+    name: '',
+    description: '',
+  });
   const colorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,
   });
@@ -159,11 +168,20 @@ const WorkspaceGeneralPage = () => {
   useEffect(() => {
     if (!workspaceSyncId) return;
 
-    setValues({
+    const nextValues: WorkspaceFormValues = {
       name: workspaceName,
       description: workspaceDescription,
-    });
+    };
+    setValues(nextValues);
+    setSavedValues(nextValues);
   }, [setValues, workspaceSyncId, workspaceName, workspaceDescription]);
+
+  const hasChanges = useMemo(
+    () =>
+      form.values.name !== savedValues.name ||
+      form.values.description !== savedValues.description,
+    [form.values.name, form.values.description, savedValues],
+  );
 
   const updateMutation = usePutWorkspacesWorkspaceId({
     mutation: {
@@ -197,6 +215,10 @@ const WorkspaceGeneralPage = () => {
           queryClient.setQueryData<
             WorkspacesSingleWorkspaceResponse | undefined
           >(detailKey, { workspace: updated });
+          setSavedValues({
+            name: updated?.name ?? '',
+            description: updated?.description ?? '',
+          });
           form.resetDirty();
         }
       },
@@ -276,6 +298,8 @@ const WorkspaceGeneralPage = () => {
   }
 
   const handleSubmit = form.onSubmit((values) => {
+    if (!hasChanges) return;
+
     updateMutation.mutate({
       workspaceId,
       data: {
@@ -402,7 +426,7 @@ const WorkspaceGeneralPage = () => {
                 <Button
                   type="submit"
                   loading={updateMutation.isPending}
-                  disabled={!form.isDirty()}
+                  disabled={!hasChanges}
                   fullWidth={isMobile}
                 >
                   Сохранить
