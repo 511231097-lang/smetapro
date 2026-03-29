@@ -1,5 +1,3 @@
-import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
-import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ActionIcon,
   AppShell,
@@ -55,7 +53,7 @@ const ProtectedSidebar = ({
       >
         <Stack style={{ flex: 1 }} pt="16px">
           <Stack gap={0}>
-            {navItems.map(({ label, icon, route, chevron }) => {
+            {navItems.map(({ label, icon, route }) => {
               const isItemActive = pathname.startsWith(route);
               const iconNode =
                 !isExpandedView && isValidElement(icon)
@@ -78,6 +76,9 @@ const ProtectedSidebar = ({
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
+                          '&:hover': {
+                            color: 'var(--mantine-primary-color-light-color)',
+                          },
                         }}
                       >
                         {iconNode}
@@ -89,11 +90,6 @@ const ProtectedSidebar = ({
                     )
                   }
                   leftSection={!isExpandedView ? undefined : iconNode}
-                  rightSection={
-                    isExpandedView && chevron ? (
-                      <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
-                    ) : undefined
-                  }
                   styles={
                     !isExpandedView
                       ? {
@@ -103,18 +99,27 @@ const ProtectedSidebar = ({
                             justifyContent: 'center',
                             borderRadius: 4,
                             color: isItemActive
-                              ? 'var(--app-accent)'
+                              ? 'var(--mantine-primary-color-light-color)'
                               : 'var(--mantine-color-text)',
                             backgroundColor: isItemActive
-                              ? 'var(--app-accent-soft)'
+                              ? 'var(--mantine-primary-color-light)'
                               : 'transparent',
                             transition:
                               'background-color 120ms ease, color 120ms ease',
+                            '& svg': {
+                              color: isItemActive
+                                ? 'var(--mantine-primary-color-light-color)'
+                                : 'var(--mantine-color-text)',
+                              transition: 'color 120ms ease',
+                            },
                             '&:hover': {
-                              color: 'var(--app-accent)',
+                              color: 'var(--mantine-primary-color-light-color)',
                               backgroundColor: isItemActive
-                                ? 'var(--app-accent-soft)'
+                                ? 'var(--mantine-primary-color-light)'
                                 : 'transparent',
+                            },
+                            '&:hover svg': {
+                              color: 'var(--mantine-primary-color-light-color)',
                             },
                           },
                           section: {
