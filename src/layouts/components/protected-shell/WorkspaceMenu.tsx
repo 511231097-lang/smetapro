@@ -27,10 +27,9 @@ type WorkspaceMenuProps = {
 };
 
 const formatMembersCount = (count?: number) => {
-  const value =
-    typeof count === 'number' && Number.isFinite(count)
-      ? Math.max(0, Math.trunc(count))
-      : 0;
+  if (typeof count !== 'number' || !Number.isFinite(count)) return null;
+
+  const value = Math.max(0, Math.trunc(count));
 
   const mod10 = value % 10;
   const mod100 = value % 100;
@@ -119,7 +118,7 @@ const WorkspaceMenu = ({
                 {activeWorkspace?.name ?? '—'}
               </Text>
               <Text fz="10px" lh="12.5px" c="dimmed" truncate mt={4}>
-                Владелец • {membersCountLabel}
+                Владелец{membersCountLabel ? ` • ${membersCountLabel}` : ''}
               </Text>
             </Box>
           </Group>

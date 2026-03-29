@@ -210,6 +210,11 @@ const WorkspaceMembersPage = () => {
     if (remaining === 0) setIsExpanded(false);
   }, [remaining]);
 
+  useEffect(() => {
+    if (isMobile == null) return;
+    setFilterOpen(false);
+  }, [isMobile]);
+
   // Keep selected role aligned with available non-owner roles for invites.
   useEffect(() => {
     if (selectedRole !== null) {
@@ -327,7 +332,19 @@ const WorkspaceMembersPage = () => {
     setFilterOpen(false);
   };
 
-  const SortIcon = ({ colKey }: { colKey: string }) => {
+  const SortIcon = ({
+    colKey,
+    colLabel,
+  }: {
+    colKey: string;
+    colLabel: string;
+  }) => {
+    const nextSortDirection =
+      sortBy === colKey && sortDir === 'asc' ? 'desc' : 'asc';
+    const sortActionLabel = `Сортировать столбец «${colLabel}» ${
+      nextSortDirection === 'asc' ? 'по возрастанию' : 'по убыванию'
+    }`;
+
     const icon =
       sortBy !== colKey ? (
         <IconArrowsSort size={14} color="var(--mantine-color-gray-5)" />
@@ -348,6 +365,8 @@ const WorkspaceMembersPage = () => {
         variant="transparent"
         color="gray"
         size={16}
+        aria-label={sortActionLabel}
+        title={sortActionLabel}
         onClick={(event) => {
           event.stopPropagation();
           handleSort(colKey);
@@ -401,12 +420,15 @@ const WorkspaceMembersPage = () => {
               value={searchValue}
               onChange={(event) => setSearchValue(event.currentTarget.value)}
               placeholder="Поиск по сотрудникам..."
+              aria-label="Поиск по сотрудникам"
               leftSection={<IconSearch size={16} />}
               rightSection={
                 <ActionIcon
                   variant="subtle"
                   color="gray"
                   size={22}
+                  aria-label="Очистить поиск"
+                  title="Очистить поиск"
                   onClick={() => {
                     setSearchValue('');
                     setIsSearchExpanded(false);
@@ -428,12 +450,14 @@ const WorkspaceMembersPage = () => {
                 variant="outline"
                 color="teal"
                 size={32}
+                aria-label="Открыть поиск сотрудников"
+                title="Открыть поиск сотрудников"
                 onClick={() => setIsSearchExpanded(true)}
               >
                 <IconSearch size={16} />
               </ActionIcon>
 
-              <Box hiddenFrom="sm">
+              {isMobile && (
                 <Popover
                   opened={filterOpen}
                   onClose={() => setFilterOpen(false)}
@@ -447,6 +471,8 @@ const WorkspaceMembersPage = () => {
                       variant={isFilterActive ? 'filled' : 'outline'}
                       color="teal"
                       size={32}
+                      aria-label="Фильтр по ролям"
+                      title="Фильтр по ролям"
                       onClick={openRoleFilter}
                     >
                       <IconFilter size={16} />
@@ -544,7 +570,7 @@ const WorkspaceMembersPage = () => {
                     </Group>
                   </Popover.Dropdown>
                 </Popover>
-              </Box>
+              )}
             </Group>
           )}
         </Group>
@@ -588,7 +614,7 @@ const WorkspaceMembersPage = () => {
                           {col.label}
                         </Text>
                         <Group gap={8} wrap="nowrap" style={{ flexShrink: 0 }}>
-                          {col.key === 'role' && (
+                          {col.key === 'role' && !isMobile && (
                             <Popover
                               opened={filterOpen}
                               onClose={() => setFilterOpen(false)}
@@ -603,6 +629,8 @@ const WorkspaceMembersPage = () => {
                                     variant="transparent"
                                     color={isFilterActive ? 'teal' : 'gray'}
                                     size={16}
+                                    aria-label="Фильтр по ролям"
+                                    title="Фильтр по ролям"
                                     onClick={(event) => {
                                       event.stopPropagation();
                                       openRoleFilter();
@@ -740,7 +768,7 @@ const WorkspaceMembersPage = () => {
                               </Popover.Dropdown>
                             </Popover>
                           )}
-                          <SortIcon colKey={col.key} />
+                          <SortIcon colKey={col.key} colLabel={col.label} />
                         </Group>
                       </Group>
                     </Table.Th>
