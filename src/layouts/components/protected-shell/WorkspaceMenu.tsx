@@ -26,6 +26,25 @@ type WorkspaceMenuProps = {
   mobile?: boolean;
 };
 
+const formatMembersCount = (count?: number) => {
+  if (typeof count !== 'number' || !Number.isFinite(count)) return null;
+
+  const value = Math.max(0, Math.trunc(count));
+
+  const mod10 = value % 10;
+  const mod100 = value % 100;
+
+  if (mod10 === 1 && mod100 !== 11) {
+    return `${value} участник`;
+  }
+
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+    return `${value} участника`;
+  }
+
+  return `${value} участников`;
+};
+
 const WorkspaceMenu = ({
   activeWorkspace,
   workspaceList,
@@ -34,6 +53,7 @@ const WorkspaceMenu = ({
 }: WorkspaceMenuProps) => {
   const { primaryColor } = usePrimaryColor();
   const [opened, setOpened] = useState(false);
+  const membersCountLabel = formatMembersCount(activeWorkspace?.members_count);
   const otherWorkspaces = workspaceList.filter(
     (workspace) => workspace.id !== activeWorkspace?.id,
   );
@@ -98,7 +118,7 @@ const WorkspaceMenu = ({
                 {activeWorkspace?.name ?? '—'}
               </Text>
               <Text fz="10px" lh="12.5px" c="dimmed" truncate mt={4}>
-                Владелец • 5 участников
+                Владелец{membersCountLabel ? ` • ${membersCountLabel}` : ''}
               </Text>
             </Box>
           </Group>

@@ -132,5 +132,7 @@ test('workspace members tab shows empty state', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: 'Настройки пространства' }),
   ).toBeVisible();
-  await expect(page.getByText('Сотрудников нет')).toBeVisible();
+  await expect(
+    page.getByRole('table').getByText('Сотрудников пока нет'),
+  ).toBeVisible();
 });

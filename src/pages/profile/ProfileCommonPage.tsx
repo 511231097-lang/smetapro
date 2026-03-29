@@ -16,6 +16,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
 import {
   IconAlertTriangle,
   IconPhone,
@@ -25,12 +26,34 @@ import {
 } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
-import { useGetAuthMe } from '../../shared/api/generated/smetchik';
+import {
+  getGetAuthMeQueryKey,
+  getGetProfileQueryKey,
+  useGetAuthMe,
+  usePatchProfile,
+} from '../../shared/api/generated/smetchik';
+import { HttpClientError } from '../../shared/api/httpClient';
+import { queryClient } from '../../shared/api/queryClient';
+
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof HttpClientError) {
+    const data = error.data as { error?: string } | undefined;
+    return data?.error ?? 'Не удалось сохранить профиль';
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Не удалось сохранить профиль';
+};
 
 const ProfileCommonPage = () => {
   const { data: userResp, isLoading, isError } = useGetAuthMe({});
   const user = userResp?.user;
   const userId = user?.id;
+  const userName = user?.name ?? '';
+  const userSurname = user?.surname ?? '';
   const userEmail = user?.email ?? '';
   const userPhone = user?.phone ?? '';
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -48,16 +71,60 @@ const ProfileCommonPage = () => {
       email: '',
       phone: '',
     },
+    validate: {
+      phone: (value) => (value.trim().length === 0 ? 'Введите телефон' : null),
+    },
   });
   const { setValues } = form;
 
   useEffect(() => {
     if (!userId) return;
     setValues({
+      name: userName,
+      surname: userSurname,
       email: userEmail,
       phone: userPhone,
     });
-  }, [setValues, userId, userEmail, userPhone]);
+  }, [setValues, userId, userName, userSurname, userEmail, userPhone]);
+
+  const updateProfileMutation = usePatchProfile({
+    mutation: {
+      onSuccess: (response) => {
+        const updatedUser = response.user;
+        if (!updatedUser) {
+          queryClient.invalidateQueries({ queryKey: getGetAuthMeQueryKey() });
+          queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey() });
+          return;
+        }
+
+        queryClient.setQueryData(getGetAuthMeQueryKey(), { user: updatedUser });
+        queryClient.setQueryData(getGetProfileQueryKey(), {
+          user: updatedUser,
+        });
+
+        setValues({
+          name: updatedUser.name ?? '',
+          surname: updatedUser.surname ?? '',
+          email: updatedUser.email ?? '',
+          phone: updatedUser.phone ?? '',
+        });
+        form.resetDirty();
+
+        notifications.show({
+          color: 'teal',
+          title: 'Профиль обновлён',
+          message: 'Изменения сохранены.',
+        });
+      },
+      onError: (error) => {
+        notifications.show({
+          color: 'red',
+          title: 'Ошибка',
+          message: getErrorMessage(error),
+        });
+      },
+    },
+  });
 
   if (isLoading) {
     return (
@@ -71,8 +138,16 @@ const ProfileCommonPage = () => {
     return <Text c="red">Не удалось загрузить профиль.</Text>;
   }
 
-  const handleSubmit = form.onSubmit((_values) => {
-    // API update будет добавлен позже
+  const handleSubmit = form.onSubmit((values) => {
+    if (!form.isDirty()) return;
+
+    updateProfileMutation.mutate({
+      data: {
+        name: values.name.trim(),
+        surname: values.surname.trim(),
+        phone: values.phone.trim(),
+      },
+    });
   });
 
   return (
@@ -139,6 +214,7 @@ const ProfileCommonPage = () => {
                     label="Почта"
                     placeholder="ivan@example.com"
                     type="email"
+                    readOnly
                     leftSection={
                       <Text fz={12} c="dimmed">
                         @
@@ -148,6 +224,7 @@ const ProfileCommonPage = () => {
                   />
                   <TextInput
                     label="Телефон"
+                    withAsterisk
                     placeholder="+7 (000) 000-00-00"
                     type="tel"
                     leftSection={<IconPhone size={14} />}
@@ -156,7 +233,11 @@ const ProfileCommonPage = () => {
                 </SimpleGrid>
 
                 <Group justify="flex-end" mt={4}>
-                  <Button type="submit" disabled={!form.isDirty()}>
+                  <Button
+                    type="submit"
+                    loading={updateProfileMutation.isPending}
+                    disabled={!form.isDirty()}
+                  >
                     Сохранить
                   </Button>
                 </Group>
