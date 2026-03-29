@@ -12,7 +12,7 @@ import {
   IconLayoutSidebarLeftExpand,
   IconLayoutSidebarRightExpand,
 } from '@tabler/icons-react';
-import { cloneElement, isValidElement } from 'react';
+import { cloneElement, isValidElement, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useWorkspace } from '../../../providers/WorkspaceProvider';
 import { getNavItems } from './constants';
@@ -33,6 +33,7 @@ const ProtectedSidebar = ({
   const { activeWorkspaceId } = useWorkspace();
   const navItems = getNavItems(activeWorkspaceId ?? '');
   const isExpandedView = !collapsed;
+  const [hoveredRoute, setHoveredRoute] = useState<string | null>(null);
 
   return (
     <AppShell.Navbar
@@ -55,10 +56,15 @@ const ProtectedSidebar = ({
           <Stack gap={0}>
             {navItems.map(({ label, icon, route }) => {
               const isItemActive = pathname.startsWith(route);
+              const isItemHovered = hoveredRoute === route;
               const iconNode =
                 !isExpandedView && isValidElement(icon)
                   ? cloneElement(icon, {
                       size: 20,
+                      color:
+                        isItemActive || isItemHovered
+                          ? 'var(--app-accent)'
+                          : 'var(--mantine-color-text)',
                     } as Record<string, unknown>)
                   : icon;
               const navLink = (
@@ -68,6 +74,17 @@ const ProtectedSidebar = ({
                   key={route}
                   component={Link}
                   to={route}
+                  onMouseEnter={
+                    !isExpandedView ? () => setHoveredRoute(route) : undefined
+                  }
+                  onMouseLeave={
+                    !isExpandedView
+                      ? () =>
+                          setHoveredRoute((current) =>
+                            current === route ? null : current,
+                          )
+                      : undefined
+                  }
                   label={
                     !isExpandedView ? (
                       <Box
@@ -76,9 +93,6 @@ const ProtectedSidebar = ({
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          '&:hover': {
-                            color: 'var(--mantine-primary-color-light-color)',
-                          },
                         }}
                       >
                         {iconNode}
@@ -99,27 +113,17 @@ const ProtectedSidebar = ({
                             justifyContent: 'center',
                             borderRadius: 4,
                             color: isItemActive
-                              ? 'var(--mantine-primary-color-light-color)'
+                              ? 'var(--app-accent)'
                               : 'var(--mantine-color-text)',
                             backgroundColor: isItemActive
-                              ? 'var(--mantine-primary-color-light)'
+                              ? 'var(--app-accent-soft)'
                               : 'transparent',
                             transition:
                               'background-color 120ms ease, color 120ms ease',
-                            '& svg': {
-                              color: isItemActive
-                                ? 'var(--mantine-primary-color-light-color)'
-                                : 'var(--mantine-color-text)',
-                              transition: 'color 120ms ease',
-                            },
                             '&:hover': {
-                              color: 'var(--mantine-primary-color-light-color)',
                               backgroundColor: isItemActive
-                                ? 'var(--mantine-primary-color-light)'
+                                ? 'var(--app-accent-soft)'
                                 : 'transparent',
-                            },
-                            '&:hover svg': {
-                              color: 'var(--mantine-primary-color-light-color)',
                             },
                           },
                           section: {
