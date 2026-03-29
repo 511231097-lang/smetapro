@@ -102,18 +102,13 @@ const ProtectedSidebar = ({
                             padding: '8px 12px',
                             justifyContent: 'center',
                             borderRadius: 4,
-                            color: isItemActive
-                              ? 'var(--mantine-color-white)'
-                              : 'var(--mantine-color-text)',
-                            backgroundColor: isItemActive
-                              ? 'var(--mantine-color-text)'
-                              : 'transparent',
+                            color: 'var(--mantine-color-text)',
+                            backgroundColor: 'transparent',
                             transition:
                               'background-color 120ms ease, color 120ms ease',
                             '&:hover': {
-                              backgroundColor: isItemActive
-                                ? 'var(--mantine-color-text)'
-                                : 'var(--mantine-color-default-hover)',
+                              color: 'var(--app-accent)',
+                              backgroundColor: 'transparent',
                             },
                           },
                           section: {
