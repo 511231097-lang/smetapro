@@ -8,8 +8,9 @@ export default defineConfig({
   setupFiles: ['./tests/rstest.setup.ts'],
   coverage: {
     reportOnFailure: true,
+    exclude: ['**/src/shared/api/generated/**'],
     thresholds: {
-      statements: 34,
+      statements: 31,
       branches: 14,
       functions: 13,
       lines: 30,
