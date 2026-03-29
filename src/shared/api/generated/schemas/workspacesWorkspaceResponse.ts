@@ -11,6 +11,7 @@ export interface WorkspacesWorkspaceResponse {
   created_by?: string;
   description?: string;
   id?: string;
+  members_count?: number;
   name?: string;
   updated_at?: string;
 }

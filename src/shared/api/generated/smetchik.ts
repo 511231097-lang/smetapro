@@ -32,6 +32,10 @@ import type {
   AuthVerifyRequest,
   GetWorkspacesParams,
   GetWorkspacesWorkspaceIdMembersParams,
+  ProfileChangePasswordRequest,
+  ProfileMessageResponse,
+  ProfileSuccessResponse,
+  ProfileUpdateProfileRequest,
   ToolsErrorResponse,
   WorkspacesCreateInviteRequest,
   WorkspacesCreateRequest,
@@ -756,11 +760,7 @@ export const postAuthRegisterVerify = (
 };
 
 export const getPostAuthRegisterVerifyMutationOptions = <
-  TError =
-    | ToolsErrorResponse
-    | ToolsErrorResponse
-    | ToolsErrorResponse
-    | ToolsErrorResponse,
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -804,18 +804,13 @@ export type PostAuthRegisterVerifyMutationBody = AuthVerifyRequest;
 export type PostAuthRegisterVerifyMutationError =
   | ToolsErrorResponse
   | ToolsErrorResponse
-  | ToolsErrorResponse
   | ToolsErrorResponse;
 
 /**
  * @summary Register verification (step 2)
  */
 export const usePostAuthRegisterVerify = <
-  TError =
-    | ToolsErrorResponse
-    | ToolsErrorResponse
-    | ToolsErrorResponse
-    | ToolsErrorResponse,
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
   TContext = unknown,
 >(
   options?: {
@@ -861,11 +856,7 @@ export const postAuthResetPassword = (
 };
 
 export const getPostAuthResetPasswordMutationOptions = <
-  TError =
-    | ToolsErrorResponse
-    | ToolsErrorResponse
-    | ToolsErrorResponse
-    | ToolsErrorResponse,
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -909,18 +900,13 @@ export type PostAuthResetPasswordMutationBody = AuthResetPasswordRequest;
 export type PostAuthResetPasswordMutationError =
   | ToolsErrorResponse
   | ToolsErrorResponse
-  | ToolsErrorResponse
   | ToolsErrorResponse;
 
 /**
  * @summary Reset password (step 2)
  */
 export const usePostAuthResetPassword = <
-  TError =
-    | ToolsErrorResponse
-    | ToolsErrorResponse
-    | ToolsErrorResponse
-    | ToolsErrorResponse,
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
   TContext = unknown,
 >(
   options?: {
@@ -1223,6 +1209,422 @@ export const usePostInviteToken = <
   TContext
 > => {
   const mutationOptions = getPostInviteTokenMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
+/**
+ * Soft-deletes current user, created workspaces and revokes all sessions.
+ * @summary Delete account
+ */
+export const deleteProfile = (options?: SecondParameter<typeof httpClient>) => {
+  return httpClient<ProfileMessageResponse>(
+    { url: `/api/v1/profile`, method: 'DELETE' },
+    options,
+  );
+};
+
+export const getDeleteProfileMutationOptions = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteProfile>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteProfile>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['deleteProfile'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteProfile>>,
+    void
+  > = () => {
+    return deleteProfile(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteProfileMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteProfile>>
+>;
+
+export type DeleteProfileMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
+
+/**
+ * @summary Delete account
+ */
+export const useDeleteProfile = <
+  TError =
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse
+    | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteProfile>>,
+      TError,
+      void,
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteProfile>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getDeleteProfileMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
+/**
+ * Returns current authenticated user profile.
+ * @summary Get current profile
+ */
+export const getProfile = (
+  options?: SecondParameter<typeof httpClient>,
+  signal?: AbortSignal,
+) => {
+  return httpClient<ProfileSuccessResponse>(
+    { url: `/api/v1/profile`, method: 'GET', signal },
+    options,
+  );
+};
+
+export const getGetProfileQueryKey = () => {
+  return [`/api/v1/profile`] as const;
+};
+
+export const getGetProfileQueryOptions = <
+  TData = Awaited<ReturnType<typeof getProfile>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getProfile>>, TError, TData>
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetProfileQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getProfile>>> = ({
+    signal,
+  }) => getProfile(requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getProfile>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetProfileQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getProfile>>
+>;
+export type GetProfileQueryError = ToolsErrorResponse | ToolsErrorResponse;
+
+export function useGetProfile<
+  TData = Awaited<ReturnType<typeof getProfile>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getProfile>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getProfile>>,
+          TError,
+          Awaited<ReturnType<typeof getProfile>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetProfile<
+  TData = Awaited<ReturnType<typeof getProfile>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getProfile>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getProfile>>,
+          TError,
+          Awaited<ReturnType<typeof getProfile>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetProfile<
+  TData = Awaited<ReturnType<typeof getProfile>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getProfile>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get current profile
+ */
+
+export function useGetProfile<
+  TData = Awaited<ReturnType<typeof getProfile>>,
+  TError = ToolsErrorResponse | ToolsErrorResponse,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getProfile>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetProfileQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * Updates current authenticated user profile fields.
+ * @summary Update current profile
+ */
+export const patchProfile = (
+  profileUpdateProfileRequest: ProfileUpdateProfileRequest,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<ProfileSuccessResponse>(
+    {
+      url: `/api/v1/profile`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: profileUpdateProfileRequest,
+    },
+    options,
+  );
+};
+
+export const getPatchProfileMutationOptions = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchProfile>>,
+    TError,
+    { data: ProfileUpdateProfileRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchProfile>>,
+  TError,
+  { data: ProfileUpdateProfileRequest },
+  TContext
+> => {
+  const mutationKey = ['patchProfile'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchProfile>>,
+    { data: ProfileUpdateProfileRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return patchProfile(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PatchProfileMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchProfile>>
+>;
+export type PatchProfileMutationBody = ProfileUpdateProfileRequest;
+export type PatchProfileMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
+
+/**
+ * @summary Update current profile
+ */
+export const usePatchProfile = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof patchProfile>>,
+      TError,
+      { data: ProfileUpdateProfileRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof patchProfile>>,
+  TError,
+  { data: ProfileUpdateProfileRequest },
+  TContext
+> => {
+  const mutationOptions = getPatchProfileMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
+/**
+ * Changes current authenticated user password using old password.
+ * @summary Change current password
+ */
+export const patchProfilePassword = (
+  profileChangePasswordRequest: ProfileChangePasswordRequest,
+  options?: SecondParameter<typeof httpClient>,
+) => {
+  return httpClient<ProfileMessageResponse>(
+    {
+      url: `/api/v1/profile/password`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: profileChangePasswordRequest,
+    },
+    options,
+  );
+};
+
+export const getPatchProfilePasswordMutationOptions = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchProfilePassword>>,
+    TError,
+    { data: ProfileChangePasswordRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchProfilePassword>>,
+  TError,
+  { data: ProfileChangePasswordRequest },
+  TContext
+> => {
+  const mutationKey = ['patchProfilePassword'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchProfilePassword>>,
+    { data: ProfileChangePasswordRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return patchProfilePassword(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PatchProfilePasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchProfilePassword>>
+>;
+export type PatchProfilePasswordMutationBody = ProfileChangePasswordRequest;
+export type PatchProfilePasswordMutationError =
+  | ToolsErrorResponse
+  | ToolsErrorResponse
+  | ToolsErrorResponse;
+
+/**
+ * @summary Change current password
+ */
+export const usePatchProfilePassword = <
+  TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof patchProfilePassword>>,
+      TError,
+      { data: ProfileChangePasswordRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof httpClient>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof patchProfilePassword>>,
+  TError,
+  { data: ProfileChangePasswordRequest },
+  TContext
+> => {
+  const mutationOptions = getPatchProfilePasswordMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

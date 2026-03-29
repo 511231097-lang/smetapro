@@ -6,16 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface WorkspacesUpdateMemberProfileRequest {
-  /** @maxLength 255 */
-  email?: string;
+export interface ProfileUpdateProfileRequest {
   /** @maxLength 255 */
   name?: string;
-  /** @maxLength 20 */
+  /** @maxLength 64 */
   phone?: string;
-  /** @maxLength 200 */
-  position?: string;
   /** @maxLength 255 */
   surname?: string;
-  telegram?: string;
 }

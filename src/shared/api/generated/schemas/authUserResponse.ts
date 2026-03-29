@@ -10,8 +10,10 @@ export interface AuthUserResponse {
   created_at?: string;
   email?: string;
   id?: string;
+  name?: string;
   permissions?: string[];
   phone?: string;
   roles?: string[];
+  surname?: string;
   updated_at?: string;
 }
