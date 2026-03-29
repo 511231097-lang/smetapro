@@ -15,7 +15,9 @@ import {
   Stack,
   Table,
   Text,
+  TextInput,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import {
   IconArrowsSort,
@@ -26,6 +28,7 @@ import {
   IconLogout,
   IconPencil,
   IconPlus,
+  IconSearch,
   IconSortAscendingLetters,
   IconSortDescendingLetters,
   IconTrash,
@@ -83,6 +86,7 @@ const COLUMNS: { key: string; label: string }[] = [
 const WorkspaceMembersPage = () => {
   const { primaryColor } = usePrimaryColor();
   const { workspaceId } = useParams<{ workspaceId: string }>();
+  const isMobile = useMediaQuery('(max-width: 48em)');
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const didAutoExpand = useRef(false);
@@ -99,6 +103,26 @@ const WorkspaceMembersPage = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [draftRoleCodes, setDraftRoleCodes] = useState<string[]>([]);
   const [filterRoleCodes, setFilterRoleCodes] = useState<string[]>([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const membersParams = useMemo(() => {
+    const params: {
+      role_code?: string;
+      sort_by?: string;
+      sort_dir?: 'asc' | 'desc';
+    } = {};
+
+    if (sortBy) {
+      params.sort_by = sortBy;
+      params.sort_dir = sortDir;
+    }
+
+    if (filterRoleCodes.length > 0) {
+      params.role_code = filterRoleCodes.join(',');
+    }
+
+    return Object.keys(params).length > 0 ? params : undefined;
+  }, [sortBy, sortDir, filterRoleCodes]);
 
   const inviteQueryKey = getGetWorkspacesWorkspaceIdInviteQueryKey(workspaceId);
   const membersQueryKey =
@@ -144,11 +168,9 @@ const WorkspaceMembersPage = () => {
   );
 
   const { data: membersData, isLoading: membersLoading } =
-    useGetWorkspacesWorkspaceIdMembers(
-      workspaceId ?? '',
-      sortBy ? { sort_by: sortBy, sort_dir: sortDir } : undefined,
-      { query: { enabled: !!workspaceId } },
-    );
+    useGetWorkspacesWorkspaceIdMembers(workspaceId ?? '', membersParams, {
+      query: { enabled: !!workspaceId },
+    });
 
   const createMutation = usePostWorkspacesWorkspaceIdInvite({
     mutation: {
@@ -218,12 +240,41 @@ const WorkspaceMembersPage = () => {
   }));
 
   const allRoles = rolesData?.roles ?? [];
-  const isFilterActive = filterRoleCodes.length > 0;
-  const filteredMembers = (membersData?.members ?? []).filter(
-    (m) =>
-      filterRoleCodes.length === 0 ||
-      (m.role?.code != null && filterRoleCodes.includes(m.role.code)),
+  const allRoleCodes = useMemo(
+    () => allRoles.map((role) => role.code ?? '').filter(Boolean),
+    [allRoles],
   );
+  const normalizedSearch = searchValue.trim().toLowerCase();
+  const isFilterActive = filterRoleCodes.length > 0;
+  const activeRoleCountLabel =
+    filterRoleCodes.length > 9 ? '9+' : String(filterRoleCodes.length);
+  const isAllRolesSelected =
+    allRoleCodes.length > 0 && draftRoleCodes.length === allRoleCodes.length;
+  const filteredMembers = (membersData?.members ?? []).filter((m) => {
+    if (!normalizedSearch) return true;
+
+    const fullName = [m.name, m.surname].filter(Boolean).join(' ');
+    const searchable = [
+      fullName,
+      m.phone,
+      m.email,
+      m.telegram,
+      m.position,
+      m.role?.name,
+      m.role?.code,
+    ]
+      .filter(
+        (value): value is string => value != null && value.trim().length > 0,
+      )
+      .join(' ')
+      .toLowerCase();
+
+    return searchable.includes(normalizedSearch);
+  });
+  const emptyMembersText =
+    (membersData?.members?.length ?? 0) > 0
+      ? 'По вашему запросу ничего не найдено'
+      : 'Сотрудников пока нет';
 
   const inviteUrl = invite?.token
     ? `${window.location.origin}/invite/${invite.token}`
@@ -258,16 +309,52 @@ const WorkspaceMembersPage = () => {
     }
   };
 
+  const openRoleFilter = () => {
+    setDraftRoleCodes(
+      filterRoleCodes.length === 0 ? allRoleCodes : filterRoleCodes,
+    );
+    setFilterOpen(true);
+  };
+
+  const applyRoleFilter = () => {
+    setFilterRoleCodes(isAllRolesSelected ? [] : draftRoleCodes);
+    setFilterOpen(false);
+  };
+
+  const resetRoleFilter = () => {
+    setDraftRoleCodes(allRoleCodes);
+    setFilterRoleCodes([]);
+    setFilterOpen(false);
+  };
+
   const SortIcon = ({ colKey }: { colKey: string }) => {
-    if (sortBy !== colKey)
-      return <IconArrowsSort size={14} color="var(--mantine-color-gray-5)" />;
-    return sortDir === 'asc' ? (
-      <IconSortAscendingLetters size={14} color="var(--mantine-color-teal-6)" />
-    ) : (
-      <IconSortDescendingLetters
-        size={14}
-        color="var(--mantine-color-teal-6)"
-      />
+    const icon =
+      sortBy !== colKey ? (
+        <IconArrowsSort size={14} color="var(--mantine-color-gray-5)" />
+      ) : sortDir === 'asc' ? (
+        <IconSortAscendingLetters
+          size={14}
+          color="var(--mantine-color-teal-6)"
+        />
+      ) : (
+        <IconSortDescendingLetters
+          size={14}
+          color="var(--mantine-color-teal-6)"
+        />
+      );
+
+    return (
+      <ActionIcon
+        variant="transparent"
+        color="gray"
+        size={16}
+        onClick={(event) => {
+          event.stopPropagation();
+          handleSort(colKey);
+        }}
+      >
+        {icon}
+      </ActionIcon>
     );
   };
 
@@ -284,157 +371,182 @@ const WorkspaceMembersPage = () => {
     : isExpanded
       ? () => setIsExpanded(false)
       : () => setIsExpanded(true);
+  const isSearchExpandedOnMobile = isSearchExpanded && !!isMobile;
 
   return (
     <Stack gap={0}>
       {/* Action bar */}
       <Paper withBorder={false} radius="md" p={12} mb={8}>
-        <Group justify="space-between">
+        <Group
+          justify="space-between"
+          gap={8}
+          wrap={isSearchExpandedOnMobile ? 'wrap' : 'nowrap'}
+        >
           <Button
             size="sm"
             leftSection={panelLeftIcon}
             onClick={panelOnClick}
             loading={createMutation.isPending && !isActive}
             disabled={!isActive && selectedRole === null}
+            style={{
+              flexShrink: 0,
+              width: isSearchExpandedOnMobile ? '100%' : undefined,
+            }}
           >
             Добавить сотрудника
           </Button>
 
-          <Popover
-            opened={filterOpen}
-            onClose={() => setFilterOpen(false)}
-            position="bottom-end"
-            shadow="md"
-            withinPortal
-            withArrow={false}
-          >
-            <Popover.Target>
-              <ActionIcon
-                variant={isFilterActive ? 'filled' : 'outline'}
-                size={32}
-                onClick={() => {
-                  if (!filterOpen) {
-                    const allCodes = allRoles
-                      .map((r) => r.code ?? '')
-                      .filter(Boolean);
-                    setDraftRoleCodes(
-                      filterRoleCodes.length === 0 ? allCodes : filterRoleCodes,
-                    );
-                  }
-                  setFilterOpen((o) => !o);
-                }}
-              >
-                <IconFilter size={16} />
-              </ActionIcon>
-            </Popover.Target>
-            <Popover.Dropdown p={0} style={{ minWidth: 280 }}>
-              {/* Header */}
-              <Group
-                justify="space-between"
-                px={16}
-                style={{
-                  height: 44,
-                  borderBottom: '1px solid var(--mantine-color-default-border)',
-                }}
-              >
-                <Group gap={8}>
-                  <IconFilter size={16} />
-                  <Text fw={700} size="md">
-                    Фильтры
-                  </Text>
-                </Group>
+          {isSearchExpanded ? (
+            <TextInput
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.currentTarget.value)}
+              placeholder="Поиск по сотрудникам..."
+              leftSection={<IconSearch size={16} />}
+              rightSection={
                 <ActionIcon
                   variant="subtle"
                   color="gray"
-                  onClick={() => setFilterOpen(false)}
+                  size={22}
+                  onClick={() => {
+                    setSearchValue('');
+                    setIsSearchExpanded(false);
+                  }}
                 >
-                  <IconX size={16} />
+                  <IconX size={14} />
                 </ActionIcon>
-              </Group>
-              {/* Body */}
-              <Stack gap={0} px={16} pt={12} pb={4}>
-                <Text
-                  size="xs"
-                  fw={600}
-                  c="dimmed"
-                  tt="uppercase"
-                  mb={8}
-                  style={{ letterSpacing: '0.04em' }}
+              }
+              rightSectionPointerEvents="all"
+              size="sm"
+              style={{
+                maxWidth: isSearchExpandedOnMobile ? '100%' : 458,
+                width: '100%',
+              }}
+            />
+          ) : (
+            <Group gap={8} wrap="nowrap">
+              <ActionIcon
+                variant="outline"
+                color="teal"
+                size={32}
+                onClick={() => setIsSearchExpanded(true)}
+              >
+                <IconSearch size={16} />
+              </ActionIcon>
+
+              <Box hiddenFrom="sm">
+                <Popover
+                  opened={filterOpen}
+                  onClose={() => setFilterOpen(false)}
+                  position="bottom-end"
+                  shadow="md"
+                  withinPortal
+                  withArrow
                 >
-                  Роль
-                </Text>
-                <Stack gap={0}>
-                  <Checkbox
-                    py={4}
-                    label={
-                      <Text size="sm" fw={600}>
-                        Все роли
-                      </Text>
-                    }
-                    checked={
-                      draftRoleCodes.length === allRoles.length &&
-                      allRoles.length > 0
-                    }
-                    indeterminate={
-                      draftRoleCodes.length > 0 &&
-                      draftRoleCodes.length < allRoles.length
-                    }
-                    onChange={(e) => {
-                      if (e.currentTarget.checked)
-                        setDraftRoleCodes(
-                          allRoles.map((r) => r.code ?? '').filter(Boolean),
-                        );
-                      else setDraftRoleCodes([]);
-                    }}
-                  />
-                  {allRoles.map((role) => (
-                    <Checkbox
-                      key={role.id}
-                      py={4}
-                      label={role.name ?? role.code}
-                      checked={draftRoleCodes.includes(role.code ?? '')}
-                      onChange={(e) => {
-                        const code = role.code ?? '';
-                        if (e.currentTarget.checked)
-                          setDraftRoleCodes((prev) => [...prev, code]);
-                        else
-                          setDraftRoleCodes((prev) =>
-                            prev.filter((c) => c !== code),
-                          );
+                  <Popover.Target>
+                    <ActionIcon
+                      variant={isFilterActive ? 'filled' : 'outline'}
+                      color="teal"
+                      size={32}
+                      onClick={openRoleFilter}
+                    >
+                      <IconFilter size={16} />
+                    </ActionIcon>
+                  </Popover.Target>
+                  <Popover.Dropdown
+                    p={0}
+                    style={{ minWidth: 332 }}
+                    onMouseDown={(event) => event.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <Group
+                      justify="space-between"
+                      px={16}
+                      style={{
+                        height: 45,
+                        borderBottom:
+                          '1px solid var(--mantine-color-default-border)',
                       }}
-                    />
-                  ))}
-                </Stack>
-              </Stack>
-              {/* Footer */}
-              <Group px={16} pb={16} pt={8} gap={8}>
-                <Button
-                  style={{ flex: 1 }}
-                  onClick={() => {
-                    setFilterRoleCodes(
-                      draftRoleCodes.length === allRoles.length
-                        ? []
-                        : draftRoleCodes,
-                    );
-                    setFilterOpen(false);
-                  }}
-                >
-                  Применить
-                </Button>
-                <Button
-                  variant="default"
-                  style={{ flex: 1 }}
-                  onClick={() => {
-                    setDraftRoleCodes([]);
-                    setFilterRoleCodes([]);
-                    setFilterOpen(false);
-                  }}
-                >
-                  Сбросить
-                </Button>
-              </Group>
-            </Popover.Dropdown>
-          </Popover>
+                    >
+                      <Group gap={8}>
+                        <IconFilter size={16} />
+                        <Text fw={700} size="md">
+                          Фильтр
+                        </Text>
+                      </Group>
+                      <ActionIcon
+                        variant="subtle"
+                        color="gray"
+                        onClick={() => setFilterOpen(false)}
+                      >
+                        <IconX size={16} />
+                      </ActionIcon>
+                    </Group>
+                    <Stack gap={0} px={16} pt={12} pb={4}>
+                      <Checkbox
+                        py={4}
+                        label={
+                          <Text size="sm" fw={600}>
+                            Все роли
+                          </Text>
+                        }
+                        checked={isAllRolesSelected}
+                        indeterminate={
+                          draftRoleCodes.length > 0 &&
+                          draftRoleCodes.length < allRoleCodes.length
+                        }
+                        onChange={(e) => {
+                          if (e.currentTarget.checked)
+                            setDraftRoleCodes(allRoleCodes);
+                          else setDraftRoleCodes([]);
+                        }}
+                      />
+                      {allRoles.map((role) => (
+                        <Checkbox
+                          key={role.id}
+                          py={4}
+                          label={role.name ?? role.code}
+                          checked={draftRoleCodes.includes(role.code ?? '')}
+                          onChange={(e) => {
+                            const code = role.code ?? '';
+                            if (e.currentTarget.checked)
+                              setDraftRoleCodes((prev) =>
+                                prev.includes(code) ? prev : [...prev, code],
+                              );
+                            else
+                              setDraftRoleCodes((prev) =>
+                                prev.filter((c) => c !== code),
+                              );
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                    <Group
+                      px={16}
+                      pb={12}
+                      pt={12}
+                      gap={8}
+                      style={{
+                        borderTop:
+                          '1px solid var(--mantine-color-default-border)',
+                      }}
+                    >
+                      <Button style={{ flex: 1 }} onClick={applyRoleFilter}>
+                        Применить
+                      </Button>
+                      <Button
+                        variant="default"
+                        style={{ flex: 1 }}
+                        disabled={!isFilterActive && isAllRolesSelected}
+                        onClick={resetRoleFilter}
+                      >
+                        Сбросить
+                      </Button>
+                    </Group>
+                  </Popover.Dropdown>
+                </Popover>
+              </Box>
+            </Group>
+          )}
         </Group>
       </Paper>
 
@@ -465,16 +577,171 @@ const WorkspaceMembersPage = () => {
               <Table.Thead>
                 <Table.Tr>
                   {COLUMNS.map((col) => (
-                    <Table.Th
-                      key={col.key}
-                      style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
-                      onClick={() => handleSort(col.key)}
-                    >
-                      <Group gap={4} wrap="nowrap">
+                    <Table.Th key={col.key} style={{ whiteSpace: 'nowrap' }}>
+                      <Group
+                        justify="space-between"
+                        gap={8}
+                        wrap="nowrap"
+                        style={{ width: '100%' }}
+                      >
                         <Text fw={700} size="xs">
                           {col.label}
                         </Text>
-                        <SortIcon colKey={col.key} />
+                        <Group gap={8} wrap="nowrap" style={{ flexShrink: 0 }}>
+                          {col.key === 'role' && (
+                            <Popover
+                              opened={filterOpen}
+                              onClose={() => setFilterOpen(false)}
+                              position="bottom-end"
+                              shadow="md"
+                              withinPortal
+                              withArrow
+                            >
+                              <Popover.Target>
+                                <Group gap={0} wrap="nowrap">
+                                  <ActionIcon
+                                    variant="transparent"
+                                    color={isFilterActive ? 'teal' : 'gray'}
+                                    size={16}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      openRoleFilter();
+                                    }}
+                                  >
+                                    <IconFilter size={14} />
+                                  </ActionIcon>
+                                  {isFilterActive && (
+                                    <Box
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        openRoleFilter();
+                                      }}
+                                      style={{
+                                        alignItems: 'center',
+                                        background:
+                                          'var(--mantine-color-teal-filled)',
+                                        borderRadius: 8,
+                                        color: 'var(--mantine-color-white)',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        fontSize: 10,
+                                        height: 12,
+                                        justifyContent: 'center',
+                                        lineHeight: '12.5px',
+                                        minWidth: 12,
+                                        padding: '0 2px',
+                                      }}
+                                    >
+                                      {activeRoleCountLabel}
+                                    </Box>
+                                  )}
+                                </Group>
+                              </Popover.Target>
+                              <Popover.Dropdown
+                                p={0}
+                                style={{ minWidth: 332 }}
+                                onMouseDown={(event) => event.stopPropagation()}
+                                onClick={(event) => event.stopPropagation()}
+                              >
+                                <Group
+                                  justify="space-between"
+                                  px={16}
+                                  style={{
+                                    height: 45,
+                                    borderBottom:
+                                      '1px solid var(--mantine-color-default-border)',
+                                  }}
+                                >
+                                  <Group gap={8}>
+                                    <IconFilter size={16} />
+                                    <Text fw={700} size="md">
+                                      Фильтр
+                                    </Text>
+                                  </Group>
+                                  <ActionIcon
+                                    variant="subtle"
+                                    color="gray"
+                                    onClick={() => setFilterOpen(false)}
+                                  >
+                                    <IconX size={16} />
+                                  </ActionIcon>
+                                </Group>
+                                <Stack gap={0} px={16} pt={12} pb={4}>
+                                  <Checkbox
+                                    py={4}
+                                    label={
+                                      <Text size="sm" fw={600}>
+                                        Все роли
+                                      </Text>
+                                    }
+                                    checked={isAllRolesSelected}
+                                    indeterminate={
+                                      draftRoleCodes.length > 0 &&
+                                      draftRoleCodes.length <
+                                        allRoleCodes.length
+                                    }
+                                    onChange={(e) => {
+                                      if (e.currentTarget.checked)
+                                        setDraftRoleCodes(allRoleCodes);
+                                      else setDraftRoleCodes([]);
+                                    }}
+                                  />
+                                  {allRoles.map((role) => (
+                                    <Checkbox
+                                      key={role.id}
+                                      py={4}
+                                      label={role.name ?? role.code}
+                                      checked={draftRoleCodes.includes(
+                                        role.code ?? '',
+                                      )}
+                                      onChange={(e) => {
+                                        const code = role.code ?? '';
+                                        if (e.currentTarget.checked)
+                                          setDraftRoleCodes((prev) =>
+                                            prev.includes(code)
+                                              ? prev
+                                              : [...prev, code],
+                                          );
+                                        else
+                                          setDraftRoleCodes((prev) =>
+                                            prev.filter((c) => c !== code),
+                                          );
+                                      }}
+                                    />
+                                  ))}
+                                </Stack>
+                                <Group
+                                  px={16}
+                                  pb={12}
+                                  pt={12}
+                                  gap={8}
+                                  style={{
+                                    borderTop:
+                                      '1px solid var(--mantine-color-default-border)',
+                                  }}
+                                >
+                                  <Button
+                                    style={{ flex: 1 }}
+                                    onClick={applyRoleFilter}
+                                  >
+                                    Применить
+                                  </Button>
+                                  <Button
+                                    variant="default"
+                                    style={{ flex: 1 }}
+                                    disabled={
+                                      !isFilterActive && isAllRolesSelected
+                                    }
+                                    onClick={resetRoleFilter}
+                                  >
+                                    Сбросить
+                                  </Button>
+                                </Group>
+                              </Popover.Dropdown>
+                            </Popover>
+                          )}
+                          <SortIcon colKey={col.key} />
+                        </Group>
                       </Group>
                     </Table.Th>
                   ))}
@@ -487,7 +754,7 @@ const WorkspaceMembersPage = () => {
                     <Table.Td colSpan={COLUMNS.length + 1}>
                       <Center py={32}>
                         <Text c="dimmed" size="sm">
-                          Сотрудников нет
+                          {emptyMembersText}
                         </Text>
                       </Center>
                     </Table.Td>
@@ -626,7 +893,7 @@ const WorkspaceMembersPage = () => {
         ) : filteredMembers.length === 0 ? (
           <Center py={32}>
             <Text c="dimmed" size="sm">
-              Сотрудников пока нет
+              {emptyMembersText}
             </Text>
           </Center>
         ) : (
