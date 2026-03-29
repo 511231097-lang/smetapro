@@ -48,7 +48,7 @@ const ProtectedSidebar = ({
           display: 'flex',
           flexDirection: 'column',
           height: '100%',
-          width: isExpandedView ? 248 : 64,
+          width: isExpandedView ? 248 : 60,
           background: 'var(--app-sidebar-bg)',
           transition: 'width 120ms ease',
         }}
@@ -56,6 +56,7 @@ const ProtectedSidebar = ({
         <Stack style={{ flex: 1 }} pt="16px">
           <Stack gap={0}>
             {navItems.map(({ label, icon, route, chevron }) => {
+              const isItemActive = pathname.startsWith(route);
               const iconNode =
                 !isExpandedView && isValidElement(icon)
                   ? cloneElement(icon, {
@@ -64,7 +65,8 @@ const ProtectedSidebar = ({
                   : icon;
               const navLink = (
                 <NavLink
-                  p={isExpandedView ? '6px 10px' : '7px'}
+                  p={isExpandedView ? '6px 10px' : undefined}
+                  mih={isExpandedView ? undefined : 36}
                   key={route}
                   component={Link}
                   to={route}
@@ -92,11 +94,36 @@ const ProtectedSidebar = ({
                       <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
                     ) : undefined
                   }
-                  style={
-                    !isExpandedView ? { justifyContent: 'center' } : undefined
+                  styles={
+                    !isExpandedView
+                      ? {
+                          root: {
+                            minHeight: 36,
+                            padding: '8px 12px',
+                            justifyContent: 'center',
+                            borderRadius: 4,
+                            color: isItemActive
+                              ? 'var(--mantine-color-white)'
+                              : 'var(--mantine-color-text)',
+                            backgroundColor: isItemActive
+                              ? 'var(--mantine-color-text)'
+                              : 'transparent',
+                            transition:
+                              'background-color 120ms ease, color 120ms ease',
+                            '&:hover': {
+                              backgroundColor: isItemActive
+                                ? 'var(--mantine-color-text)'
+                                : 'var(--mantine-color-default-hover)',
+                            },
+                          },
+                          section: {
+                            margin: 0,
+                          },
+                        }
+                      : undefined
                   }
                   aria-label={!isExpandedView ? label : undefined}
-                  active={pathname.startsWith(route)}
+                  active={isExpandedView ? isItemActive : undefined}
                 />
               );
 
@@ -107,19 +134,25 @@ const ProtectedSidebar = ({
                   key={route}
                   label={label}
                   position="right"
-                  withArrow={false}
+                  withArrow
+                  arrowSize={4}
                   openDelay={120}
-                  offset={0}
+                  offset={2}
                   withinPortal
                   styles={{
                     tooltip: {
-                      height: 34,
-                      padding: '0 10px',
+                      padding: 8,
+                      fontSize: 12,
+                      lineHeight: '16px',
+                      fontWeight: 400,
                       display: 'flex',
                       alignItems: 'center',
-                      background: 'var(--app-sidebar-bg)',
-                      color: 'var(--app-sidebar-tooltip-text)',
+                      background: '#212529',
+                      color: '#ffffff',
                       borderRadius: 4,
+                    },
+                    arrow: {
+                      background: '#212529',
                     },
                   }}
                 >
@@ -131,10 +164,11 @@ const ProtectedSidebar = ({
         </Stack>
 
         {!lockCollapsed && (
-          <Group justify={!isExpandedView ? 'center' : 'end'} p="12px">
+          <Group justify="flex-end" p="12px">
             <ActionIcon
-              variant="subtle"
+              variant="transparent"
               color="gray"
+              size={20}
               onClick={onToggleSidebar}
               aria-label="Свернуть боковое меню"
             >

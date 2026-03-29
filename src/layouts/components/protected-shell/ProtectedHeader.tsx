@@ -35,6 +35,8 @@ type ProtectedHeaderProps = {
   onWorkspaceSelect: (id: string | null) => void;
   onGoToProfile: () => void;
   onLogout: () => void;
+  hideWorkspaceMenu?: boolean;
+  hideMobileMenuButton?: boolean;
 };
 
 const ProtectedHeader = ({
@@ -46,6 +48,8 @@ const ProtectedHeader = ({
   onWorkspaceSelect,
   onGoToProfile,
   onLogout,
+  hideWorkspaceMenu = false,
+  hideMobileMenuButton = false,
 }: ProtectedHeaderProps) => {
   const { toggleColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
@@ -80,23 +84,27 @@ const ProtectedHeader = ({
             />
           </Link>
 
-          <WorkspaceMenu
-            activeWorkspace={activeWorkspace}
-            workspaceList={workspaceList}
-            onWorkspaceSelect={onWorkspaceSelect}
-          />
+          {!hideWorkspaceMenu && (
+            <WorkspaceMenu
+              activeWorkspace={activeWorkspace}
+              workspaceList={workspaceList}
+              onWorkspaceSelect={onWorkspaceSelect}
+            />
+          )}
         </Group>
 
         <Group gap={4} wrap="nowrap">
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            hiddenFrom="sm"
-            onClick={onOpenMobileMenu}
-            aria-label="Открыть меню"
-          >
-            <HugeiconsIcon icon={Menu01Icon} size={20} />
-          </ActionIcon>
+          {!hideMobileMenuButton && (
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              hiddenFrom="sm"
+              onClick={onOpenMobileMenu}
+              aria-label="Открыть меню"
+            >
+              <HugeiconsIcon icon={Menu01Icon} size={20} />
+            </ActionIcon>
+          )}
 
           <Box visibleFrom="sm">
             <Menu

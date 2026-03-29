@@ -15,6 +15,7 @@ type ProtectedShellProps = {
 };
 
 const FORCED_COLLAPSED_WIDTH = 950;
+const COLLAPSED_SIDEBAR_WIDTH = 60;
 
 const ProtectedShell = ({ user }: ProtectedShellProps) => {
   const location = useLocation();
@@ -59,7 +60,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
       <AppShell
         header={{ height: 59 }}
         navbar={{
-          width: effectiveCollapsed ? 64 : 248,
+          width: effectiveCollapsed ? COLLAPSED_SIDEBAR_WIDTH : 248,
           breakpoint: 'sm',
           collapsed: { mobile: true, desktop: false },
         }}
