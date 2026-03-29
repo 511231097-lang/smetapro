@@ -47,7 +47,7 @@ npm run dev
 
 ## Переменные окружения
 
-- `BASE_API_URL` — базовый URL для HTTP-клиента (обязательная).
+- `BASE_API_URL` — базовый URL для HTTP-клиента (обязательная переменная).
 - `BASE_USER` / `BASE_PASS` — Basic Auth для dev-proxy в `rsbuild.config.ts` (используется для проксирования `/api` на `https://dev.smetchik.pro`).
 - `PW_BASE_URL` — базовый URL для Playwright (по умолчанию `http://127.0.0.1:4000`).
 
