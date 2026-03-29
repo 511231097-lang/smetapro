@@ -23,4 +23,8 @@ export type GetWorkspacesWorkspaceIdMembersParams = {
    * Sort direction: asc, desc
    */
   sort_dir?: string;
+  /**
+   * Comma-separated role codes
+   */
+  role_code?: string;
 };

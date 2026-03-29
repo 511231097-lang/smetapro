@@ -6,16 +6,14 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface WorkspacesUpdateMemberProfileRequest {
-  /** @maxLength 255 */
+export interface DtoUserResponse {
+  created_at?: string;
   email?: string;
-  /** @maxLength 255 */
+  id?: string;
   name?: string;
-  /** @maxLength 20 */
+  permissions?: string[];
   phone?: string;
-  /** @maxLength 200 */
-  position?: string;
-  /** @maxLength 255 */
+  roles?: string[];
   surname?: string;
-  telegram?: string;
+  updated_at?: string;
 }
