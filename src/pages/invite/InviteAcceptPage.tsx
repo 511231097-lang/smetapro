@@ -16,6 +16,7 @@ import { notifications } from '@mantine/notifications';
 import { IconCheck } from '@tabler/icons-react';
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { wsInitials } from '../../layouts/components/protected-shell/constants';
 import ProtectedHeader from '../../layouts/components/protected-shell/ProtectedHeader';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
@@ -38,15 +39,14 @@ const getErrorMessage = (error: unknown) => {
   return 'Не удалось вступить в пространство';
 };
 
-const getWorkspaceInitials = (name?: string | null) => {
-  if (!name) return 'WS';
+const getInviteWorkspaceId = (invite: unknown): string | null => {
+  if (!invite || typeof invite !== 'object') return null;
 
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
+  const workspaceId = (invite as { workspace_id?: unknown }).workspace_id;
+  if (typeof workspaceId !== 'string') return null;
 
-  return name.slice(0, 2).toUpperCase();
+  const normalizedWorkspaceId = workspaceId.trim();
+  return normalizedWorkspaceId.length > 0 ? normalizedWorkspaceId : null;
 };
 
 const formatMembersLabel = (count?: number) => {
@@ -75,15 +75,11 @@ const InviteAcceptPage = () => {
   const isDark = computedColorScheme === 'dark';
 
   const { data: userData } = useGetAuthMe({});
-  const { data: workspacesData } = useGetWorkspaces(undefined, {
-    query: { enabled: !!userData },
-  });
+  const { data: workspacesData, isLoading: isWorkspacesLoading } =
+    useGetWorkspaces(undefined, {
+      query: { enabled: !!userData },
+    });
   const workspaceList = workspacesData?.workspaces ?? [];
-  const fallbackWorkspaceId = workspaceList[0]?.id ?? null;
-
-  const fallbackRoute = fallbackWorkspaceId
-    ? buildRoute(ROUTES.PROJECTS, { workspaceId: fallbackWorkspaceId })
-    : ROUTES.ROOT;
 
   const {
     data: inviteData,
@@ -138,7 +134,7 @@ const InviteAcceptPage = () => {
           return;
         }
 
-        navigate(fallbackRoute, { replace: true });
+        navigate(resolveFallbackRoute(), { replace: true });
       },
       onError: (error) => {
         notifications.show({
@@ -156,39 +152,53 @@ const InviteAcceptPage = () => {
     () => formatMembersLabel(invite?.member_count),
     [invite?.member_count],
   );
-  const existingWorkspaceId = useMemo(() => {
-    const inviteWorkspaceName = invite?.workspace_name?.trim().toLowerCase();
-    if (!inviteWorkspaceName) return null;
-
-    const existingWorkspace = workspaceList.find(
-      (workspace) =>
-        workspace.name?.trim().toLowerCase() === inviteWorkspaceName,
-    );
-
-    return existingWorkspace?.id ?? null;
-  }, [invite?.workspace_name, workspaceList]);
+  const existingWorkspaceId = useMemo(
+    () => getInviteWorkspaceId(invite),
+    [invite],
+  );
 
   const email = userData?.user?.email ?? '';
   const initials = email.slice(0, 2).toUpperCase() || 'U';
+  const isFallbackRouteLoading =
+    Boolean(userData) && isWorkspacesLoading && workspaceList.length === 0;
+
+  const resolveFallbackWorkspaceId = () => {
+    const queryWorkspaces =
+      queryClient.getQueryData<WorkspacesListResponse | undefined>(
+        getGetWorkspacesQueryKey(),
+      )?.workspaces ?? [];
+
+    return queryWorkspaces[0]?.id ?? workspaceList[0]?.id ?? null;
+  };
+
+  const resolveFallbackRoute = () => {
+    const workspaceId = resolveFallbackWorkspaceId();
+    return workspaceId
+      ? buildRoute(ROUTES.PROJECTS, { workspaceId })
+      : ROUTES.ROOT;
+  };
+
+  const navigateToFallbackRoute = () =>
+    navigate(resolveFallbackRoute(), { replace: true });
 
   const handleGoToProfile = () => {
-    if (!fallbackWorkspaceId) {
+    const workspaceId = resolveFallbackWorkspaceId();
+    if (!workspaceId) {
       navigate(ROUTES.ROOT);
       return;
     }
 
-    navigate(
-      buildRoute(ROUTES.PROFILE_COMMON, { workspaceId: fallbackWorkspaceId }),
-    );
+    navigate(buildRoute(ROUTES.PROFILE_COMMON, { workspaceId }));
   };
 
   const handleLogout = () => {
-    if (!fallbackWorkspaceId) {
+    const workspaceId = resolveFallbackWorkspaceId();
+    if (!workspaceId) {
       navigate(ROUTES.ROOT);
       return;
     }
 
-    navigate(buildRoute(ROUTES.LOGOUT, { workspaceId: fallbackWorkspaceId }));
+    navigate(buildRoute(ROUTES.LOGOUT, { workspaceId }));
   };
 
   const workspacePanelBackground = isDark ? '#3b414b' : '#f1f3f5';
@@ -197,7 +207,7 @@ const InviteAcceptPage = () => {
 
   useEffect(() => {
     if (!existingWorkspaceId) return;
-    if (isLoading || isError) return;
+    if (isLoading) return;
 
     navigate(
       buildRoute(ROUTES.WORKSPACE_GENERAL, {
@@ -205,7 +215,7 @@ const InviteAcceptPage = () => {
       }),
       { replace: true },
     );
-  }, [existingWorkspaceId, isLoading, isError, navigate]);
+  }, [existingWorkspaceId, isLoading, navigate]);
 
   return (
     <AppShell header={{ height: 59 }}>
@@ -283,7 +293,8 @@ const InviteAcceptPage = () => {
                           fontWeight: 400,
                         },
                       }}
-                      onClick={() => navigate(fallbackRoute, { replace: true })}
+                      disabled={isFallbackRouteLoading}
+                      onClick={navigateToFallbackRoute}
                     >
                       Хорошо
                     </Button>
@@ -317,7 +328,7 @@ const InviteAcceptPage = () => {
                         variant="filled"
                         style={{ fontSize: 16, fontWeight: 700 }}
                       >
-                        {getWorkspaceInitials(workspaceName)}
+                        {wsInitials(workspaceName)}
                       </Avatar>
                       <Text
                         style={{
@@ -368,7 +379,8 @@ const InviteAcceptPage = () => {
                         fontWeight: 400,
                       },
                     }}
-                    onClick={() => navigate(fallbackRoute, { replace: true })}
+                    disabled={isFallbackRouteLoading}
+                    onClick={navigateToFallbackRoute}
                   >
                     Отклонить
                   </Button>

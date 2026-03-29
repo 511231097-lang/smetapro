@@ -118,7 +118,7 @@ test('expired invite shows outdated message and one confirm button', async ({
   await expect(page).toHaveURL(/\/existing-ws-1\/projects$/);
 });
 
-test('already member is redirected to workspace profile immediately', async ({
+test('already member is redirected to workspace settings immediately', async ({
   page,
 }) => {
   await setupApiMock(page, {
@@ -127,6 +127,7 @@ test('already member is redirected to workspace profile immediately', async ({
       [inviteToken]: {
         expires_at: '2035-01-01T00:00:00.000Z',
         member_count: 4,
+        workspace_id: invitedWorkspaceId,
         workspace_name: 'Команда QA',
       },
     },

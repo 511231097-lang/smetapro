@@ -5,6 +5,9 @@ import {
 } from '@tabler/icons-react';
 import { buildRoute, ROUTES } from '../../../shared/constants/routes';
 
+const SIDEBAR_WIDTH = 248;
+const COLLAPSED_SIDEBAR_WIDTH = 60;
+
 const getNavItems = (workspaceId: string) =>
   [
     {
@@ -38,4 +41,4 @@ const wsInitials = (name?: string | null): string => {
   return name.slice(0, 2).toUpperCase();
 };
 
-export { getNavItems, wsInitials };
+export { COLLAPSED_SIDEBAR_WIDTH, getNavItems, SIDEBAR_WIDTH, wsInitials };

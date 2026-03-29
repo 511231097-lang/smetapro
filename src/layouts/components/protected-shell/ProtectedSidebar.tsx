@@ -7,15 +7,19 @@ import {
   Stack,
   Text,
   Tooltip,
-} from "@mantine/core";
+} from '@mantine/core';
 import {
   IconLayoutSidebarLeftExpand,
   IconLayoutSidebarRightExpand,
-} from "@tabler/icons-react";
-import { cloneElement, isValidElement, useState } from "react";
-import { Link } from "react-router-dom";
-import { useWorkspace } from "../../../providers/WorkspaceProvider";
-import { getNavItems } from "./constants";
+} from '@tabler/icons-react';
+import { cloneElement, isValidElement, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useWorkspace } from '../../../providers/WorkspaceProvider';
+import {
+  COLLAPSED_SIDEBAR_WIDTH,
+  getNavItems,
+  SIDEBAR_WIDTH,
+} from './constants';
 
 type ProtectedSidebarProps = {
   pathname: string;
@@ -31,25 +35,25 @@ const ProtectedSidebar = ({
   onToggleSidebar,
 }: ProtectedSidebarProps) => {
   const { activeWorkspaceId } = useWorkspace();
-  const navItems = getNavItems(activeWorkspaceId ?? "");
+  const navItems = getNavItems(activeWorkspaceId ?? '');
   const isExpandedView = !collapsed;
   const [hoveredRoute, setHoveredRoute] = useState<string | null>(null);
 
   return (
     <AppShell.Navbar
       style={{
-        background: "var(--app-sidebar-bg)",
-        borderRight: "1px solid var(--app-border)",
+        background: 'var(--app-sidebar-bg)',
+        borderRight: '1px solid var(--app-border)',
       }}
     >
       <Box
         style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          width: isExpandedView ? 248 : 60,
-          background: "var(--app-sidebar-bg)",
-          transition: "width 120ms ease",
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          width: isExpandedView ? SIDEBAR_WIDTH : COLLAPSED_SIDEBAR_WIDTH,
+          background: 'var(--app-sidebar-bg)',
+          transition: 'width 120ms ease',
         }}
       >
         <Stack style={{ flex: 1 }} pt="16px">
@@ -63,13 +67,13 @@ const ProtectedSidebar = ({
                       size: 20,
                       color:
                         isItemActive || isItemHovered
-                          ? "var(--mantine-primary-color-light-color)"
-                          : "var(--mantine-color-text)",
+                          ? 'var(--mantine-primary-color-light-color)'
+                          : 'var(--mantine-color-text)',
                     } as Record<string, unknown>)
                   : icon;
               const navLink = (
                 <NavLink
-                  p={isExpandedView ? "6px 10px" : undefined}
+                  p={isExpandedView ? '6px 10px' : undefined}
                   mih={isExpandedView ? undefined : 36}
                   key={route}
                   component={Link}
@@ -89,16 +93,16 @@ const ProtectedSidebar = ({
                     !isExpandedView ? (
                       <Box
                         style={{
-                          width: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
                         {iconNode}
                       </Box>
                     ) : (
-                      <Text pl={"4px"} fz="16px">
+                      <Text pl={'4px'} fz="16px">
                         {label}
                       </Text>
                     )
@@ -109,21 +113,21 @@ const ProtectedSidebar = ({
                       ? {
                           root: {
                             minHeight: 36,
-                            padding: "8px 12px",
-                            justifyContent: "center",
+                            padding: '8px 12px',
+                            justifyContent: 'center',
                             borderRadius: 4,
                             color: isItemActive
-                              ? "var(--app-accent)"
-                              : "var(--mantine-color-text)",
+                              ? 'var(--app-accent)'
+                              : 'var(--mantine-color-text)',
                             backgroundColor: isItemActive
-                              ? "var(--app-accent-soft)"
-                              : "transparent",
+                              ? 'var(--app-accent-soft)'
+                              : 'transparent',
                             transition:
-                              "background-color 120ms ease, color 120ms ease",
-                            "&:hover": {
+                              'background-color 120ms ease, color 120ms ease',
+                            '&:hover': {
                               backgroundColor: isItemActive
-                                ? "var(--app-accent-soft)"
-                                : "transparent",
+                                ? 'var(--app-accent-soft)'
+                                : 'transparent',
                             },
                           },
                           section: {
@@ -153,16 +157,16 @@ const ProtectedSidebar = ({
                     tooltip: {
                       padding: 8,
                       fontSize: 12,
-                      lineHeight: "16px",
+                      lineHeight: '16px',
                       fontWeight: 400,
-                      display: "flex",
-                      alignItems: "center",
-                      background: "#212529",
-                      color: "#ffffff",
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: 'var(--app-sidebar-bg)',
+                      color: 'var(--app-sidebar-tooltip-text)',
                       borderRadius: 4,
                     },
                     arrow: {
-                      background: "#212529",
+                      background: 'var(--app-sidebar-bg)',
                     },
                   }}
                 >
