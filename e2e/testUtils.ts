@@ -46,6 +46,7 @@ type InvitePreview = {
   member_count?: number;
   role?: MemberRole;
   workspace_description?: string;
+  workspace_id?: string;
   workspace_name?: string;
 };
 

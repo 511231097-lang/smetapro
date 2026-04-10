@@ -6,6 +6,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../../providers/WorkspaceProvider';
 import type { AuthSuccessResponse } from '../../../shared/api/generated/schemas';
 import { buildRoute, ROUTES } from '../../../shared/constants/routes';
+import { COLLAPSED_SIDEBAR_WIDTH, SIDEBAR_WIDTH } from './constants';
 import ProtectedHeader from './ProtectedHeader';
 import ProtectedMobileDrawer from './ProtectedMobileDrawer';
 import ProtectedSidebar from './ProtectedSidebar';
@@ -59,7 +60,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
       <AppShell
         header={{ height: 59 }}
         navbar={{
-          width: effectiveCollapsed ? 64 : 248,
+          width: effectiveCollapsed ? COLLAPSED_SIDEBAR_WIDTH : SIDEBAR_WIDTH,
           breakpoint: 'sm',
           collapsed: { mobile: true, desktop: false },
         }}
