@@ -104,6 +104,27 @@ npm run api
 
 Сгенерированные файлы редактировать вручную не нужно.
 
+Чтобы подтянуть свежую спеки с dev-сервера и сразу перегенерировать клиент:
+
+```bash
+npm run api:sync
+```
+
+Перед запуском `api:sync` нужно задать параметры подключения через переменные окружения:
+
+- `SMETCHIK_API_SSH_HOST` — SSH-хост в формате `user@example-host` (обязательно)
+- `SMETCHIK_API_SSH_KEY` — путь к приватному ключу (опционально, по умолчанию `~/.ssh/id_ed25519`)
+- `SMETCHIK_API_REMOTE_PATH` — путь до `swagger.yaml` на удаленном сервере (обязательно)
+- `SMETCHIK_API_LOCAL_SCHEMA_PATH` — локальный путь сохранения схемы (опционально, по умолчанию `./schema.yaml`)
+
+Пример:
+
+```bash
+SMETCHIK_API_SSH_HOST=user@example-host \
+SMETCHIK_API_REMOTE_PATH=/opt/apps/smetchik/dev/backend/docs/api/swagger/swagger.yaml \
+npm run api:sync
+```
+
 ## Структура проекта (кратко)
 
 - `src/pages` — страницы приложения

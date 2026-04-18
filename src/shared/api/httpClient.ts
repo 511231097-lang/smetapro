@@ -125,7 +125,10 @@ const isBodyInit = (value: unknown): value is BodyInit => {
   return value instanceof ReadableStream;
 };
 
-const parseBody = async (response: Response) => {
+const parseBody = async (
+  response: Response,
+  responseType?: HttpClientResponseType,
+) => {
   if (response.status === 204) {
     return undefined;
   }
@@ -133,6 +136,10 @@ const parseBody = async (response: Response) => {
   const contentLength = response.headers.get('content-length');
   if (contentLength === '0') {
     return undefined;
+  }
+
+  if (responseType === 'blob') {
+    return response.blob();
   }
 
   const contentType = response.headers.get('content-type');
@@ -167,8 +174,11 @@ export type HttpClientConfig<TBody> = {
   params?: QueryParams;
   data?: TBody;
   headers?: Record<string, string>;
+  responseType?: HttpClientResponseType;
   signal?: AbortSignal;
 };
+
+export type HttpClientResponseType = 'blob';
 
 export type HttpClientOptions = {
   skipRefresh?: boolean;
@@ -178,7 +188,8 @@ export type HttpClientOptions = {
 const rawRequest = async <TResponse, TBody = unknown>(
   config: HttpClientConfig<TBody>,
 ): Promise<TResponse> => {
-  const { url, method, baseUrl, params, data, headers, signal } = config;
+  const { url, method, baseUrl, params, data, headers, responseType, signal } =
+    config;
   const requestUrl = buildUrl(url, baseUrl, params);
 
   const requestHeaders = new Headers(headers);
@@ -201,7 +212,7 @@ const rawRequest = async <TResponse, TBody = unknown>(
   }
 
   const response = await fetch(requestUrl, init);
-  const parsed = await parseBody(response);
+  const parsed = await parseBody(response, responseType);
 
   if (!response.ok) {
     throw new HttpClientError(response, parsed);

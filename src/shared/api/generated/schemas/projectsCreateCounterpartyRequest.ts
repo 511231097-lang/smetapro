@@ -6,13 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type GetWorkspacesParams = {
-/**
- * Page size
- */
-limit?: number;
-/**
- * Page offset
- */
-offset?: number;
-};
+export interface ProjectsCreateCounterpartyRequest {
+  /** @maxLength 255 */
+  email?: string;
+  name: string;
+  phone?: string;
+  type: string;
+}

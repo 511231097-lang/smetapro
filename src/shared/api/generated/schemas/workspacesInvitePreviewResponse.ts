@@ -9,6 +9,7 @@ import type { WorkspacesMemberRoleResponse } from './workspacesMemberRoleRespons
 
 export interface WorkspacesInvitePreviewResponse {
   expires_at?: string;
+  logo_url?: string;
   member_count?: number;
   role?: WorkspacesMemberRoleResponse;
   workspace_description?: string;

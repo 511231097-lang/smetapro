@@ -6,15 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface DtoUserResponse {
-  avatar_url?: string;
-  created_at?: string;
+export interface ProjectsUpdateCounterpartyRequestBody {
   email?: string;
-  id?: string;
   name?: string;
-  permissions?: string[];
   phone?: string;
-  roles?: string[];
-  surname?: string;
-  updated_at?: string;
+  type?: string;
 }

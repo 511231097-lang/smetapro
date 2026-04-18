@@ -5,20 +5,16 @@
  * HTTP API сервиса smethick-pro.
  * OpenAPI spec version: 1.0
  */
-import type { WorkspacesMemberRoleResponse } from './workspacesMemberRoleResponse';
+import type { ProjectsCounterpartyTypeResponse } from './projectsCounterpartyTypeResponse';
 
-export interface WorkspacesMemberResponse {
-  avatar_url?: string;
+export interface ProjectsCounterpartyResponse {
   created_at?: string;
+  deleted_at?: string;
   email?: string;
   id?: string;
   name?: string;
   phone?: string;
-  position?: string;
-  role?: WorkspacesMemberRoleResponse;
-  surname?: string;
-  telegram?: string;
+  type?: ProjectsCounterpartyTypeResponse;
   updated_at?: string;
-  user_id?: string;
   workspace_id?: string;
 }

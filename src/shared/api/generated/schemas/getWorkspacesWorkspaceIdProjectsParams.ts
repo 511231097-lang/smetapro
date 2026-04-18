@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type GetWorkspacesWorkspaceIdMembersParams = {
+export type GetWorkspacesWorkspaceIdProjectsParams = {
 /**
  * Page size
  */
@@ -16,19 +16,11 @@ limit?: number;
  */
 offset?: number;
 /**
- * Sort field: full_name, phone, email, telegram, position, role
+ * Sort field: name, counterparty, start_date, end_date, status
  */
 sort_by?: string;
 /**
  * Sort direction: asc, desc
  */
 sort_dir?: string;
-/**
- * Comma-separated role codes
- */
-role_code?: string;
-/**
- * Search across name, surname, phone, email, telegram, position, role
- */
-search?: string;
 };
