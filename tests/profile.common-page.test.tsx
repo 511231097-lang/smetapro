@@ -1,37 +1,51 @@
 import { MantineProvider } from '@mantine/core';
 import { beforeEach, describe, expect, rstest, test } from '@rstest/core';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 const mocks = rstest.hoisted(() => ({
+  postProfileAvatar: rstest.fn(),
   mutateProfile: rstest.fn(),
-  useGetAuthMe: rstest.fn(),
+  useGetProfile: rstest.fn(),
   usePatchProfile: rstest.fn(),
 }));
 
 rstest.mock('../src/shared/api/generated/smetchik', () => ({
-  getGetAuthMeQueryKey: () => ['/api/v1/auth/me'],
   getGetProfileQueryKey: () => ['/api/v1/profile'],
-  useGetAuthMe: mocks.useGetAuthMe,
+  postProfileAvatar: mocks.postProfileAvatar,
+  useGetProfile: mocks.useGetProfile,
   usePatchProfile: mocks.usePatchProfile,
 }));
 
 import ProfileCommonPage from '../src/pages/profile/ProfileCommonPage';
 
 const renderPage = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      mutations: { retry: false },
+      queries: { retry: false },
+    },
+  });
+
   render(
-    <MantineProvider>
-      <ProfileCommonPage />
-    </MantineProvider>,
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider>
+        <ProfileCommonPage />
+      </MantineProvider>
+    </QueryClientProvider>,
   );
 };
 
 describe('ProfileCommonPage', () => {
   beforeEach(() => {
     mocks.mutateProfile.mockReset();
-    mocks.useGetAuthMe.mockReset();
+    mocks.postProfileAvatar.mockReset();
+    mocks.useGetProfile.mockReset();
     mocks.usePatchProfile.mockReset();
 
-    mocks.useGetAuthMe.mockReturnValue({
+    mocks.postProfileAvatar.mockResolvedValue({});
+
+    mocks.useGetProfile.mockReturnValue({
       data: {
         user: {
           id: 'user-1',

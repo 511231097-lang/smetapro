@@ -16,7 +16,7 @@ test('renders login page route', async () => {
           ? input.toString()
           : input.url;
 
-    if (url.includes('/api/v1/auth/me')) {
+    if (url.includes('/api/v1/profile')) {
       return new Response(JSON.stringify({ message: 'Unauthorized' }), {
         status: 401,
         headers: {

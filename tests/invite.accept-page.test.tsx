@@ -5,7 +5,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 const mocks = rstest.hoisted(() => ({
   mutateInvite: rstest.fn(),
   navigate: rstest.fn(),
-  useGetAuthMe: rstest.fn(),
+  useGetProfile: rstest.fn(),
   useGetInviteToken: rstest.fn(),
   useGetWorkspaces: rstest.fn(),
   useNavigate: rstest.fn(),
@@ -32,7 +32,7 @@ rstest.mock('../src/providers/PrimaryColorProvider', () => ({
 
 rstest.mock('../src/shared/api/generated/smetchik', () => ({
   getGetWorkspacesQueryKey: () => ['/api/v1/workspaces'],
-  useGetAuthMe: mocks.useGetAuthMe,
+  useGetProfile: mocks.useGetProfile,
   useGetInviteToken: mocks.useGetInviteToken,
   useGetWorkspaces: mocks.useGetWorkspaces,
   usePostInviteToken: mocks.usePostInviteToken,
@@ -52,7 +52,7 @@ describe('InviteAcceptPage', () => {
   beforeEach(() => {
     mocks.mutateInvite.mockReset();
     mocks.navigate.mockReset();
-    mocks.useGetAuthMe.mockReset();
+    mocks.useGetProfile.mockReset();
     mocks.useGetInviteToken.mockReset();
     mocks.useGetWorkspaces.mockReset();
     mocks.useNavigate.mockReset();
@@ -61,7 +61,7 @@ describe('InviteAcceptPage', () => {
 
     mocks.useNavigate.mockReturnValue(mocks.navigate);
     mocks.useParams.mockReturnValue({ token: 'invite-token' });
-    mocks.useGetAuthMe.mockReturnValue({
+    mocks.useGetProfile.mockReturnValue({
       data: { user: { id: 'user-1', email: 'ivan@example.com' } },
     });
     mocks.useGetWorkspaces.mockReturnValue({

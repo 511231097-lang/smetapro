@@ -24,16 +24,20 @@ import {
   IconUpload,
   IconUser,
 } from '@tabler/icons-react';
-import { useEffect, useRef, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import {
-  getGetAuthMeQueryKey,
   getGetProfileQueryKey,
-  useGetAuthMe,
+  postProfileAvatar,
+  useGetProfile,
   usePatchProfile,
 } from '../../shared/api/generated/smetchik';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { queryClient } from '../../shared/api/queryClient';
+import ImageEditorModal, {
+  type EditorSource,
+} from '../../shared/components/ImageEditorModal';
 
 const getErrorMessage = (error: unknown) => {
   if (error instanceof HttpClientError) {
@@ -49,17 +53,22 @@ const getErrorMessage = (error: unknown) => {
 };
 
 const ProfileCommonPage = () => {
-  const { data: userResp, isLoading, isError } = useGetAuthMe({});
-  const user = userResp?.user;
+  const { data: profileResp, isLoading, isError } = useGetProfile({});
+  const user = profileResp?.user;
   const userId = user?.id;
   const userName = user?.name ?? '';
   const userSurname = user?.surname ?? '';
   const userEmail = user?.email ?? '';
   const userPhone = user?.phone ?? '';
+  const avatarUrl =
+    user && 'avatar_url' in user
+      ? (user as { avatar_url?: string }).avatar_url
+      : undefined;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [deleteOpen, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
   const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [editorSource, setEditorSource] = useState<EditorSource | null>(null);
   const { primaryColor } = usePrimaryColor();
 
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : 'U';
@@ -78,6 +87,14 @@ const ProfileCommonPage = () => {
   const { setValues } = form;
 
   useEffect(() => {
+    return () => {
+      if (editorSource?.url) {
+        URL.revokeObjectURL(editorSource.url);
+      }
+    };
+  }, [editorSource?.url]);
+
+  useEffect(() => {
     if (!userId) return;
     setValues({
       name: userName,
@@ -92,12 +109,10 @@ const ProfileCommonPage = () => {
       onSuccess: (response) => {
         const updatedUser = response.user;
         if (!updatedUser) {
-          queryClient.invalidateQueries({ queryKey: getGetAuthMeQueryKey() });
           queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey() });
           return;
         }
 
-        queryClient.setQueryData(getGetAuthMeQueryKey(), { user: updatedUser });
         queryClient.setQueryData(getGetProfileQueryKey(), {
           user: updatedUser,
         });
@@ -125,6 +140,73 @@ const ProfileCommonPage = () => {
       },
     },
   });
+
+  const uploadAvatarMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      return postProfileAvatar({ data: formData });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey() });
+      setEditorSource(null);
+
+      notifications.show({
+        color: 'teal',
+        title: 'Фото профиля обновлено',
+        message: 'Изображение успешно сохранено.',
+      });
+    },
+    onError: (error) => {
+      notifications.show({
+        color: 'red',
+        title: 'Ошибка загрузки',
+        message: getErrorMessage(error),
+      });
+    },
+  });
+
+  const closeEditor = () => {
+    if (uploadAvatarMutation.isPending) return;
+    setEditorSource(null);
+  };
+
+  const handleAvatarFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = '';
+    if (!file) return;
+
+    const allowedTypes = new Set([
+      'image/gif',
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+    ]);
+    const maxSize = 3 * 1024 * 1024;
+
+    if (!allowedTypes.has(file.type.toLowerCase())) {
+      notifications.show({
+        color: 'red',
+        title: 'Неверный формат',
+        message: 'Поддерживаются файлы *.jpeg, *.jpg, *.png, *.gif',
+      });
+      return;
+    }
+
+    if (file.size > maxSize) {
+      notifications.show({
+        color: 'red',
+        title: 'Файл слишком большой',
+        message: 'Максимальный размер изображения — 3.0 MB',
+      });
+      return;
+    }
+
+    setEditorSource({
+      file,
+      url: URL.createObjectURL(file),
+    });
+  };
 
   if (isLoading) {
     return (
@@ -172,6 +254,7 @@ const ProfileCommonPage = () => {
                 radius={9999}
                 size={56}
                 color={primaryColor}
+                src={avatarUrl}
               >
                 {initials}
               </Avatar>
@@ -181,6 +264,7 @@ const ProfileCommonPage = () => {
                 size="xs"
                 leftSection={<IconUpload size={12} />}
                 onClick={() => fileInputRef.current?.click()}
+                disabled={uploadAvatarMutation.isPending}
               >
                 Загрузить фото
               </Button>
@@ -189,6 +273,7 @@ const ProfileCommonPage = () => {
                 type="file"
                 accept=".jpeg,.jpg,.png,.gif"
                 style={{ display: 'none' }}
+                onChange={handleAvatarFileSelect}
               />
             </Group>
 
@@ -331,6 +416,17 @@ const ProfileCommonPage = () => {
           </Group>
         </Stack>
       </Modal>
+
+      <ImageEditorModal
+        opened={!!editorSource}
+        source={editorSource}
+        shape="circle"
+        loading={uploadAvatarMutation.isPending}
+        onClose={closeEditor}
+        onSave={async (file) => {
+          await uploadAvatarMutation.mutateAsync(file);
+        }}
+      />
     </>
   );
 };

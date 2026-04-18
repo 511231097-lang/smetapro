@@ -1,5 +1,6 @@
 import {
   Alert,
+  Avatar,
   Box,
   Button,
   Center,
@@ -17,20 +18,26 @@ import {
 import { useForm } from '@mantine/form';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { IconAlertTriangle, IconTrash } from '@tabler/icons-react';
-import { useEffect, useRef, useState } from 'react';
+import { IconAlertTriangle, IconTrash, IconUpload } from '@tabler/icons-react';
+import { useMutation } from '@tanstack/react-query';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
 import type { WorkspacesSingleWorkspaceResponse } from '../../shared/api/generated/schemas/workspacesSingleWorkspaceResponse';
 import {
   getGetWorkspacesQueryKey,
   getGetWorkspacesWorkspaceIdQueryKey,
+  postWorkspacesWorkspaceIdLogo,
   useDeleteWorkspacesWorkspaceId,
   useGetWorkspacesWorkspaceId,
   usePutWorkspacesWorkspaceId,
 } from '../../shared/api/generated/smetchik';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { queryClient } from '../../shared/api/queryClient';
+import ImageEditorModal, {
+  type EditorSource,
+} from '../../shared/components/ImageEditorModal';
 import { buildRoute, ROUTES } from '../../shared/constants/routes';
 
 const DESCRIPTION_MAX = 320;
@@ -142,10 +149,12 @@ const WorkspaceGeneralPage = () => {
   const [deleteOpened, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [editorSource, setEditorSource] = useState<EditorSource | null>(null);
   const [savedValues, setSavedValues] = useState<WorkspaceFormValues>({
     name: '',
     description: '',
   });
+  const { primaryColor } = usePrimaryColor();
 
   const form = useForm({
     initialValues: {
@@ -178,6 +187,14 @@ const WorkspaceGeneralPage = () => {
     setValues(nextValues);
     setSavedValues(nextValues);
   }, [setValues, workspaceSyncId, workspaceName, workspaceDescription]);
+
+  useEffect(() => {
+    return () => {
+      if (editorSource?.url) {
+        URL.revokeObjectURL(editorSource.url);
+      }
+    };
+  }, [editorSource?.url]);
 
   const currentValues = normalizeWorkspaceFormValues(form.values);
   const currentSavedValues = normalizeWorkspaceFormValues(savedValues);
@@ -287,6 +304,119 @@ const WorkspaceGeneralPage = () => {
     },
   });
 
+  const uploadLogoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      if (!workspaceId) {
+        throw new Error('Не удалось определить пространство');
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      return postWorkspacesWorkspaceIdLogo(workspaceId, { data: formData });
+    },
+    onSuccess: (response) => {
+      if (!workspaceId) return;
+
+      const nextLogoUrl = response.logo_url;
+      const listKey = getGetWorkspacesQueryKey();
+      const detailKey = getGetWorkspacesWorkspaceIdQueryKey(workspaceId);
+      const currentList = queryClient.getQueryData<
+        WorkspacesListResponse | undefined
+      >(listKey);
+
+      if (currentList?.workspaces?.length) {
+        queryClient.setQueryData<WorkspacesListResponse | undefined>(listKey, {
+          ...currentList,
+          workspaces: currentList.workspaces.map((item) =>
+            item.id === workspaceId ? { ...item, logo_url: nextLogoUrl } : item,
+          ),
+        });
+      }
+
+      const currentDetail = queryClient.getQueryData<
+        WorkspacesSingleWorkspaceResponse | undefined
+      >(detailKey);
+      if (currentDetail?.workspace) {
+        queryClient.setQueryData<WorkspacesSingleWorkspaceResponse | undefined>(
+          detailKey,
+          {
+            ...currentDetail,
+            workspace: {
+              ...currentDetail.workspace,
+              logo_url: nextLogoUrl,
+            },
+          },
+        );
+      } else if (workspace) {
+        queryClient.setQueryData<WorkspacesSingleWorkspaceResponse | undefined>(
+          detailKey,
+          {
+            workspace: {
+              ...workspace,
+              logo_url: nextLogoUrl,
+            },
+          },
+        );
+      }
+
+      setEditorSource(null);
+      notifications.show({
+        color: 'teal',
+        title: 'Логотип обновлён',
+        message: 'Изображение успешно сохранено.',
+      });
+    },
+    onError: (error) => {
+      notifications.show({
+        color: 'red',
+        title: 'Ошибка загрузки',
+        message: getErrorMessage(error),
+      });
+    },
+  });
+
+  const closeEditor = () => {
+    if (uploadLogoMutation.isPending) return;
+    setEditorSource(null);
+  };
+
+  const handleLogoFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = '';
+    if (!file) return;
+
+    const allowedTypes = new Set([
+      'image/gif',
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+    ]);
+    const maxSize = 3 * 1024 * 1024;
+
+    if (!allowedTypes.has(file.type.toLowerCase())) {
+      notifications.show({
+        color: 'red',
+        title: 'Неверный формат',
+        message: 'Поддерживаются файлы *.jpeg, *.jpg, *.png, *.gif',
+      });
+      return;
+    }
+
+    if (file.size > maxSize) {
+      notifications.show({
+        color: 'red',
+        title: 'Файл слишком большой',
+        message: 'Максимальный размер изображения — 3.0 MB',
+      });
+      return;
+    }
+
+    setEditorSource({
+      file,
+      url: URL.createObjectURL(file),
+    });
+  };
+
   if (!workspaceId) return <Navigate to={ROUTES.WORKSPACE_CREATE} replace />;
 
   if (isLoading) {
@@ -315,6 +445,14 @@ const WorkspaceGeneralPage = () => {
   });
 
   const descLen = form.values.description.length;
+  const workspaceInitials =
+    workspace.name
+      ?.split(/\s+/)
+      .filter(Boolean)
+      .map((part) => part[0] ?? '')
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() || 'WS';
 
   return (
     <>
@@ -357,6 +495,9 @@ const WorkspaceGeneralPage = () => {
               Логотип компании
             </Title>
             <Box
+              role="button"
+              tabIndex={0}
+              aria-label="Загрузить логотип"
               style={{
                 width: isMobile ? 110 : 140,
                 height: isMobile ? 110 : 140,
@@ -370,16 +511,39 @@ const WorkspaceGeneralPage = () => {
                 justifyContent: 'center',
               }}
               onClick={() => fileInputRef.current?.click()}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
             >
-              <Text c="dimmed" size="sm">
-                Фото
-              </Text>
+              <Avatar
+                size={isMobile ? 110 : 140}
+                radius={30}
+                color={primaryColor}
+                variant="filled"
+                src={workspace.logo_url ?? undefined}
+              >
+                {workspaceInitials}
+              </Avatar>
             </Box>
+            <Button
+              variant="outline"
+              color="gray"
+              size="xs"
+              leftSection={<IconUpload size={12} />}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadLogoMutation.isPending}
+            >
+              Загрузить логотип
+            </Button>
             <input
               ref={fileInputRef}
               type="file"
               accept=".jpeg,.jpg,.png,.gif"
               style={{ display: 'none' }}
+              onChange={handleLogoFileSelect}
             />
             <Text size="xs" c="dimmed" ta="center">
               Разрешены *.jpeg, *.jpg, *.png, *.gif
@@ -438,6 +602,17 @@ const WorkspaceGeneralPage = () => {
           </form>
         </Paper>
       </Group>
+
+      <ImageEditorModal
+        opened={!!editorSource}
+        source={editorSource}
+        shape="rounded"
+        loading={uploadLogoMutation.isPending}
+        onClose={closeEditor}
+        onSave={async (file) => {
+          await uploadLogoMutation.mutateAsync(file);
+        }}
+      />
     </>
   );
 };

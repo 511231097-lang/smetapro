@@ -29,6 +29,7 @@ import WorkspaceMenu from './WorkspaceMenu';
 type ProtectedHeaderProps = {
   email: string;
   initials: string;
+  avatarUrl?: string;
   activeWorkspace?: WorkspacesWorkspaceResponse;
   workspaceList: WorkspacesWorkspaceResponse[];
   onOpenMobileMenu: () => void;
@@ -42,6 +43,7 @@ type ProtectedHeaderProps = {
 const ProtectedHeader = ({
   email,
   initials,
+  avatarUrl,
   activeWorkspace,
   workspaceList,
   onOpenMobileMenu,
@@ -133,6 +135,7 @@ const ProtectedHeader = ({
                     variant="filled"
                     radius="xl"
                     size={34}
+                    src={avatarUrl}
                   >
                     {initials}
                   </Avatar>

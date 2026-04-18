@@ -83,6 +83,7 @@ const WorkspaceMenu = ({
               radius={4}
               color={primaryColor}
               variant="filled"
+              src={activeWorkspace?.logo_url ?? undefined}
               style={{ fontSize: 11, fontWeight: 700 }}
             >
               {wsInitials(activeWorkspace?.name)}
@@ -109,6 +110,7 @@ const WorkspaceMenu = ({
               radius={4}
               color={primaryColor}
               variant="filled"
+              src={activeWorkspace?.logo_url ?? undefined}
               style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}
             >
               {wsInitials(activeWorkspace?.name)}
@@ -161,6 +163,7 @@ const WorkspaceMenu = ({
                       radius={4}
                       color={primaryColor}
                       variant="filled"
+                      src={workspace.logo_url ?? undefined}
                       style={{
                         fontSize: 13,
                         fontWeight: 700,

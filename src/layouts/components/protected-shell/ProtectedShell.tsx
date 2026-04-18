@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { useWorkspace } from '../../../providers/WorkspaceProvider';
-import type { AuthSuccessResponse } from '../../../shared/api/generated/schemas';
+import type { DtoUserResponse } from '../../../shared/api/generated/schemas';
 import { buildRoute, ROUTES } from '../../../shared/constants/routes';
 import { COLLAPSED_SIDEBAR_WIDTH, SIDEBAR_WIDTH } from './constants';
 import ProtectedHeader from './ProtectedHeader';
@@ -12,7 +12,7 @@ import ProtectedMobileDrawer from './ProtectedMobileDrawer';
 import ProtectedSidebar from './ProtectedSidebar';
 
 type ProtectedShellProps = {
-  user: AuthSuccessResponse;
+  user: DtoUserResponse;
 };
 
 const FORCED_COLLAPSED_WIDTH = 950;
@@ -33,7 +33,8 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
   const { activeWorkspace, workspaceList, setActiveWorkspaceId } =
     useWorkspace();
 
-  const email = user?.user?.email ?? '';
+  const email = user?.email ?? '';
+  const avatarUrl = user?.avatar_url ?? undefined;
   const initials = email.slice(0, 2).toUpperCase() || 'U';
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: location is intentional trigger
@@ -68,6 +69,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
         <ProtectedHeader
           email={email}
           initials={initials}
+          avatarUrl={avatarUrl}
           activeWorkspace={activeWorkspace}
           workspaceList={workspaceList}
           onOpenMobileMenu={openMobileMenu}
@@ -104,6 +106,7 @@ const ProtectedShell = ({ user }: ProtectedShellProps) => {
         opened={mobileMenuOpened}
         pathname={location.pathname}
         initials={initials}
+        avatarUrl={avatarUrl}
         activeWorkspace={activeWorkspace}
         workspaceList={workspaceList}
         onWorkspaceSelect={setActiveWorkspaceId}

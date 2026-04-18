@@ -181,6 +181,11 @@ export type HttpClientConfig<TBody> = {
 export type HttpClientResponseType = 'blob';
 
 export type HttpClientOptions = {
+  baseUrl?: string;
+  data?: unknown;
+  headers?: Record<string, string>;
+  params?: QueryParams;
+  responseType?: HttpClientResponseType;
   skipRefresh?: boolean;
 };
 
@@ -225,29 +230,43 @@ export const httpClient = async <TResponse, TBody = unknown>(
   config: HttpClientConfig<TBody>,
   options?: HttpClientOptions,
 ): Promise<TResponse> => {
+  const mergedConfig: HttpClientConfig<TBody> = {
+    ...config,
+    baseUrl: options?.baseUrl ?? config.baseUrl,
+    params: options?.params ?? config.params,
+    responseType: options?.responseType ?? config.responseType,
+    data: (options?.data as TBody | undefined) ?? config.data,
+    headers: options?.headers
+      ? { ...(config.headers ?? {}), ...options.headers }
+      : config.headers,
+  };
+
   try {
-    return await rawRequest<TResponse, TBody>(config);
+    return await rawRequest<TResponse, TBody>(mergedConfig);
   } catch (error) {
     // нас интересует только 401 от бизнес-ручек
     if (
       error instanceof HttpClientError &&
       error.status === 401 &&
       !options?.skipRefresh &&
-      !isAuthEndpoint(config.url)
+      !isAuthEndpoint(mergedConfig.url)
     ) {
       // 1) запускаем/ждем refresh (single-flight)
       try {
         await runSingleFlightRefresh();
       } catch (refreshError) {
-        // 2) если refresh не удался — logout (кроме проверки /me), иначе пробрасываем ошибку
-        if (!config.url.includes('/api/v1/auth/me')) {
+        // 2) если refresh не удался — logout (кроме auth/profile check), иначе пробрасываем ошибку
+        if (
+          !mergedConfig.url.includes('/api/v1/auth/me') &&
+          !mergedConfig.url.includes('/api/v1/profile')
+        ) {
           logoutFn?.();
         }
         throw refreshError;
       }
 
       // 3) refresh ок — повторяем исходный запрос ОДИН раз
-      return await rawRequest<TResponse, TBody>(config);
+      return await rawRequest<TResponse, TBody>(mergedConfig);
     }
 
     throw error;
