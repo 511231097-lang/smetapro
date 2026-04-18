@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { IconMinus, IconPlus, IconReload, IconX } from '@tabler/icons-react';
 import {
   type PointerEvent as ReactPointerEvent,
@@ -52,8 +53,7 @@ const getOutputType = (file: File) => {
   if (
     nextType === 'image/png' ||
     nextType === 'image/jpeg' ||
-    nextType === 'image/jpg' ||
-    nextType === 'image/gif'
+    nextType === 'image/jpg'
   ) {
     return nextType === 'image/jpg' ? 'image/jpeg' : nextType;
   }
@@ -63,7 +63,6 @@ const getOutputType = (file: File) => {
 
 const toOutputFileName = (fileName: string, mimeType: string) => {
   const extMap: Record<string, string> = {
-    'image/gif': 'gif',
     'image/jpeg': 'jpg',
     'image/png': 'png',
   };
@@ -229,7 +228,14 @@ const ImageEditorModal = ({
       canvas.toBlob(resolve, outputType, 0.92);
     });
 
-    if (!blob) return;
+    if (!blob) {
+      notifications.show({
+        color: 'red',
+        title: 'Ошибка обработки',
+        message: 'Не удалось подготовить изображение. Попробуйте другой файл.',
+      });
+      return;
+    }
 
     const outputFile = new File(
       [blob],

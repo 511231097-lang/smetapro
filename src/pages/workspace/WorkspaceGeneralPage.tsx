@@ -385,19 +385,14 @@ const WorkspaceGeneralPage = () => {
     event.currentTarget.value = '';
     if (!file) return;
 
-    const allowedTypes = new Set([
-      'image/gif',
-      'image/jpeg',
-      'image/jpg',
-      'image/png',
-    ]);
+    const allowedTypes = new Set(['image/jpeg', 'image/jpg', 'image/png']);
     const maxSize = 3 * 1024 * 1024;
 
     if (!allowedTypes.has(file.type.toLowerCase())) {
       notifications.show({
         color: 'red',
         title: 'Неверный формат',
-        message: 'Поддерживаются файлы *.jpeg, *.jpg, *.png, *.gif',
+        message: 'Поддерживаются файлы *.jpeg, *.jpg, *.png',
       });
       return;
     }
@@ -541,12 +536,12 @@ const WorkspaceGeneralPage = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".jpeg,.jpg,.png,.gif"
+              accept=".jpeg,.jpg,.png"
               style={{ display: 'none' }}
               onChange={handleLogoFileSelect}
             />
             <Text size="xs" c="dimmed" ta="center">
-              Разрешены *.jpeg, *.jpg, *.png, *.gif
+              Разрешены *.jpeg, *.jpg, *.png
               <br />
               Максимальный размер до 3.0 MB
             </Text>

@@ -60,10 +60,7 @@ const ProfileCommonPage = () => {
   const userSurname = user?.surname ?? '';
   const userEmail = user?.email ?? '';
   const userPhone = user?.phone ?? '';
-  const avatarUrl =
-    user && 'avatar_url' in user
-      ? (user as { avatar_url?: string }).avatar_url
-      : undefined;
+  const avatarUrl = user?.avatar_url;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [deleteOpen, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
@@ -176,19 +173,14 @@ const ProfileCommonPage = () => {
     event.currentTarget.value = '';
     if (!file) return;
 
-    const allowedTypes = new Set([
-      'image/gif',
-      'image/jpeg',
-      'image/jpg',
-      'image/png',
-    ]);
+    const allowedTypes = new Set(['image/jpeg', 'image/jpg', 'image/png']);
     const maxSize = 3 * 1024 * 1024;
 
     if (!allowedTypes.has(file.type.toLowerCase())) {
       notifications.show({
         color: 'red',
         title: 'Неверный формат',
-        message: 'Поддерживаются файлы *.jpeg, *.jpg, *.png, *.gif',
+        message: 'Поддерживаются файлы *.jpeg, *.jpg, *.png',
       });
       return;
     }
@@ -271,7 +263,7 @@ const ProfileCommonPage = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".jpeg,.jpg,.png,.gif"
+                accept=".jpeg,.jpg,.png"
                 style={{ display: 'none' }}
                 onChange={handleAvatarFileSelect}
               />
