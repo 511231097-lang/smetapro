@@ -846,7 +846,7 @@ const ProjectsPage = () => {
           borderBottomLeftRadius: 8,
           borderBottomRightRadius: 8,
           borderTopRightRadius: 8,
-          color: 'var(--mantine-color-teal-6)',
+          color: 'var(--mantine-primary-color-filled)',
           display: 'flex',
           flexDirection: 'column',
           flex: 1,
@@ -857,7 +857,12 @@ const ProjectsPage = () => {
         }}
       >
         <IconPlus size={32} />
-        <Text size="md" fw={600} lh="24px" c="teal.6">
+        <Text
+          size="md"
+          fw={600}
+          lh="24px"
+          style={{ color: 'var(--mantine-primary-color-filled)' }}
+        >
           Создать проект
         </Text>
       </UnstyledButton>
