@@ -15,7 +15,7 @@ test('finances page renders placeholder content', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('references page renders placeholder content', async ({ page }) => {
+test('references page renders counterparties directory', async ({ page }) => {
   await setupApiMock(page, {
     initialUser: mockUser,
     workspaces: [mockWorkspace],
@@ -26,7 +26,6 @@ test('references page renders placeholder content', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: 'Справочники' }),
   ).toBeVisible();
-  await expect(
-    page.getByText('Информация по справочникам появится здесь.'),
-  ).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Контрагенты' })).toBeVisible();
+  await expect(page.getByText('Контрагенты пока не добавлены.')).toBeVisible();
 });

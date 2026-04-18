@@ -49,6 +49,45 @@ type InvitePreview = {
   workspace_name?: string;
 };
 
+type ProjectStatus = {
+  code?: string;
+  id?: number;
+  name?: string;
+  sort_order?: number;
+};
+
+type CounterpartyType = {
+  code?: string;
+  id?: number;
+  name?: string;
+  sort_order?: number;
+};
+
+type WorkspaceCounterparty = {
+  created_at?: string;
+  email?: string;
+  id?: string;
+  name?: string;
+  phone?: string;
+  type?: CounterpartyType;
+  updated_at?: string;
+  workspace_id?: string;
+};
+
+type WorkspaceProject = {
+  address?: string;
+  counterparty?: WorkspaceCounterparty;
+  created_at?: string;
+  description?: string;
+  end_date?: string;
+  id?: string;
+  name?: string;
+  start_date?: string;
+  status?: ProjectStatus;
+  updated_at?: string;
+  workspace_id?: string;
+};
+
 const mockUser = {
   id: '11111111-1111-4111-8111-111111111111',
   phone: '79001234567',
@@ -79,6 +118,8 @@ const defaultRole: WorkspaceRole = {
 const defaultInviteExpiry = '2035-01-01T00:00:00.000Z';
 
 type MockOptions = {
+  counterpartiesByWorkspace?: Record<string, WorkspaceCounterparty[]>;
+  counterpartyTypes?: CounterpartyType[];
   forgotPassword?: { error?: string; status: number };
   initialUser?: typeof mockUser | null;
   inviteAcceptByToken?: Record<
@@ -88,6 +129,8 @@ type MockOptions = {
   invitePreviewByToken?: Record<string, InvitePreview | null>;
   login?: { error?: string; status: number; user?: typeof mockUser };
   membersByWorkspace?: Record<string, WorkspaceMember[]>;
+  projectsByWorkspace?: Record<string, WorkspaceProject[]>;
+  projectStatuses?: ProjectStatus[];
   refresh?: { error?: string; status: number; user?: typeof mockUser };
   register?: { error?: string; status: number; user?: typeof mockUser };
   resetPassword?: { error?: string; status: number; user?: typeof mockUser };
@@ -100,8 +143,24 @@ type MockOptions = {
 const setupApiMock = async (page: Page, options: MockOptions = {}) => {
   const nowIso = () => new Date().toISOString();
   const defaultWorkspaceId = options.workspaces?.[0]?.id ?? mockWorkspace.id;
+  const defaultCounterpartyType: CounterpartyType = {
+    code: 'client',
+    id: 1,
+    name: 'Клиент',
+    sort_order: 1,
+  };
+  const defaultProjectStatus: ProjectStatus = {
+    code: 'draft',
+    id: 1,
+    name: 'Черновик',
+    sort_order: 1,
+  };
 
   const state = {
+    counterpartiesByWorkspace: options.counterpartiesByWorkspace ?? {
+      [defaultWorkspaceId]: [],
+    },
+    counterpartyTypes: options.counterpartyTypes ?? [defaultCounterpartyType],
     forgotPassword: options.forgotPassword ?? { status: 200 },
     inviteAcceptByToken: options.inviteAcceptByToken ?? {},
     invitePreviewByToken: options.invitePreviewByToken ?? {},
@@ -109,6 +168,10 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
     membersByWorkspace: options.membersByWorkspace ?? {
       [defaultWorkspaceId]: [],
     },
+    projectsByWorkspace: options.projectsByWorkspace ?? {
+      [defaultWorkspaceId]: [],
+    },
+    projectStatuses: options.projectStatuses ?? [defaultProjectStatus],
     refresh: options.refresh ?? { status: 401, error: 'Not authenticated' },
     register: options.register ?? { status: 201, user: mockUser },
     resetPassword: options.resetPassword ?? { status: 200, user: mockUser },
@@ -127,6 +190,12 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
     }
     if (!state.membersByWorkspace[workspaceId]) {
       state.membersByWorkspace[workspaceId] = [];
+    }
+    if (!state.projectsByWorkspace[workspaceId]) {
+      state.projectsByWorkspace[workspaceId] = [];
+    }
+    if (!state.counterpartiesByWorkspace[workspaceId]) {
+      state.counterpartiesByWorkspace[workspaceId] = [];
     }
   };
 
@@ -159,6 +228,14 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
             : { 'content-type': 'application/json' },
         status,
       });
+
+    if (url.pathname === '/api/v1/project-statuses' && method === 'GET') {
+      return json(200, { statuses: state.projectStatuses });
+    }
+
+    if (url.pathname === '/api/v1/counterparty-types' && method === 'GET') {
+      return json(200, { types: state.counterpartyTypes });
+    }
 
     if (url.pathname === '/api/v1/auth/me' && method === 'GET') {
       if (state.user) {
@@ -438,8 +515,251 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
           );
           delete state.rolesByWorkspace[workspaceId];
           delete state.membersByWorkspace[workspaceId];
+          delete state.projectsByWorkspace[workspaceId];
+          delete state.counterpartiesByWorkspace[workspaceId];
           delete state.workspaceInvitesByWorkspace[workspaceId];
           return json(200, { message: 'Workspace deleted' });
+        }
+      }
+
+      if (tail.length === 1 && tail[0] === 'projects') {
+        ensureWorkspaceDefaults(workspaceId);
+
+        if (method === 'GET') {
+          const sortBy = url.searchParams.get('sort_by');
+          const sortDir =
+            url.searchParams.get('sort_dir') === 'desc' ? 'desc' : 'asc';
+          const projects = [...(state.projectsByWorkspace[workspaceId] ?? [])];
+
+          if (sortBy) {
+            projects.sort((a, b) => {
+              const av = String(
+                (a as Record<string, unknown>)[sortBy] ?? '',
+              ).toLowerCase();
+              const bv = String(
+                (b as Record<string, unknown>)[sortBy] ?? '',
+              ).toLowerCase();
+              if (av === bv) return 0;
+              if (sortDir === 'asc') return av > bv ? 1 : -1;
+              return av > bv ? -1 : 1;
+            });
+          }
+
+          return json(200, {
+            limit: 100,
+            offset: 0,
+            total: projects.length,
+            projects,
+          });
+        }
+
+        if (method === 'POST') {
+          const payload = parseRequestBody<{ name?: string }>();
+          const created: WorkspaceProject = {
+            created_at: nowIso(),
+            id: `project-${Date.now()}`,
+            name: payload?.name ?? 'Новый проект',
+            status: state.projectStatuses[0],
+            updated_at: nowIso(),
+            workspace_id: workspaceId,
+          };
+
+          state.projectsByWorkspace[workspaceId] = [
+            created,
+            ...(state.projectsByWorkspace[workspaceId] ?? []),
+          ];
+          return json(201, { project: created });
+        }
+      }
+
+      if (tail.length === 1 && tail[0] === 'counterparties') {
+        ensureWorkspaceDefaults(workspaceId);
+
+        if (method === 'GET') {
+          const sortBy = url.searchParams.get('sort_by');
+          const sortDir =
+            url.searchParams.get('sort_dir') === 'desc' ? 'desc' : 'asc';
+          const counterparties = [
+            ...(state.counterpartiesByWorkspace[workspaceId] ?? []),
+          ];
+
+          if (sortBy) {
+            counterparties.sort((a, b) => {
+              const av = String(
+                (a as Record<string, unknown>)[sortBy] ?? '',
+              ).toLowerCase();
+              const bv = String(
+                (b as Record<string, unknown>)[sortBy] ?? '',
+              ).toLowerCase();
+              if (av === bv) return 0;
+              if (sortDir === 'asc') return av > bv ? 1 : -1;
+              return av > bv ? -1 : 1;
+            });
+          }
+
+          return json(200, {
+            counterparties,
+            limit: 200,
+            offset: 0,
+            total: counterparties.length,
+          });
+        }
+
+        if (method === 'POST') {
+          const payload = parseRequestBody<{
+            email?: string;
+            name?: string;
+            phone?: string;
+            type?: string;
+          }>();
+          const nextType =
+            state.counterpartyTypes.find(
+              (item) => item.code === payload?.type,
+            ) ?? state.counterpartyTypes[0];
+
+          const created: WorkspaceCounterparty = {
+            created_at: nowIso(),
+            email: payload?.email,
+            id: `counterparty-${Date.now()}`,
+            name: payload?.name ?? 'Новый контрагент',
+            phone: payload?.phone,
+            type: nextType,
+            updated_at: nowIso(),
+            workspace_id: workspaceId,
+          };
+
+          state.counterpartiesByWorkspace[workspaceId] = [
+            created,
+            ...(state.counterpartiesByWorkspace[workspaceId] ?? []),
+          ];
+          return json(201, { counterparty: created });
+        }
+      }
+
+      if (tail.length === 2 && tail[0] === 'projects') {
+        const projectId = tail[1];
+        ensureWorkspaceDefaults(workspaceId);
+
+        if (method === 'DELETE') {
+          state.projectsByWorkspace[workspaceId] = (
+            state.projectsByWorkspace[workspaceId] ?? []
+          ).filter((project) => project.id !== projectId);
+          return json(200, { message: 'Project deleted' });
+        }
+
+        if (method === 'PATCH') {
+          const payload = parseRequestBody<{
+            address?: string;
+            counterparty_id?: string;
+            description?: string;
+            end_date?: string;
+            name?: string;
+            start_date?: string;
+            status_id?: number;
+          }>();
+
+          const status = state.projectStatuses.find(
+            (item) => item.id === payload?.status_id,
+          );
+          const counterparty = (
+            state.counterpartiesByWorkspace[workspaceId] ?? []
+          ).find((item) => item.id === payload?.counterparty_id);
+
+          state.projectsByWorkspace[workspaceId] = (
+            state.projectsByWorkspace[workspaceId] ?? []
+          ).map((project) =>
+            project.id === projectId
+              ? {
+                  ...project,
+                  address: payload?.address ?? project.address,
+                  counterparty: counterparty ?? project.counterparty,
+                  description: payload?.description ?? project.description,
+                  end_date: payload?.end_date ?? project.end_date,
+                  name: payload?.name ?? project.name,
+                  start_date: payload?.start_date ?? project.start_date,
+                  status: status ?? project.status,
+                  updated_at: nowIso(),
+                }
+              : project,
+          );
+
+          const updated = (state.projectsByWorkspace[workspaceId] ?? []).find(
+            (project) => project.id === projectId,
+          );
+          return json(200, { project: updated });
+        }
+      }
+
+      if (tail.length === 3 && tail[0] === 'projects' && tail[2] === 'copy') {
+        const projectId = tail[1];
+        ensureWorkspaceDefaults(workspaceId);
+
+        if (method === 'POST') {
+          const source = (state.projectsByWorkspace[workspaceId] ?? []).find(
+            (project) => project.id === projectId,
+          );
+
+          if (!source) {
+            return json(404, { error: 'Project not found' });
+          }
+
+          const copied: WorkspaceProject = {
+            ...source,
+            created_at: nowIso(),
+            id: `project-copy-${Date.now()}`,
+            name: source.name ? `${source.name} (Копия)` : 'Копия проекта',
+            updated_at: nowIso(),
+          };
+
+          state.projectsByWorkspace[workspaceId] = [
+            copied,
+            ...(state.projectsByWorkspace[workspaceId] ?? []),
+          ];
+          return json(201, { project: copied });
+        }
+      }
+
+      if (tail.length === 2 && tail[0] === 'counterparties') {
+        const counterpartyId = tail[1];
+        ensureWorkspaceDefaults(workspaceId);
+
+        if (method === 'DELETE') {
+          state.counterpartiesByWorkspace[workspaceId] = (
+            state.counterpartiesByWorkspace[workspaceId] ?? []
+          ).filter((counterparty) => counterparty.id !== counterpartyId);
+          return json(200, { message: 'Counterparty deleted' });
+        }
+
+        if (method === 'PATCH') {
+          const payload = parseRequestBody<{
+            email?: string;
+            name?: string;
+            phone?: string;
+            type?: string;
+          }>();
+          const nextType = state.counterpartyTypes.find(
+            (item) => item.code === payload?.type,
+          );
+
+          state.counterpartiesByWorkspace[workspaceId] = (
+            state.counterpartiesByWorkspace[workspaceId] ?? []
+          ).map((counterparty) =>
+            counterparty.id === counterpartyId
+              ? {
+                  ...counterparty,
+                  email: payload?.email ?? counterparty.email,
+                  name: payload?.name ?? counterparty.name,
+                  phone: payload?.phone ?? counterparty.phone,
+                  type: nextType ?? counterparty.type,
+                  updated_at: nowIso(),
+                }
+              : counterparty,
+          );
+
+          const updated = (
+            state.counterpartiesByWorkspace[workspaceId] ?? []
+          ).find((counterparty) => counterparty.id === counterpartyId);
+          return json(200, { counterparty: updated });
         }
       }
 
