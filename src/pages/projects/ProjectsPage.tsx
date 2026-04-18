@@ -37,7 +37,7 @@ import {
   IconTrash,
   IconX,
 } from '@tabler/icons-react';
-import { useEffect, useMemo, useState } from 'react';
+import { type MouseEvent, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { ProjectsProjectResponse } from '../../shared/api/generated/schemas/projectsProjectResponse';
 import {
@@ -429,7 +429,7 @@ const ProjectsPage = () => {
     notifications.show({
       color: 'blue',
       title,
-      message: 'Пока реализован только список проектов.',
+      message: 'Фильтры и расширенные действия пока в разработке.',
     });
   };
 
@@ -480,6 +480,30 @@ const ProjectsPage = () => {
           projectId: project.id,
         })
       : null;
+
+  const shouldSkipProjectNavigation = (
+    event: MouseEvent<HTMLElement>,
+  ): boolean => {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey
+    ) {
+      return true;
+    }
+
+    if (
+      event.target instanceof Element &&
+      event.target.closest('a,button,[role="button"]')
+    ) {
+      return true;
+    }
+
+    return false;
+  };
 
   const handleDeleteProject = () => {
     const projectId = deleteModalProject?.id;
@@ -691,7 +715,14 @@ const ProjectsPage = () => {
     return (
       <Box
         key={key}
-        onClick={projectRoute ? () => navigate(projectRoute) : undefined}
+        onClick={
+          projectRoute
+            ? (event) => {
+                if (shouldSkipProjectNavigation(event)) return;
+                navigate(projectRoute);
+              }
+            : undefined
+        }
         style={{
           cursor: projectRoute ? 'pointer' : 'default',
         }}
@@ -1069,7 +1100,11 @@ const ProjectsPage = () => {
                             }
                             onClick={
                               projectRoute
-                                ? () => navigate(projectRoute)
+                                ? (event) => {
+                                    if (shouldSkipProjectNavigation(event))
+                                      return;
+                                    navigate(projectRoute);
+                                  }
                                 : undefined
                             }
                             style={{

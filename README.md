@@ -110,13 +110,20 @@ npm run api
 npm run api:sync
 ```
 
-По умолчанию синк выполняется из `flarit@46.149.69.164:/opt/apps/smetchik/dev/backend/docs/api/swagger/swagger.yaml`
-в локальный `schema.yaml`. При необходимости параметры можно переопределить переменными:
+Перед запуском `api:sync` нужно задать параметры подключения через переменные окружения:
 
-- `SMETCHIK_API_SSH_HOST`
-- `SMETCHIK_API_SSH_KEY`
-- `SMETCHIK_API_REMOTE_PATH`
-- `SMETCHIK_API_LOCAL_SCHEMA_PATH`
+- `SMETCHIK_API_SSH_HOST` — SSH-хост в формате `user@example-host` (обязательно)
+- `SMETCHIK_API_SSH_KEY` — путь к приватному ключу (опционально, по умолчанию `~/.ssh/id_ed25519`)
+- `SMETCHIK_API_REMOTE_PATH` — путь до `swagger.yaml` на удаленном сервере (обязательно)
+- `SMETCHIK_API_LOCAL_SCHEMA_PATH` — локальный путь сохранения схемы (опционально, по умолчанию `./schema.yaml`)
+
+Пример:
+
+```bash
+SMETCHIK_API_SSH_HOST=user@example-host \
+SMETCHIK_API_REMOTE_PATH=/opt/apps/smetchik/dev/backend/docs/api/swagger/swagger.yaml \
+npm run api:sync
+```
 
 ## Структура проекта (кратко)
 
