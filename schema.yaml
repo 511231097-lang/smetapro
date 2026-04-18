@@ -104,6 +104,8 @@ definitions:
     type: object
   dto.UserResponse:
     properties:
+      avatar_url:
+        type: string
       created_at:
         type: string
       email:
@@ -161,6 +163,177 @@ definitions:
         maxLength: 255
         type: string
     type: object
+  profile.avatarResponse:
+    properties:
+      avatar_url:
+        type: string
+    type: object
+  projects.CounterpartiesListResponse:
+    properties:
+      counterparties:
+        items:
+          $ref: '#/definitions/projects.CounterpartyResponse'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  projects.CounterpartyResponse:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      type:
+        $ref: '#/definitions/projects.CounterpartyTypeResponse'
+      updated_at:
+        type: string
+      workspace_id:
+        type: string
+    type: object
+  projects.CounterpartyTypeResponse:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      sort_order:
+        type: integer
+    type: object
+  projects.CounterpartyTypesListResponse:
+    properties:
+      types:
+        items:
+          $ref: '#/definitions/projects.CounterpartyTypeResponse'
+        type: array
+    type: object
+  projects.CreateCounterpartyRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      type:
+        type: string
+    required:
+    - name
+    - type
+    type: object
+  projects.CreateProjectRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  projects.ProjectListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      projects:
+        items:
+          $ref: '#/definitions/projects.ProjectResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  projects.ProjectResponse:
+    properties:
+      activity_at:
+        type: string
+      address:
+        type: string
+      counterparty:
+        $ref: '#/definitions/projects.CounterpartyResponse'
+      created_at:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      start_date:
+        type: string
+      status:
+        $ref: '#/definitions/projects.ProjectStatusResponse'
+      updated_at:
+        type: string
+      workspace_id:
+        type: string
+    type: object
+  projects.ProjectStatusResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      sort_order:
+        type: integer
+    type: object
+  projects.ProjectStatusesListResponse:
+    properties:
+      statuses:
+        items:
+          $ref: '#/definitions/projects.ProjectStatusResponse'
+        type: array
+    type: object
+  projects.SingleCounterpartyResponse:
+    properties:
+      counterparty:
+        $ref: '#/definitions/projects.CounterpartyResponse'
+    type: object
+  projects.SingleProjectResponse:
+    properties:
+      project:
+        $ref: '#/definitions/projects.ProjectResponse'
+    type: object
+  projects.UpdateCounterpartyRequestBody:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      type:
+        type: string
+    type: object
+  projects.UpdateProjectRequestBody:
+    properties:
+      address:
+        type: string
+      counterparty_id:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      name:
+        type: string
+      start_date:
+        type: string
+      status_id:
+        type: integer
+    type: object
   tools.ErrorResponse:
     properties:
       code:
@@ -210,6 +383,8 @@ definitions:
     properties:
       expires_at:
         type: string
+      logo_url:
+        type: string
       member_count:
         type: integer
       role:
@@ -247,6 +422,8 @@ definitions:
     type: object
   workspaces.MemberResponse:
     properties:
+      avatar_url:
+        type: string
       created_at:
         type: string
       email:
@@ -297,6 +474,11 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  workspaces.MessageResponse:
+    properties:
+      message:
+        type: string
     type: object
   workspaces.PermissionResponse:
     properties:
@@ -430,11 +612,23 @@ definitions:
         type: string
       id:
         type: string
+      logo_url:
+        type: string
       members_count:
         type: integer
       name:
         type: string
       updated_at:
+        type: string
+    type: object
+  workspaces.logoResponse:
+    properties:
+      logo_url:
+        type: string
+    type: object
+  workspaces.memberAvatarResponse:
+    properties:
+      avatar_url:
         type: string
     type: object
 host: localhost:8888
@@ -713,6 +907,60 @@ paths:
       summary: Reset password (step 2)
       tags:
       - Auth
+  /counterparty-types:
+    get:
+      consumes:
+      - application/json
+      description: Returns built-in counterparty types dictionary.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.CounterpartyTypesListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: List counterparty types
+      tags:
+      - Projects
+  /files/{file_id}:
+    get:
+      description: Streams a file from storage if the current user has access to it.
+      parameters:
+      - description: File ID
+        in: path
+        name: file_id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - AccessCookieAuth: []
+      summary: Serve file
+      tags:
+      - Files
   /invite/{token}:
     get:
       description: Returns workspace preview for invite token.
@@ -733,10 +981,6 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/tools.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/tools.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -749,8 +993,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/tools.ErrorResponse'
-      security:
-      - AccessCookieAuth: []
       summary: Preview invite
       tags:
       - Workspaces
@@ -796,6 +1038,31 @@ paths:
       security:
       - AccessCookieAuth: []
       summary: Accept invite
+      tags:
+      - Workspaces
+  /invite/{token}/logo:
+    get:
+      description: Streams workspace logo for a valid public invite token.
+      parameters:
+      - description: Invite token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Serve invite logo
       tags:
       - Workspaces
   /profile:
@@ -888,6 +1155,57 @@ paths:
       summary: Update current profile
       tags:
       - Profile
+  /profile/avatar:
+    delete:
+      description: Removes avatar reference from current authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/profile.MessageResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Delete current user avatar
+      tags:
+      - Profile
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads and processes avatar image for current authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/profile.avatarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Upload current user avatar
+      tags:
+      - Profile
   /profile/password:
     patch:
       consumes:
@@ -924,6 +1242,31 @@ paths:
       summary: Change current password
       tags:
       - Profile
+  /project-statuses:
+    get:
+      consumes:
+      - application/json
+      description: Returns global project statuses dictionary.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.ProjectStatusesListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: List project statuses
+      tags:
+      - Projects
   /workspaces:
     get:
       consumes:
@@ -1128,6 +1471,213 @@ paths:
       summary: Update workspace
       tags:
       - Workspaces
+  /workspaces/{workspace_id}/counterparties:
+    get:
+      consumes:
+      - application/json
+      description: Returns paginated list of workspace counterparties.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Page size
+        in: query
+        name: limit
+        type: integer
+      - description: Page offset
+        in: query
+        name: offset
+        type: integer
+      - description: Search across name, type, phone and email
+        in: query
+        name: search
+        type: string
+      - description: 'Exact counterparty type filter: subcontractor, client, supplier,
+          other'
+        in: query
+        name: type
+        type: string
+      - description: 'Sort field: name, type'
+        in: query
+        name: sort_by
+        type: string
+      - description: 'Sort direction: asc, desc'
+        in: query
+        name: sort_dir
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.CounterpartiesListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: List workspace counterparties
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: Creates a new workspace counterparty.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Create counterparty payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/projects.CreateCounterpartyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.SingleCounterpartyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Create workspace counterparty
+      tags:
+      - Projects
+  /workspaces/{workspace_id}/counterparties/{counterparty_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft-deletes workspace counterparty.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Counterparty ID
+        in: path
+        name: counterparty_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Delete workspace counterparty
+      tags:
+      - Projects
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates workspace counterparty fields.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Counterparty ID
+        in: path
+        name: counterparty_id
+        required: true
+        type: string
+      - description: Update counterparty payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/projects.UpdateCounterpartyRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.SingleCounterpartyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Update workspace counterparty
+      tags:
+      - Projects
   /workspaces/{workspace_id}/invite:
     delete:
       description: Soft-deletes current workspace invite.
@@ -1255,6 +1805,90 @@ paths:
       summary: Create workspace invite
       tags:
       - Workspaces
+  /workspaces/{workspace_id}/logo:
+    delete:
+      description: Removes workspace logo reference for the current workspace member.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Delete workspace logo
+      tags:
+      - Workspaces
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads and processes workspace logo for the current workspace
+        member.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.logoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Upload workspace logo
+      tags:
+      - Workspaces
   /workspaces/{workspace_id}/members:
     get:
       consumes:
@@ -1285,6 +1919,11 @@ paths:
       - description: Comma-separated role codes
         in: query
         name: role_code
+        type: string
+      - description: Search across name, surname, phone, email, telegram, position,
+          role
+        in: query
+        name: search
         type: string
       produces:
       - application/json
@@ -1421,6 +2060,100 @@ paths:
       summary: Update workspace member profile
       tags:
       - Workspaces
+  /workspaces/{workspace_id}/members/{member_id}/avatar:
+    delete:
+      description: Removes workspace member avatar reference for any workspace member.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Member ID
+        in: path
+        name: member_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Delete member avatar
+      tags:
+      - Workspaces
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads and processes workspace member avatar for any workspace
+        member.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Member ID
+        in: path
+        name: member_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.memberAvatarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Upload member avatar
+      tags:
+      - Workspaces
   /workspaces/{workspace_id}/members/{member_id}/role:
     patch:
       consumes:
@@ -1518,6 +2251,256 @@ paths:
       summary: List workspace permissions
       tags:
       - Workspaces
+  /workspaces/{workspace_id}/projects:
+    get:
+      consumes:
+      - application/json
+      description: Returns paginated list of workspace projects.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Page size
+        in: query
+        name: limit
+        type: integer
+      - description: Page offset
+        in: query
+        name: offset
+        type: integer
+      - description: 'Sort field: name, counterparty, start_date, end_date, status'
+        in: query
+        name: sort_by
+        type: string
+      - description: 'Sort direction: asc, desc'
+        in: query
+        name: sort_dir
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.ProjectListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: List workspace projects
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: Creates a new workspace project with draft status.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Create project payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/projects.CreateProjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.SingleProjectResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Create workspace project
+      tags:
+      - Projects
+  /workspaces/{workspace_id}/projects/{project_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft-deletes workspace project.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Delete workspace project
+      tags:
+      - Projects
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates workspace project fields.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Update project payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/projects.UpdateProjectRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.SingleProjectResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Update workspace project
+      tags:
+      - Projects
+  /workspaces/{workspace_id}/projects/{project_id}/copy:
+    post:
+      consumes:
+      - application/json
+      description: Creates a draft copy of existing workspace project.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.SingleProjectResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Copy workspace project
+      tags:
+      - Projects
   /workspaces/{workspace_id}/roles:
     get:
       consumes:

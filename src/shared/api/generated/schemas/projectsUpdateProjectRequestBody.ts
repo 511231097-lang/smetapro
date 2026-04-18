@@ -6,13 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface WorkspacesWorkspaceResponse {
-  created_at?: string;
-  created_by?: string;
+export interface ProjectsUpdateProjectRequestBody {
+  address?: string;
+  counterparty_id?: string;
   description?: string;
-  id?: string;
-  logo_url?: string;
-  members_count?: number;
+  end_date?: string;
   name?: string;
-  updated_at?: string;
+  start_date?: string;
+  status_id?: number;
 }

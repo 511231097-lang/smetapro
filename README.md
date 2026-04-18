@@ -104,6 +104,20 @@ npm run api
 
 Сгенерированные файлы редактировать вручную не нужно.
 
+Чтобы подтянуть свежую спеки с dev-сервера и сразу перегенерировать клиент:
+
+```bash
+npm run api:sync
+```
+
+По умолчанию синк выполняется из `flarit@46.149.69.164:/opt/apps/smetchik/dev/backend/docs/api/swagger/swagger.yaml`
+в локальный `schema.yaml`. При необходимости параметры можно переопределить переменными:
+
+- `SMETCHIK_API_SSH_HOST`
+- `SMETCHIK_API_SSH_KEY`
+- `SMETCHIK_API_REMOTE_PATH`
+- `SMETCHIK_API_LOCAL_SCHEMA_PATH`
+
 ## Структура проекта (кратко)
 
 - `src/pages` — страницы приложения

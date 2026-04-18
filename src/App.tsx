@@ -11,6 +11,7 @@ import InviteAcceptPage from './pages/invite/InviteAcceptPage';
 import ProfileAppearancePage from './pages/profile/ProfileAppearancePage';
 import ProfileCommonPage from './pages/profile/ProfileCommonPage';
 import ProfilePage from './pages/profile/ProfilePage';
+import ProjectPage from './pages/projects/ProjectPage';
 import ProjectsPage from './pages/projects/ProjectsPage.tsx';
 import ReferencesPage from './pages/references/ReferencesPage';
 import WorkspaceGeneralPage from './pages/workspace/WorkspaceGeneralPage';
@@ -46,6 +47,7 @@ const App = () => {
       </Route>
 
       <Route path="/:workspaceId" element={<ProtectedLayout />}>
+        <Route path="projects/:projectId" element={<ProjectPage />} />
         <Route path="projects" element={<ProjectsPage />} />
 
         <Route path="profile" element={<ProfilePage />}>

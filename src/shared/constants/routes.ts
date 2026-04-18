@@ -5,6 +5,7 @@ export const ROUTES = {
   FORGOT_PASSWORD: '/forgot-password',
   APP: '/app',
   PROJECTS: '/:workspaceId/projects',
+  PROJECT_DETAILS: '/:workspaceId/projects/:projectId',
   PROFILE: '/:workspaceId/profile',
   PROFILE_COMMON: '/:workspaceId/profile/common',
   PROFILE_APPEARANCE: '/:workspaceId/profile/appearance',
