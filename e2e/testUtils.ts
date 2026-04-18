@@ -90,6 +90,7 @@ type WorkspaceProject = {
 };
 
 const mockUser = {
+  avatar_url: 'https://example.com/avatar.png',
   id: '11111111-1111-4111-8111-111111111111',
   phone: '79001234567',
   email: 'ivan@example.com',
@@ -243,6 +244,61 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
         return json(200, { user: state.user });
       }
       return json(401, { error: 'Not authenticated' });
+    }
+
+    if (url.pathname === '/api/v1/profile' && method === 'GET') {
+      if (state.user) {
+        return json(200, { user: state.user });
+      }
+      return json(401, { error: 'Not authenticated' });
+    }
+
+    if (url.pathname === '/api/v1/profile' && method === 'PATCH') {
+      if (!state.user) {
+        return json(401, { error: 'Not authenticated' });
+      }
+
+      const payload = parseRequestBody<{
+        name?: string;
+        phone?: string;
+        surname?: string;
+      }>();
+
+      state.user = {
+        ...state.user,
+        name: payload?.name ?? state.user.name,
+        phone: payload?.phone ?? state.user.phone,
+        surname: payload?.surname ?? state.user.surname,
+      };
+
+      return json(200, { user: state.user });
+    }
+
+    if (url.pathname === '/api/v1/profile/avatar' && method === 'POST') {
+      if (!state.user) {
+        return json(401, { error: 'Not authenticated' });
+      }
+
+      const avatarUrl = `https://example.com/avatar-${Date.now()}.png`;
+      state.user = {
+        ...state.user,
+        avatar_url: avatarUrl,
+      };
+
+      return json(200, { avatar_url: avatarUrl });
+    }
+
+    if (url.pathname === '/api/v1/profile/avatar' && method === 'DELETE') {
+      if (!state.user) {
+        return json(401, { error: 'Not authenticated' });
+      }
+
+      state.user = {
+        ...state.user,
+        avatar_url: '',
+      };
+
+      return json(200, { message: 'Avatar deleted' });
     }
 
     if (url.pathname === '/api/v1/auth/login' && method === 'POST') {

@@ -4,7 +4,7 @@ import { Navigate, useLocation, useParams } from 'react-router-dom';
 
 import { WorkspaceProvider } from '../providers/WorkspaceProvider';
 import {
-  useGetAuthMe,
+  useGetProfile,
   useGetWorkspaces,
 } from '../shared/api/generated/smetchik';
 import { buildRoute, ROUTES } from '../shared/constants/routes';
@@ -13,7 +13,8 @@ import ProtectedShell from './components/protected-shell/ProtectedShell';
 const ProtectedLayout = () => {
   const location = useLocation();
   const { workspaceId } = useParams<{ workspaceId: string }>();
-  const { data: user, isLoading, isError } = useGetAuthMe({});
+  const { data: profile, isLoading, isError } = useGetProfile({});
+  const user = profile?.user;
   const {
     data: workspaces,
     isLoading: isWorkspacesLoading,

@@ -22,8 +22,8 @@ import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
 import {
   getGetWorkspacesQueryKey,
-  useGetAuthMe,
   useGetInviteToken,
+  useGetProfile,
   useGetWorkspaces,
   usePostInviteToken,
 } from '../../shared/api/generated/smetchik';
@@ -74,7 +74,7 @@ const InviteAcceptPage = () => {
   const computedColorScheme = useComputedColorScheme('light');
   const isDark = computedColorScheme === 'dark';
 
-  const { data: userData } = useGetAuthMe({});
+  const { data: userData } = useGetProfile({});
   const { data: workspacesData, isLoading: isWorkspacesLoading } =
     useGetWorkspaces(undefined, {
       query: { enabled: !!userData },

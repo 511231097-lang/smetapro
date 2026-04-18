@@ -28,6 +28,7 @@ type ProtectedMobileDrawerProps = {
   opened: boolean;
   pathname: string;
   initials: string;
+  avatarUrl?: string;
   activeWorkspace?: WorkspacesWorkspaceResponse;
   workspaceList: WorkspacesWorkspaceResponse[];
   onWorkspaceSelect: (id: string | null) => void;
@@ -38,6 +39,7 @@ const ProtectedMobileDrawer = ({
   opened,
   pathname,
   initials,
+  avatarUrl,
   activeWorkspace,
   workspaceList,
   onWorkspaceSelect,
@@ -83,7 +85,13 @@ const ProtectedMobileDrawer = ({
           style={{ display: 'block', width: '100%', padding: '16px' }}
         >
           <Group gap={12}>
-            <Avatar color={primaryColor} variant="filled" radius="xl" size={40}>
+            <Avatar
+              color={primaryColor}
+              variant="filled"
+              radius="xl"
+              size={40}
+              src={avatarUrl}
+            >
               {initials}
             </Avatar>
             <Box>

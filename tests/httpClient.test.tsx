@@ -325,6 +325,27 @@ describe('httpClient', () => {
     expect(logout).toHaveBeenCalledTimes(0);
   });
 
+  test('does not logout when refresh fails for /profile', async () => {
+    const refresh = rstest.fn(async () => {
+      throw new Error('refresh failed');
+    });
+    const logout = rstest.fn();
+    setAuthHandlers({ refresh, logout });
+
+    globalThis.fetch = rstest.fn(async () =>
+      jsonResponse(401, { message: 'Unauthorized' }),
+    );
+
+    await expect(
+      httpClient({
+        url: '/api/v1/profile',
+        method: 'GET',
+      }),
+    ).rejects.toThrow('refresh failed');
+
+    expect(logout).toHaveBeenCalledTimes(0);
+  });
+
   test('uses single-flight refresh for concurrent 401 requests', async () => {
     let resolveRefresh: (() => void) | undefined;
     const refresh = rstest.fn(

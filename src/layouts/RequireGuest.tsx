@@ -1,9 +1,9 @@
 import { Center, Loader, Stack } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
-import { useGetAuthMe } from '../shared/api/generated/smetchik';
+import { useGetProfile } from '../shared/api/generated/smetchik';
 
 const RequireGuest = () => {
-  const { isLoading } = useGetAuthMe({});
+  const { isLoading } = useGetProfile({});
 
   if (isLoading) {
     return (

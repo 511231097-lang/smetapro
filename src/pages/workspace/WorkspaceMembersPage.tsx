@@ -45,7 +45,7 @@ import {
   getGetWorkspacesWorkspaceIdInviteQueryKey,
   getGetWorkspacesWorkspaceIdMembersQueryKey,
   useDeleteWorkspacesWorkspaceIdMembersMemberId,
-  useGetAuthMe,
+  useGetProfile,
   useGetWorkspacesWorkspaceIdInvite,
   useGetWorkspacesWorkspaceIdMembers,
   useGetWorkspacesWorkspaceIdRoles,
@@ -128,7 +128,7 @@ const WorkspaceMembersPage = () => {
   const membersQueryKey =
     getGetWorkspacesWorkspaceIdMembersQueryKey(workspaceId);
 
-  const { data: me } = useGetAuthMe({});
+  const { data: me } = useGetProfile({});
   const isMe = (m: WorkspacesMemberResponse) =>
     !!me?.user?.id && m.user_id === me.user.id;
   const isOwner = (m: WorkspacesMemberResponse) =>

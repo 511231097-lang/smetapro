@@ -4,12 +4,12 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 const mocks = rstest.hoisted(() => ({
-  useGetAuthMe: rstest.fn(),
+  useGetProfile: rstest.fn(),
   useGetWorkspaces: rstest.fn(),
 }));
 
 rstest.mock('../src/shared/api/generated/smetchik', () => ({
-  useGetAuthMe: mocks.useGetAuthMe,
+  useGetProfile: mocks.useGetProfile,
   useGetWorkspaces: mocks.useGetWorkspaces,
 }));
 
@@ -47,12 +47,12 @@ const setup = (entry: string) => {
 
 describe('ProtectedLayout', () => {
   beforeEach(() => {
-    mocks.useGetAuthMe.mockReset();
+    mocks.useGetProfile.mockReset();
     mocks.useGetWorkspaces.mockReset();
   });
 
   test('shows loader while auth query is loading', () => {
-    mocks.useGetAuthMe.mockReturnValue({
+    mocks.useGetProfile.mockReturnValue({
       data: undefined,
       isLoading: true,
       isError: false,
@@ -69,7 +69,7 @@ describe('ProtectedLayout', () => {
   });
 
   test('redirects to login when auth query fails', () => {
-    mocks.useGetAuthMe.mockReturnValue({
+    mocks.useGetProfile.mockReturnValue({
       data: undefined,
       isLoading: false,
       isError: true,
@@ -87,8 +87,8 @@ describe('ProtectedLayout', () => {
   });
 
   test('redirects to workspace create when user has no workspaces', () => {
-    mocks.useGetAuthMe.mockReturnValue({
-      data: { email: 'maria@example.com' },
+    mocks.useGetProfile.mockReturnValue({
+      data: { user: { email: 'maria@example.com' } },
       isLoading: false,
       isError: false,
     });
@@ -104,8 +104,8 @@ describe('ProtectedLayout', () => {
   });
 
   test('renders workspace fetch error stub when workspaces request fails', () => {
-    mocks.useGetAuthMe.mockReturnValue({
-      data: { email: 'maria@example.com' },
+    mocks.useGetProfile.mockReturnValue({
+      data: { user: { email: 'maria@example.com' } },
       isLoading: false,
       isError: false,
     });
@@ -129,8 +129,8 @@ describe('ProtectedLayout', () => {
   });
 
   test('redirects root route to the first workspace projects page', () => {
-    mocks.useGetAuthMe.mockReturnValue({
-      data: { email: 'maria@example.com' },
+    mocks.useGetProfile.mockReturnValue({
+      data: { user: { email: 'maria@example.com' } },
       isLoading: false,
       isError: false,
     });
@@ -151,8 +151,8 @@ describe('ProtectedLayout', () => {
   });
 
   test('redirects when workspace id in url is invalid', () => {
-    mocks.useGetAuthMe.mockReturnValue({
-      data: { email: 'maria@example.com' },
+    mocks.useGetProfile.mockReturnValue({
+      data: { user: { email: 'maria@example.com' } },
       isLoading: false,
       isError: false,
     });
@@ -176,8 +176,8 @@ describe('ProtectedLayout', () => {
   });
 
   test('renders protected shell when workspace id is valid', () => {
-    mocks.useGetAuthMe.mockReturnValue({
-      data: { email: 'maria@example.com' },
+    mocks.useGetProfile.mockReturnValue({
+      data: { user: { email: 'maria@example.com' } },
       isLoading: false,
       isError: false,
     });

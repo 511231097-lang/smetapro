@@ -1,11 +1,11 @@
 import { Center, Loader, Stack } from '@mantine/core';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useGetAuthMe } from '../shared/api/generated/smetchik';
+import { useGetProfile } from '../shared/api/generated/smetchik';
 import { ROUTES } from '../shared/constants/routes';
 
 const RequireAuth = () => {
   const location = useLocation();
-  const { data: user, isLoading, isError } = useGetAuthMe({});
+  const { data: profile, isLoading, isError } = useGetProfile({});
 
   if (isLoading) {
     return (
@@ -17,7 +17,7 @@ const RequireAuth = () => {
     );
   }
 
-  if (isError || !user) {
+  if (isError || !profile?.user) {
     return <Navigate to={ROUTES.LOGIN} replace state={{ from: location }} />;
   }
 
