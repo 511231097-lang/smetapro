@@ -614,14 +614,20 @@ const ProjectPage = () => {
     );
   }
 
+  if (!project) {
+    return null;
+  }
+
+  const currentProject = project;
+
   const currentProjectStatusId =
-    project.status?.id !== undefined && project.status.id !== null
-      ? String(project.status.id)
+    currentProject.status?.id !== undefined && currentProject.status.id !== null
+      ? String(currentProject.status.id)
       : '';
   const headerStatusName =
     statusOptions.find((item) => item.value === currentProjectStatusId)
       ?.label ??
-    project.status?.name ??
+    currentProject.status?.name ??
     '—';
   const statusPalette = resolveStatusPalette(headerStatusName, colorScheme);
   const isHeaderActionsPending =
@@ -710,7 +716,7 @@ const ProjectPage = () => {
 
         <Group justify="space-between" align="center" wrap="nowrap">
           <Group gap={16} wrap="nowrap">
-            <Title order={3}>{project.name?.trim() || 'Проект'}</Title>
+            <Title order={3}>{currentProject.name?.trim() || 'Проект'}</Title>
             <Menu
               withinPortal
               position="bottom-start"

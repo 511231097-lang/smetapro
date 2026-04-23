@@ -49,8 +49,8 @@ export const getWorkspaceMeta = (workspace?: WorkspacesWorkspaceResponse) => {
   const roleLabel = workspace?.member_role?.name?.trim() || null;
   const membersCountLabel = formatMembersCount(workspace?.members_count);
 
-  const meta = [roleLabel, membersCountLabel].filter(
-    (value): value is string => Boolean(value),
+  const meta = [roleLabel, membersCountLabel].filter((value): value is string =>
+    Boolean(value),
   );
 
   return meta.length > 0 ? meta.join(' • ') : null;

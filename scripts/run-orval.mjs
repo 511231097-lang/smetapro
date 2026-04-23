@@ -40,7 +40,7 @@ const sanitizeSchemaForOrval = (schema) => {
         return line;
       }
 
-      const schemeMatch = line.match(/^  ([A-Za-z0-9_]+):\s*$/u);
+      const schemeMatch = line.match(/^ {2}([A-Za-z0-9_]+):\s*$/u);
 
       if (schemeMatch) {
         currentScheme = schemeMatch[1];

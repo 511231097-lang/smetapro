@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, rstest, test } from '@rstest/core';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 const mocks = rstest.hoisted(() => ({
+  useLocation: rstest.fn(),
   mutateInvite: rstest.fn(),
   navigate: rstest.fn(),
   useGetProfile: rstest.fn(),
@@ -14,6 +15,8 @@ const mocks = rstest.hoisted(() => ({
 }));
 
 rstest.mock('react-router-dom', () => ({
+  Link: 'a',
+  useLocation: mocks.useLocation,
   useNavigate: mocks.useNavigate,
   useParams: mocks.useParams,
 }));
@@ -54,11 +57,13 @@ describe('InviteAcceptPage', () => {
     mocks.navigate.mockReset();
     mocks.useGetProfile.mockReset();
     mocks.useGetInviteToken.mockReset();
+    mocks.useLocation.mockReset();
     mocks.useGetWorkspaces.mockReset();
     mocks.useNavigate.mockReset();
     mocks.useParams.mockReset();
     mocks.usePostInviteToken.mockReset();
 
+    mocks.useLocation.mockReturnValue({ state: null });
     mocks.useNavigate.mockReturnValue(mocks.navigate);
     mocks.useParams.mockReturnValue({ token: 'invite-token' });
     mocks.useGetProfile.mockReturnValue({

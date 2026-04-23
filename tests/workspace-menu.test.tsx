@@ -35,7 +35,12 @@ describe('WorkspaceMenu', () => {
   test('omits separator when only one workspace meta part is available', () => {
     expect(
       getWorkspaceMeta({
-        member_role: { code: 'owner', id: 1, is_system: true, name: 'Владелец' },
+        member_role: {
+          code: 'owner',
+          id: 1,
+          is_system: true,
+          name: 'Владелец',
+        },
       }),
     ).toBe('Владелец');
 

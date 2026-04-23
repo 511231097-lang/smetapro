@@ -129,7 +129,9 @@ beforeEach(() => {
   );
   mocks.getGetWorkspacesWorkspaceIdProjectsProjectIdQueryKey.mockReset();
   mocks.getGetWorkspacesWorkspaceIdProjectsProjectIdQueryKey.mockImplementation(
-    (workspace: string, project: string) => [`/projects/${workspace}/${project}`],
+    (workspace: string, project: string) => [
+      `/projects/${workspace}/${project}`,
+    ],
   );
   mocks.getGetWorkspacesWorkspaceIdCounterpartiesQueryKey.mockReset();
   mocks.getGetWorkspacesWorkspaceIdCounterpartiesQueryKey.mockImplementation(
@@ -245,16 +247,18 @@ describe('ProjectsPage', () => {
   });
 
   test('passes search value to projects query', () => {
-    renderWithRoutes(`/${workspaceId}/projects`, '/:workspaceId/projects', <ProjectsPage />);
+    renderWithRoutes(
+      `/${workspaceId}/projects`,
+      '/:workspaceId/projects',
+      <ProjectsPage />,
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Открыть поиск' }));
     fireEvent.change(screen.getByLabelText('Поиск по проектам'), {
       target: { value: 'ВИЦЦ' },
     });
 
-    expect(
-      mocks.useGetWorkspacesWorkspaceIdProjects,
-    ).toHaveBeenLastCalledWith(
+    expect(mocks.useGetWorkspacesWorkspaceIdProjects).toHaveBeenLastCalledWith(
       workspaceId,
       expect.objectContaining({
         search: 'ВИЦЦ',
@@ -285,10 +289,9 @@ describe('ProjectPage', () => {
   test('shows not found placeholder when project endpoint returns 404', () => {
     mocks.useGetWorkspacesWorkspaceIdProjectsProjectId.mockReturnValueOnce({
       data: undefined,
-      error: new HttpClientError(
-        new Response(null, { status: 404 }),
-        { error: 'Project not found' },
-      ),
+      error: new HttpClientError(new Response(null, { status: 404 }), {
+        error: 'Project not found',
+      }),
       isError: true,
       isLoading: false,
       refetch: rstest.fn(),
