@@ -160,45 +160,49 @@ const WorkspaceMenu = ({
           <>
             <Divider my={4} />
             <Box display="block">
-              {otherWorkspaces.map((workspace) => (
-                <UnstyledButton
-                  key={workspace.id}
-                  onClick={() => {
-                    setOpened(false);
-                    onWorkspaceSelect(workspace.id ?? null);
-                  }}
-                  p="8px"
-                  display="block"
-                >
-                  <Group gap={12} wrap="nowrap">
-                    <Avatar
-                      size={24}
-                      radius={4}
-                      color={primaryColor}
-                      variant="filled"
-                      src={workspace.logo_url ?? undefined}
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 700,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {wsInitials(workspace.name)}
-                    </Avatar>
+              {otherWorkspaces.map((workspace) => {
+                const workspaceMeta = getWorkspaceMeta(workspace);
 
-                    <Box>
-                      <Text fw={400} size="12px" lh="16px" truncate>
-                        {workspace.name}
-                      </Text>
-                      {getWorkspaceMeta(workspace) && (
-                        <Text fz="10px" lh="12.5px" c="dimmed" truncate>
-                          {getWorkspaceMeta(workspace)}
+                return (
+                  <UnstyledButton
+                    key={workspace.id}
+                    onClick={() => {
+                      setOpened(false);
+                      onWorkspaceSelect(workspace.id ?? null);
+                    }}
+                    p="8px"
+                    display="block"
+                  >
+                    <Group gap={12} wrap="nowrap">
+                      <Avatar
+                        size={24}
+                        radius={4}
+                        color={primaryColor}
+                        variant="filled"
+                        src={workspace.logo_url ?? undefined}
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 700,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {wsInitials(workspace.name)}
+                      </Avatar>
+
+                      <Box>
+                        <Text fw={400} size="12px" lh="16px" truncate>
+                          {workspace.name}
                         </Text>
-                      )}
-                    </Box>
-                  </Group>
-                </UnstyledButton>
-              ))}
+                        {workspaceMeta && (
+                          <Text fz="10px" lh="12.5px" c="dimmed" truncate>
+                            {workspaceMeta}
+                          </Text>
+                        )}
+                      </Box>
+                    </Group>
+                  </UnstyledButton>
+                );
+              })}
             </Box>
           </>
         )}

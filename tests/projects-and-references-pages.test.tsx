@@ -62,7 +62,7 @@ rstest.mock('@mantine/notifications', () => ({
 }));
 
 import ProjectPage, {
-  getClientCounterpartyOptions,
+  getProjectCounterpartyOptions,
 } from '../src/pages/projects/ProjectPage';
 import ProjectsPage from '../src/pages/projects/ProjectsPage';
 import ReferencesPage from '../src/pages/references/ReferencesPage';
@@ -370,9 +370,9 @@ describe('ProjectPage', () => {
   });
 });
 
-describe('getClientCounterpartyOptions', () => {
+describe('getProjectCounterpartyOptions', () => {
   test('returns only client counterparties for project form select', () => {
-    const options = getClientCounterpartyOptions([
+    const options = getProjectCounterpartyOptions([
       {
         id: 'counterparty-1',
         name: 'ВИЦЦ',

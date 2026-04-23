@@ -203,7 +203,7 @@ const toFormValues = (project?: {
   description: project?.description ?? '',
 });
 
-export const getClientCounterpartyOptions = (
+export const getProjectCounterpartyOptions = (
   counterparties: CounterpartyOptionSource[] | undefined,
   currentCounterparty?: {
     id?: string;
@@ -226,6 +226,8 @@ export const getClientCounterpartyOptions = (
     currentName &&
     !base.some((option) => option.value === currentId)
   ) {
+    // Preserve the currently linked counterparty in legacy projects until the
+    // user explicitly replaces it with a valid client option.
     return [...base, { value: currentId, label: currentName }];
   }
 
@@ -363,7 +365,7 @@ const ProjectPage = () => {
   }, [project?.status?.id, project?.status?.name, statusesData?.statuses]);
 
   const counterpartyOptions = useMemo(() => {
-    return getClientCounterpartyOptions(counterpartiesData?.counterparties, {
+    return getProjectCounterpartyOptions(counterpartiesData?.counterparties, {
       id: project?.counterparty?.id,
       name: project?.counterparty?.name,
     });

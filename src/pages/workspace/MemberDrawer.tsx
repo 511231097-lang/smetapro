@@ -130,9 +130,15 @@ const MemberDrawer = ({
   ]);
 
   useEffect(() => {
+    if (!memberId) {
+      setAvatarUrl(null);
+      setAvatarPreviewOpened(false);
+      return;
+    }
+
     setAvatarUrl(member?.avatar_url ?? null);
     setAvatarPreviewOpened(false);
-  }, [member?.avatar_url]);
+  }, [memberId, member?.avatar_url]);
 
   useEffect(() => {
     return () => {
@@ -390,9 +396,11 @@ const MemberDrawer = ({
               <Box
                 component={avatarUrl ? 'button' : 'div'}
                 type={avatarUrl ? 'button' : undefined}
+                aria-label={avatarUrl ? 'Открыть фото сотрудника' : undefined}
                 onClick={
                   avatarUrl ? () => setAvatarPreviewOpened(true) : undefined
                 }
+                title={avatarUrl ? 'Открыть фото сотрудника' : undefined}
                 style={{
                   background: 'transparent',
                   border: 'none',
