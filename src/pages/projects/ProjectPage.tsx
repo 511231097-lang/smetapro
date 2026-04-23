@@ -40,12 +40,14 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import type { ProjectsProjectListResponse } from '../../shared/api/generated/schemas/projectsProjectListResponse';
+import type { ProjectsSingleProjectResponse } from '../../shared/api/generated/schemas/projectsSingleProjectResponse';
 import {
+  getGetWorkspacesWorkspaceIdProjectsProjectIdQueryKey,
   getGetWorkspacesWorkspaceIdProjectsQueryKey,
   useDeleteWorkspacesWorkspaceIdProjectsProjectId,
   useGetProjectStatuses,
   useGetWorkspacesWorkspaceIdCounterparties,
-  useGetWorkspacesWorkspaceIdProjects,
+  useGetWorkspacesWorkspaceIdProjectsProjectId,
   usePatchWorkspacesWorkspaceIdProjectsProjectId,
   usePostWorkspacesWorkspaceIdProjectsProjectIdCopy,
 } from '../../shared/api/generated/smetchik';
@@ -74,59 +76,72 @@ type StatusPalette = {
   badgeColor: string;
 };
 
+type CounterpartyOptionSource = {
+  id?: string;
+  name?: string;
+  type?: {
+    code?: string;
+  };
+};
+
+type CounterpartyOption = {
+  label: string;
+  value: string;
+};
+
 const STATUS_PALETTES_LIGHT: Record<string, StatusPalette> = {
   черновик: {
     badgeBorder: 'transparent',
-    badgeBg: 'var(--mantine-color-gray-1)',
-    badgeColor: 'var(--mantine-color-gray-6)',
+    badgeBg: 'var(--mantine-color-gray-light)',
+    badgeColor: 'var(--mantine-color-gray-light-color)',
   },
   'на согласовании': {
     badgeBorder: 'transparent',
-    badgeBg: 'var(--mantine-color-yellow-1)',
-    badgeColor: 'var(--mantine-color-yellow-6)',
+    badgeBg: 'var(--mantine-color-yellow-light)',
+    badgeColor: 'var(--mantine-color-yellow-light-color)',
   },
   'в работе': {
     badgeBorder: 'transparent',
-    badgeBg: 'var(--mantine-color-indigo-1)',
-    badgeColor: 'var(--mantine-color-indigo-6)',
+    badgeBg: 'var(--mantine-color-indigo-light)',
+    badgeColor: 'var(--mantine-color-indigo-light-color)',
   },
   приостановлен: {
     badgeBorder: 'transparent',
-    badgeBg: 'var(--mantine-color-red-1)',
-    badgeColor: 'var(--mantine-color-red-6)',
+    badgeBg: 'var(--mantine-color-red-light)',
+    badgeColor: 'var(--mantine-color-red-light-color)',
   },
   завершен: {
     badgeBorder: 'transparent',
-    badgeBg: 'var(--mantine-color-teal-1)',
-    badgeColor: 'var(--mantine-color-teal-6)',
+    badgeBg: 'var(--mantine-color-teal-light)',
+    badgeColor: 'var(--mantine-color-teal-light-color)',
   },
 };
 
 const STATUS_PALETTES_DARK: Record<string, StatusPalette> = {
   черновик: {
-    badgeBorder: 'rgba(173, 181, 189, 0.35)',
-    badgeBg: 'rgba(173, 181, 189, 0.18)',
-    badgeColor: 'var(--mantine-color-gray-3)',
+    badgeBorder: 'transparent',
+    badgeBg: 'var(--mantine-color-gray-light)',
+    badgeColor: 'var(--mantine-color-gray-light-color)',
   },
   'на согласовании': {
-    badgeBorder: 'rgba(252, 196, 25, 0.4)',
-    badgeBg: 'rgba(252, 196, 25, 0.2)',
-    badgeColor: 'var(--mantine-color-yellow-3)',
+    badgeBorder: 'transparent',
+    badgeBg: 'var(--mantine-color-yellow-light)',
+    badgeColor: 'var(--mantine-color-yellow-light-color)',
   },
   'в работе': {
-    badgeBorder: 'rgba(92, 124, 250, 0.4)',
-    badgeBg: 'rgba(92, 124, 250, 0.2)',
-    badgeColor: 'var(--mantine-color-indigo-3)',
+    badgeBorder: 'transparent',
+    badgeBg: 'var(--mantine-color-indigo-light)',
+    badgeColor: 'var(--mantine-color-indigo-light-color)',
   },
   приостановлен: {
-    badgeBorder: 'rgba(250, 82, 82, 0.4)',
-    badgeBg: 'rgba(250, 82, 82, 0.2)',
-    badgeColor: 'var(--mantine-color-red-3)',
+    badgeBorder: 'transparent',
+    badgeBg: 'var(--mantine-color-red-light)',
+    badgeColor: 'var(--mantine-color-red-light-color)',
   },
   завершен: {
-    badgeBorder: 'rgba(18, 184, 134, 0.4)',
-    badgeBg: 'rgba(18, 184, 134, 0.2)',
-    badgeColor: 'var(--mantine-color-teal-3)',
+    badgeBorder: 'transparent',
+    badgeBg: 'var(--mantine-color-teal-light)',
+    badgeColor: 'var(--mantine-color-teal-light-color)',
   },
 };
 
@@ -188,6 +203,35 @@ const toFormValues = (project?: {
   description: project?.description ?? '',
 });
 
+export const getClientCounterpartyOptions = (
+  counterparties: CounterpartyOptionSource[] | undefined,
+  currentCounterparty?: {
+    id?: string;
+    name?: string;
+  },
+): CounterpartyOption[] => {
+  const base = (counterparties ?? [])
+    .filter(
+      (item) => item.id && item.name && item.type?.code?.trim() === 'client',
+    )
+    .map((item) => ({
+      value: item.id ?? '',
+      label: item.name ?? '',
+    }));
+
+  const currentId = currentCounterparty?.id;
+  const currentName = currentCounterparty?.name;
+  if (
+    currentId &&
+    currentName &&
+    !base.some((option) => option.value === currentId)
+  ) {
+    return [...base, { value: currentId, label: currentName }];
+  }
+
+  return base;
+};
+
 const mergeUpdatedProjectInListCache = (
   cache: ProjectsProjectListResponse | undefined,
   updatedProject: NonNullable<ProjectsProjectListResponse['projects']>[number],
@@ -237,8 +281,6 @@ const ProjectPage = () => {
     validate: {
       name: (value) =>
         value.trim().length === 0 ? 'Введите наименование проекта' : null,
-      address: (value) =>
-        value.trim().length === 0 ? 'Введите адрес проекта' : null,
       description: (value) =>
         value.length > DESCRIPTION_MAX
           ? `Максимум ${DESCRIPTION_MAX} символов`
@@ -257,16 +299,17 @@ const ProjectPage = () => {
   });
 
   const {
-    data: projectsData,
+    data: projectData,
+    error: projectError,
     isLoading,
     isError,
-    refetch,
-  } = useGetWorkspacesWorkspaceIdProjects(
+    refetch: refetchProject,
+  } = useGetWorkspacesWorkspaceIdProjectsProjectId(
     workspaceId ?? '',
-    { limit: 500, offset: 0 },
+    projectId ?? '',
     {
       query: {
-        enabled: !!workspaceId,
+        enabled: !!workspaceId && !!projectId,
       },
     },
   );
@@ -294,10 +337,9 @@ const ProjectPage = () => {
       },
     );
 
-  const project = useMemo(
-    () => (projectsData?.projects ?? []).find((item) => item.id === projectId),
-    [projectsData?.projects, projectId],
-  );
+  const project = projectData?.project;
+  const isProjectNotFound =
+    projectError instanceof HttpClientError && projectError.status === 404;
 
   const statusOptions = useMemo(() => {
     const base = (statusesData?.statuses ?? [])
@@ -321,24 +363,10 @@ const ProjectPage = () => {
   }, [project?.status?.id, project?.status?.name, statusesData?.statuses]);
 
   const counterpartyOptions = useMemo(() => {
-    const base = (counterpartiesData?.counterparties ?? [])
-      .filter((item) => item.id && item.name)
-      .map((item) => ({
-        value: item.id ?? '',
-        label: item.name ?? '',
-      }));
-
-    const currentId = project?.counterparty?.id;
-    const currentName = project?.counterparty?.name;
-    if (
-      currentId &&
-      currentName &&
-      !base.some((option) => option.value === currentId)
-    ) {
-      return [...base, { value: currentId, label: currentName }];
-    }
-
-    return base;
+    return getClientCounterpartyOptions(counterpartiesData?.counterparties, {
+      id: project?.counterparty?.id,
+      name: project?.counterparty?.name,
+    });
   }, [
     counterpartiesData?.counterparties,
     project?.counterparty?.id,
@@ -351,6 +379,14 @@ const ProjectPage = () => {
     >[number],
   ) => {
     if (!workspaceId || !updatedProject.id) return;
+
+    queryClient.setQueryData<ProjectsSingleProjectResponse>(
+      getGetWorkspacesWorkspaceIdProjectsProjectIdQueryKey(
+        workspaceId,
+        updatedProject.id,
+      ),
+      { project: updatedProject },
+    );
 
     const projectsQueryKey =
       getGetWorkspacesWorkspaceIdProjectsQueryKey(workspaceId);
@@ -533,22 +569,7 @@ const ProjectPage = () => {
     );
   }
 
-  if (isError) {
-    return (
-      <Paper p={20} radius="md">
-        <Stack gap={12}>
-          <Text c="red">Не удалось загрузить данные проекта.</Text>
-          <Group>
-            <Button variant="default" size="xs" onClick={() => refetch()}>
-              Повторить
-            </Button>
-          </Group>
-        </Stack>
-      </Paper>
-    );
-  }
-
-  if (!project) {
+  if (isProjectNotFound || (!isLoading && !isError && !project)) {
     return (
       <Center h="calc(100vh - 220px)" mih={320}>
         <Paper withBorder radius="md" p={28} maw={560} w="100%">
@@ -571,6 +592,25 @@ const ProjectPage = () => {
           </Stack>
         </Paper>
       </Center>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Paper p={20} radius="md">
+        <Stack gap={12}>
+          <Text c="red">Не удалось загрузить данные проекта.</Text>
+          <Group>
+            <Button
+              variant="default"
+              size="xs"
+              onClick={() => refetchProject()}
+            >
+              Повторить
+            </Button>
+          </Group>
+        </Stack>
+      </Paper>
     );
   }
 
@@ -915,7 +955,6 @@ const ProjectPage = () => {
 
               <TextInput
                 label="Адрес"
-                withAsterisk
                 leftSection={<IconMapPin size={16} />}
                 {...form.getInputProps('address')}
               />

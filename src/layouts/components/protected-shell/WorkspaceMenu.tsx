@@ -45,6 +45,17 @@ const formatMembersCount = (count?: number) => {
   return `${value} участников`;
 };
 
+export const getWorkspaceMeta = (workspace?: WorkspacesWorkspaceResponse) => {
+  const roleLabel = workspace?.member_role?.name?.trim() || null;
+  const membersCountLabel = formatMembersCount(workspace?.members_count);
+
+  const meta = [roleLabel, membersCountLabel].filter(
+    (value): value is string => Boolean(value),
+  );
+
+  return meta.length > 0 ? meta.join(' • ') : null;
+};
+
 const WorkspaceMenu = ({
   activeWorkspace,
   workspaceList,
@@ -53,7 +64,7 @@ const WorkspaceMenu = ({
 }: WorkspaceMenuProps) => {
   const { primaryColor } = usePrimaryColor();
   const [opened, setOpened] = useState(false);
-  const membersCountLabel = formatMembersCount(activeWorkspace?.members_count);
+  const activeWorkspaceMeta = getWorkspaceMeta(activeWorkspace);
   const otherWorkspaces = workspaceList.filter(
     (workspace) => workspace.id !== activeWorkspace?.id,
   );
@@ -119,9 +130,11 @@ const WorkspaceMenu = ({
               <Text fz={12} fw={700} lh={'16px'}>
                 {activeWorkspace?.name ?? '—'}
               </Text>
-              <Text fz="10px" lh="12.5px" c="dimmed" truncate mt={4}>
-                Владелец{membersCountLabel ? ` • ${membersCountLabel}` : ''}
-              </Text>
+              {activeWorkspaceMeta && (
+                <Text fz="10px" lh="12.5px" c="dimmed" truncate mt={4}>
+                  {activeWorkspaceMeta}
+                </Text>
+              )}
             </Box>
           </Group>
 
@@ -177,9 +190,11 @@ const WorkspaceMenu = ({
                       <Text fw={400} size="12px" lh="16px" truncate>
                         {workspace.name}
                       </Text>
-                      <Text fz="10px" lh="12.5px" c="dimmed" truncate>
-                        Клиент
-                      </Text>
+                      {getWorkspaceMeta(workspace) && (
+                        <Text fz="10px" lh="12.5px" c="dimmed" truncate>
+                          {getWorkspaceMeta(workspace)}
+                        </Text>
+                      )}
                     </Box>
                   </Group>
                 </UnstyledButton>

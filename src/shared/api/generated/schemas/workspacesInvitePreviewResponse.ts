@@ -13,5 +13,6 @@ export interface WorkspacesInvitePreviewResponse {
   member_count?: number;
   role?: WorkspacesMemberRoleResponse;
   workspace_description?: string;
+  workspace_id?: string;
   workspace_name?: string;
 }

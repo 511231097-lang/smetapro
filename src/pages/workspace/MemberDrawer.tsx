@@ -1,8 +1,10 @@
 import {
   Avatar,
+  Box,
   Button,
   Drawer,
   Group,
+  Modal,
   Select,
   Stack,
   Text,
@@ -11,20 +13,26 @@ import {
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconTrash, IconUpload } from '@tabler/icons-react';
-import { useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import type {
   WorkspacesMemberResponse,
   WorkspacesUpdateMemberProfileRequest,
 } from '../../shared/api/generated/schemas';
 import {
+  deleteWorkspacesWorkspaceIdMembersMemberIdAvatar,
   getGetWorkspacesWorkspaceIdMembersQueryKey,
+  postWorkspacesWorkspaceIdMembersMemberIdAvatar,
   useGetWorkspacesWorkspaceIdRoles,
   usePatchWorkspacesWorkspaceIdMembersMemberId,
   usePatchWorkspacesWorkspaceIdMembersMemberIdRole,
 } from '../../shared/api/generated/smetchik';
 import { HttpClientError } from '../../shared/api/httpClient';
 import { queryClient } from '../../shared/api/queryClient';
+import ImageEditorModal, {
+  type EditorSource,
+} from '../../shared/components/ImageEditorModal';
 import { isOwnerRoleCode } from '../../shared/constants/roles';
 import { getInitials } from '../../shared/utils/getInitials';
 
@@ -52,6 +60,7 @@ const MemberDrawer = ({
   onDelete,
 }: Props) => {
   const { primaryColor } = usePrimaryColor();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const memberId = member?.id ?? '';
   const memberName = member?.name ?? '';
   const memberSurname = member?.surname ?? '';
@@ -60,6 +69,11 @@ const MemberDrawer = ({
   const memberTelegram = member?.telegram ?? '';
   const memberPosition = member?.position ?? '';
   const memberRoleCode = member?.role?.code ?? '';
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(
+    member?.avatar_url ?? null,
+  );
+  const [editorSource, setEditorSource] = useState<EditorSource | null>(null);
+  const [avatarPreviewOpened, setAvatarPreviewOpened] = useState(false);
   const isOwnerMember = isOwnerRoleCode(memberRoleCode);
   const { data: rolesData } = useGetWorkspacesWorkspaceIdRoles(workspaceId, {
     query: { enabled: !!workspaceId },
@@ -115,6 +129,19 @@ const MemberDrawer = ({
     memberRoleCode,
   ]);
 
+  useEffect(() => {
+    setAvatarUrl(member?.avatar_url ?? null);
+    setAvatarPreviewOpened(false);
+  }, [member?.avatar_url]);
+
+  useEffect(() => {
+    return () => {
+      if (editorSource?.url) {
+        URL.revokeObjectURL(editorSource.url);
+      }
+    };
+  }, [editorSource?.url]);
+
   const membersQueryKey =
     getGetWorkspacesWorkspaceIdMembersQueryKey(workspaceId);
 
@@ -133,6 +160,107 @@ const MemberDrawer = ({
       },
     },
   });
+
+  const uploadAvatarMutation = useMutation({
+    mutationFn: async (file: File) => {
+      if (!workspaceId || !memberId) {
+        throw new Error('Не удалось определить сотрудника');
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      return postWorkspacesWorkspaceIdMembersMemberIdAvatar(
+        workspaceId,
+        memberId,
+        {
+          data: formData,
+        },
+      );
+    },
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: membersQueryKey });
+      setAvatarUrl(response.avatar_url ?? null);
+      setEditorSource(null);
+
+      notifications.show({
+        color: 'teal',
+        message: 'Фото сотрудника обновлено',
+      });
+    },
+    onError: (error) => {
+      notifications.show({
+        color: 'red',
+        message: getErrorMessage(error),
+      });
+    },
+  });
+
+  const deleteAvatarMutation = useMutation({
+    mutationFn: async () => {
+      if (!workspaceId || !memberId) {
+        throw new Error('Не удалось определить сотрудника');
+      }
+
+      return deleteWorkspacesWorkspaceIdMembersMemberIdAvatar(
+        workspaceId,
+        memberId,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: membersQueryKey });
+      setAvatarPreviewOpened(false);
+      setAvatarUrl(null);
+
+      notifications.show({
+        color: 'teal',
+        message: 'Фото сотрудника удалено',
+      });
+    },
+    onError: (error) => {
+      notifications.show({
+        color: 'red',
+        message: getErrorMessage(error),
+      });
+    },
+  });
+
+  const closeEditor = () => {
+    if (uploadAvatarMutation.isPending) return;
+    setEditorSource(null);
+  };
+
+  const handleAvatarFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = '';
+    if (!file) return;
+
+    const allowedTypes = new Set(['image/jpeg', 'image/jpg', 'image/png']);
+    const maxSize = 3 * 1024 * 1024;
+
+    if (!allowedTypes.has(file.type.toLowerCase())) {
+      notifications.show({
+        color: 'red',
+        title: 'Неверный формат',
+        message: 'Поддерживаются файлы *.jpeg, *.jpg, *.png',
+      });
+      return;
+    }
+
+    if (file.size > maxSize) {
+      notifications.show({
+        color: 'red',
+        title: 'Файл слишком большой',
+        message: 'Максимальный размер изображения — 3.0 MB',
+      });
+      return;
+    }
+
+    setEditorSource({
+      file,
+      url: URL.createObjectURL(file),
+    });
+  };
 
   const handleSave = form.onSubmit(async (values) => {
     if (!member?.id) return;
@@ -200,7 +328,11 @@ const MemberDrawer = ({
     }
   });
 
-  const isPending = patchMember.isPending || patchRole.isPending;
+  const isPending =
+    patchMember.isPending ||
+    patchRole.isPending ||
+    uploadAvatarMutation.isPending ||
+    deleteAvatarMutation.isPending;
 
   const initials = getInitials(member?.name, member?.surname);
   const fullName =
@@ -255,17 +387,57 @@ const MemberDrawer = ({
           >
             {/* Avatar row */}
             <Group gap="md" align="center">
-              <Avatar size={56} radius="xl" color={primaryColor}>
-                {initials}
-              </Avatar>
+              <Box
+                component={avatarUrl ? 'button' : 'div'}
+                type={avatarUrl ? 'button' : undefined}
+                onClick={
+                  avatarUrl ? () => setAvatarPreviewOpened(true) : undefined
+                }
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: avatarUrl ? 'zoom-in' : 'default',
+                  padding: 0,
+                }}
+              >
+                <Avatar
+                  size={56}
+                  radius={9999}
+                  color={primaryColor}
+                  src={avatarUrl ?? undefined}
+                >
+                  {initials}
+                </Avatar>
+              </Box>
               <Button
                 variant="outline"
                 color="gray"
                 size="xs"
                 leftSection={<IconUpload size={14} />}
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadAvatarMutation.isPending}
               >
                 Загрузить фото
               </Button>
+              {avatarUrl && (
+                <Button
+                  variant="default"
+                  color="gray"
+                  size="xs"
+                  leftSection={<IconTrash size={14} />}
+                  onClick={() => deleteAvatarMutation.mutate()}
+                  disabled={deleteAvatarMutation.isPending}
+                >
+                  Удалить фото
+                </Button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".jpeg,.jpg,.png"
+                style={{ display: 'none' }}
+                onChange={handleAvatarFileSelect}
+              />
             </Group>
 
             <TextInput label="Имя" {...form.getInputProps('name')} />
@@ -332,6 +504,34 @@ const MemberDrawer = ({
           </Group>
         </form>
       </Drawer>
+      <Modal
+        opened={avatarPreviewOpened}
+        onClose={() => setAvatarPreviewOpened(false)}
+        centered
+        size="auto"
+        title={fullName}
+      >
+        <Stack align="center" p="md">
+          <Avatar
+            size={240}
+            radius={9999}
+            color={primaryColor}
+            src={avatarUrl ?? undefined}
+          >
+            {initials}
+          </Avatar>
+        </Stack>
+      </Modal>
+      <ImageEditorModal
+        opened={!!editorSource}
+        source={editorSource}
+        shape="circle"
+        loading={uploadAvatarMutation.isPending}
+        onClose={closeEditor}
+        onSave={async (file) => {
+          await uploadAvatarMutation.mutateAsync(file);
+        }}
+      />
     </>
   );
 };

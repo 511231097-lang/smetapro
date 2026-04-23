@@ -283,7 +283,7 @@ describe('httpClient', () => {
     expect(refresh).toHaveBeenCalledTimes(0);
   });
 
-  test('logs out when refresh fails for non-/auth/me endpoint', async () => {
+  test('logs out when refresh fails for non-/profile endpoint', async () => {
     const refresh = rstest.fn(async () => {
       throw new Error('refresh failed');
     });
@@ -303,28 +303,6 @@ describe('httpClient', () => {
 
     expect(logout).toHaveBeenCalledTimes(1);
   });
-
-  test('does not logout when refresh fails for /auth/me', async () => {
-    const refresh = rstest.fn(async () => {
-      throw new Error('refresh failed');
-    });
-    const logout = rstest.fn();
-    setAuthHandlers({ refresh, logout });
-
-    globalThis.fetch = rstest.fn(async () =>
-      jsonResponse(401, { message: 'Unauthorized' }),
-    );
-
-    await expect(
-      httpClient({
-        url: '/api/v1/auth/me',
-        method: 'GET',
-      }),
-    ).rejects.toThrow('refresh failed');
-
-    expect(logout).toHaveBeenCalledTimes(0);
-  });
-
   test('does not logout when refresh fails for /profile', async () => {
     const refresh = rstest.fn(async () => {
       throw new Error('refresh failed');

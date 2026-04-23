@@ -20,7 +20,7 @@
     "test:watch": "rstest --watch",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "api": "orval --config orval.config.cjs",
+    "api": "node ./scripts/run-orval.mjs",
     "api:sync": "bash ./scripts/sync-api-schema.sh"
   },
   "dependencies": {

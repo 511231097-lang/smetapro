@@ -255,11 +255,8 @@ export const httpClient = async <TResponse, TBody = unknown>(
       try {
         await runSingleFlightRefresh();
       } catch (refreshError) {
-        // 2) если refresh не удался — logout (кроме auth/profile check), иначе пробрасываем ошибку
-        if (
-          !mergedConfig.url.includes('/api/v1/auth/me') &&
-          !mergedConfig.url.includes('/api/v1/profile')
-        ) {
+        // 2) если refresh не удался — logout (кроме profile check), иначе пробрасываем ошибку
+        if (!mergedConfig.url.includes('/api/v1/profile')) {
           logoutFn?.();
         }
         throw refreshError;

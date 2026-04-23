@@ -74,10 +74,13 @@ const useCountdown = (expiresAt: string | undefined) => {
   return remaining;
 };
 
-const COLUMNS: { key: string; label: string }[] = [
-  { key: 'full_name', label: 'Сотрудник' },
+const NAME_COLUMN_WIDTH = 200;
+const EMAIL_COLUMN_WIDTH = 200;
+
+const COLUMNS: { key: string; label: string; width?: number }[] = [
+  { key: 'full_name', label: 'Сотрудник', width: NAME_COLUMN_WIDTH },
   { key: 'phone', label: 'Телефон' },
-  { key: 'email', label: 'Почта' },
+  { key: 'email', label: 'Почта', width: EMAIL_COLUMN_WIDTH },
   { key: 'telegram', label: 'Telegram' },
   { key: 'position', label: 'Должность' },
   { key: 'role', label: 'Роль' },
@@ -603,7 +606,13 @@ const WorkspaceMembersPage = () => {
               <Table.Thead>
                 <Table.Tr>
                   {COLUMNS.map((col) => (
-                    <Table.Th key={col.key} style={{ whiteSpace: 'nowrap' }}>
+                    <Table.Th
+                      key={col.key}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        width: col.width,
+                      }}
+                    >
                       <Group
                         justify="space-between"
                         gap={8}
@@ -794,38 +803,72 @@ const WorkspaceMembersPage = () => {
                       onClick={() => setSelectedMember(m)}
                       style={{ cursor: 'pointer' }}
                     >
-                      <Table.Td>
-                        <Group gap="sm" wrap="nowrap">
-                          <Avatar size={32} radius="xl" color={primaryColor}>
+                      <Table.Td
+                        style={{
+                          maxWidth: NAME_COLUMN_WIDTH,
+                          overflow: 'hidden',
+                          width: NAME_COLUMN_WIDTH,
+                        }}
+                      >
+                        <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+                          <Avatar
+                            size={32}
+                            radius="xl"
+                            color={primaryColor}
+                            src={m.avatar_url ?? undefined}
+                          >
                             {getInitials(m.name, m.surname)}
                           </Avatar>
-                          <Text size="sm">
+                          <Box style={{ flex: 1, minWidth: 0 }}>
                             <Text
-                              component="span"
-                              style={{
-                                textDecoration: 'underline',
-                                textDecorationColor:
-                                  'var(--mantine-color-default-border)',
-                              }}
+                              size="sm"
+                              truncate
+                              title={`${[m.name, m.surname].filter(Boolean).join(' ') || m.email || '—'}${
+                                isMe(m) ? ' (Вы)' : ''
+                              }`}
                             >
-                              {[m.name, m.surname].filter(Boolean).join(' ') ||
-                                m.email ||
-                                '—'}
-                            </Text>
-                            {isMe(m) && (
-                              <Text component="span" c="dimmed">
-                                {' '}
-                                (Вы)
+                              <Text
+                                component="span"
+                                style={{
+                                  textDecoration: 'underline',
+                                  textDecorationColor:
+                                    'var(--mantine-color-default-border)',
+                                }}
+                              >
+                                {[m.name, m.surname]
+                                  .filter(Boolean)
+                                  .join(' ') ||
+                                  m.email ||
+                                  '—'}
                               </Text>
-                            )}
-                          </Text>
+                              {isMe(m) && (
+                                <Text component="span" c="dimmed">
+                                  {' '}
+                                  (Вы)
+                                </Text>
+                              )}
+                            </Text>
+                          </Box>
                         </Group>
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm">{m.phone || '—'}</Text>
                       </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">{m.email || '—'}</Text>
+                      <Table.Td
+                        style={{
+                          maxWidth: EMAIL_COLUMN_WIDTH,
+                          overflow: 'hidden',
+                          width: EMAIL_COLUMN_WIDTH,
+                        }}
+                      >
+                        <Text
+                          size="sm"
+                          truncate
+                          title={m.email || undefined}
+                          style={{ maxWidth: EMAIL_COLUMN_WIDTH }}
+                        >
+                          {m.email || '—'}
+                        </Text>
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm">{m.telegram || '—'}</Text>
@@ -948,6 +991,7 @@ const WorkspaceMembersPage = () => {
                         size={36}
                         radius="xl"
                         color={primaryColor}
+                        src={m.avatar_url ?? undefined}
                         style={{ flexShrink: 0 }}
                       >
                         {getInitials(m.name, m.surname)}

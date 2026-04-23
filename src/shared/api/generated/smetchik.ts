@@ -342,99 +342,6 @@ export const usePostAuthLogoutAll = <TError = ToolsErrorResponse | ToolsErrorRes
     }
     
 /**
- * Returns current authenticated user profile.
- * @summary Get current user
- */
-export const getAuthMe = (
-    
- options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
-) => {
-      
-      
-      return httpClient<AuthSuccessResponse>(
-      {url: `/api/v1/auth/me`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-
-
-export const getGetAuthMeQueryKey = () => {
-    return [
-    `/api/v1/auth/me`
-    ] as const;
-    }
-
-    
-export const getGetAuthMeQueryOptions = <TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetAuthMeQueryKey();
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuthMe>>> = ({ signal }) => getAuthMe(requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetAuthMeQueryResult = NonNullable<Awaited<ReturnType<typeof getAuthMe>>>
-export type GetAuthMeQueryError = ToolsErrorResponse | ToolsErrorResponse
-
-
-export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAuthMe>>,
-          TError,
-          Awaited<ReturnType<typeof getAuthMe>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAuthMe>>,
-          TError,
-          Awaited<ReturnType<typeof getAuthMe>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get current user
- */
-
-export function useGetAuthMe<TData = Awaited<ReturnType<typeof getAuthMe>>, TError = ToolsErrorResponse | ToolsErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthMe>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getGetAuthMeQueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
  * Rotates refresh token and returns new auth cookies.
  * @summary Refresh tokens
  */
@@ -3424,6 +3331,106 @@ export const useDeleteWorkspacesWorkspaceIdProjectsProjectId = <TError = ToolsEr
       return useMutation(mutationOptions, queryClient);
     }
     
+/**
+ * Returns workspace project by identifier.
+ * @summary Get workspace project
+ */
+export const getWorkspacesWorkspaceIdProjectsProjectId = (
+    workspaceId: string,
+    projectId: string,
+ options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+) => {
+      
+      
+      return httpClient<ProjectsSingleProjectResponse>(
+      {url: `/api/v1/workspaces/${workspaceId}/projects/${projectId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetWorkspacesWorkspaceIdProjectsProjectIdQueryKey = (workspaceId?: string,
+    projectId?: string,) => {
+    return [
+    `/api/v1/workspaces/${workspaceId}/projects/${projectId}`
+    ] as const;
+    }
+
+    
+export const getGetWorkspacesWorkspaceIdProjectsProjectIdQueryOptions = <TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(workspaceId: string,
+    projectId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetWorkspacesWorkspaceIdProjectsProjectIdQueryKey(workspaceId,projectId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>> = ({ signal }) => getWorkspacesWorkspaceIdProjectsProjectId(workspaceId,projectId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(workspaceId && projectId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetWorkspacesWorkspaceIdProjectsProjectIdQueryResult = NonNullable<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>>
+export type GetWorkspacesWorkspaceIdProjectsProjectIdQueryError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse
+
+
+export function useGetWorkspacesWorkspaceIdProjectsProjectId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
+ workspaceId: string,
+    projectId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>,
+          TError,
+          Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetWorkspacesWorkspaceIdProjectsProjectId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
+ workspaceId: string,
+    projectId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>,
+          TError,
+          Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetWorkspacesWorkspaceIdProjectsProjectId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
+ workspaceId: string,
+    projectId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get workspace project
+ */
+
+export function useGetWorkspacesWorkspaceIdProjectsProjectId<TData = Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError = ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse | ToolsErrorResponse>(
+ workspaceId: string,
+    projectId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWorkspacesWorkspaceIdProjectsProjectId>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetWorkspacesWorkspaceIdProjectsProjectIdQueryOptions(workspaceId,projectId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * Partially updates workspace project fields.
  * @summary Update workspace project

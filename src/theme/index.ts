@@ -11,9 +11,12 @@ type SizeProps = {
 const fontFamily = '"Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif';
 
 export const cssVariablesResolver: CSSVariablesResolver = () => ({
-  variables: {},
+  variables: {
+    '--app-heading-color': '#1c1a17',
+  },
   light: {},
   dark: {
+    '--app-heading-color': '#f8f9fa',
     '--mantine-color-body': '#2C2E33',
     '--mantine-color-default-border': '#495057',
   },
@@ -244,6 +247,13 @@ export const createAppTheme = (primaryColor: MantineColor = 'teal') =>
       xl: '0 1px 3px rgba(0, 0, 0, 0.05), 0 36px 28px -7px rgba(0, 0, 0, 0.102), 0 17px 17px -7px rgba(0, 0, 0, 0.039)',
     },
     components: {
+      Title: {
+        styles: {
+          root: {
+            color: 'var(--app-heading-color)',
+          },
+        },
+      },
       Button: {
         defaultProps: { radius: 'sm' },
         vars: (_theme: unknown, props: SizeProps) => {
