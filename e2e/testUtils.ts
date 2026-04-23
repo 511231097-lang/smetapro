@@ -246,7 +246,6 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
       }
       return json(401, { error: 'Not authenticated' });
     }
-
     if (url.pathname === '/api/v1/profile' && method === 'PATCH') {
       if (!state.user) {
         return json(401, { error: 'Not authenticated' });
