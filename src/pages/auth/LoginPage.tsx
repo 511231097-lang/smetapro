@@ -53,12 +53,14 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { primaryColor } = usePrimaryColor();
-  const from =
-    (location.state as { from?: { pathname: string } } | null)?.from
-      ?.pathname ?? ROUTES.ROOT;
-  const passwordChanged =
-    (location.state as { passwordChanged?: boolean } | null)?.passwordChanged ??
-    false;
+  const authState = location.state as {
+    autoAcceptInvite?: boolean;
+    from?: { pathname?: string };
+    passwordChanged?: boolean;
+  } | null;
+  const from = authState?.from?.pathname ?? ROUTES.ROOT;
+  const passwordChanged = authState?.passwordChanged ?? false;
+  const autoAcceptInvite = authState?.autoAcceptInvite ?? false;
 
   const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -82,7 +84,10 @@ const LoginForm = () => {
   const loginMutation = usePostAuthLogin({
     mutation: {
       onSuccess: () => {
-        navigate(from, { replace: true });
+        navigate(from, {
+          replace: true,
+          state: autoAcceptInvite ? { autoAcceptInvite: true } : undefined,
+        });
       },
       onError: (error) => {
         setLoginError(getErrorMessage(error));
@@ -193,7 +198,12 @@ const LoginForm = () => {
 
           <Group gap={4} justify="center">
             <Text size="sm">Нет аккаунта?</Text>
-            <Anchor component={Link} size="sm" to={ROUTES.REGISTER}>
+            <Anchor
+              component={Link}
+              size="sm"
+              to={ROUTES.REGISTER}
+              state={location.state}
+            >
               Зарегистрироваться
             </Anchor>
           </Group>

@@ -2,6 +2,7 @@
 
 :root {
   --app-bg: #f6f3ee;
+  --app-page-bg: var(--mantine-color-gray-1);
   --app-panel: #ffffff;
   --app-border: #e2ddd2;
   --app-accent: #0c6b5f;
@@ -16,6 +17,7 @@
 }
 
 [data-mantine-color-scheme="dark"] {
+  --app-page-bg: #212529;
   --app-border: #495057;
   --app-header-bg: #343a40;
   --app-sidebar-bg: #272c32;
@@ -48,16 +50,19 @@ body {
   margin: 0;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #1c1a17;
-  background-color: var(--mantine-color-gray-1);
+  background-color: var(--app-page-bg);
 }
 
 [data-mantine-color-scheme="dark"] body {
   color: #c9c9c9;
-  background-color: #212529;
+}
+
+[data-mantine-color-scheme="light"] .mantine-AppShell-main {
+  background-color: var(--app-page-bg);
 }
 
 [data-mantine-color-scheme="dark"] .mantine-AppShell-main {
-  background-color: #212529;
+  background-color: var(--app-page-bg);
 }
 
 * {

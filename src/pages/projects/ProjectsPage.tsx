@@ -55,6 +55,7 @@ type SortField = 'name' | 'counterparty' | 'start_date' | 'status';
 type SortDirection = 'asc' | 'desc';
 
 type ColumnConfig = {
+  filterable?: boolean;
   key: 'name' | 'counterparty' | 'period' | 'status';
   label: string;
   sortBy?: SortField;
@@ -75,6 +76,12 @@ type CreateProjectFormValues = {
 type ViewMode = 'table' | 'grid';
 
 const VIEW_MODE_STORAGE_KEY = 'smetapro.projects.viewMode';
+const FOLDER_STATUS_WIDTH = 150;
+const FOLDER_STATUS_HEIGHT = 8;
+const FOLDER_SIDE_HEIGHT = 15;
+const FOLDER_TOP_RIGHT_PADDING = 28;
+const FOLDER_TAB_CONNECTOR_WIDTH = 23.8486;
+const CREATE_PROJECT_CONNECTOR_OVERLAP = 3;
 
 const isViewMode = (value: string | null): value is ViewMode =>
   value === 'table' || value === 'grid';
@@ -91,40 +98,46 @@ const getInitialViewMode = (): ViewMode => {
 };
 
 const COLUMNS: ColumnConfig[] = [
-  { key: 'name', label: 'Наименование', sortBy: 'name' },
-  { key: 'counterparty', label: 'Клиент', sortBy: 'counterparty', width: 210 },
+  { key: 'name', label: 'Наименование', sortBy: 'name', filterable: false },
+  {
+    key: 'counterparty',
+    label: 'Клиент',
+    sortBy: 'counterparty',
+    width: 210,
+    filterable: false,
+  },
   { key: 'period', label: 'Сроки', sortBy: 'start_date', width: 210 },
   { key: 'status', label: 'Статус', sortBy: 'status', width: 221 },
 ];
 
 const STATUS_PALETTES_LIGHT: Record<string, StatusPalette> = {
   черновик: {
-    badgeBg: 'var(--mantine-color-gray-1)',
-    badgeColor: 'var(--mantine-color-gray-6)',
+    badgeBg: 'var(--mantine-color-gray-light)',
+    badgeColor: 'var(--mantine-color-gray-light-color)',
     dotColor: 'var(--mantine-color-gray-6)',
     stripeColor: 'var(--mantine-color-gray-6)',
   },
   'на согласовании': {
-    badgeBg: 'var(--mantine-color-yellow-1)',
-    badgeColor: 'var(--mantine-color-yellow-6)',
+    badgeBg: 'var(--mantine-color-yellow-light)',
+    badgeColor: 'var(--mantine-color-yellow-light-color)',
     dotColor: 'var(--mantine-color-yellow-6)',
     stripeColor: 'var(--mantine-color-yellow-6)',
   },
   'в работе': {
-    badgeBg: 'var(--mantine-color-indigo-1)',
-    badgeColor: 'var(--mantine-color-indigo-6)',
+    badgeBg: 'var(--mantine-color-indigo-light)',
+    badgeColor: 'var(--mantine-color-indigo-light-color)',
     dotColor: 'var(--mantine-color-indigo-6)',
     stripeColor: 'var(--mantine-color-indigo-6)',
   },
   приостановлен: {
-    badgeBg: 'var(--mantine-color-red-1)',
-    badgeColor: 'var(--mantine-color-red-6)',
+    badgeBg: 'var(--mantine-color-red-light)',
+    badgeColor: 'var(--mantine-color-red-light-color)',
     dotColor: 'var(--mantine-color-red-6)',
     stripeColor: 'var(--mantine-color-red-6)',
   },
   завершен: {
-    badgeBg: 'var(--mantine-color-teal-1)',
-    badgeColor: 'var(--mantine-color-teal-6)',
+    badgeBg: 'var(--mantine-color-teal-light)',
+    badgeColor: 'var(--mantine-color-teal-light-color)',
     dotColor: 'var(--mantine-color-teal-6)',
     stripeColor: 'var(--mantine-color-teal-6)',
   },
@@ -132,32 +145,32 @@ const STATUS_PALETTES_LIGHT: Record<string, StatusPalette> = {
 
 const STATUS_PALETTES_DARK: Record<string, StatusPalette> = {
   черновик: {
-    badgeBg: 'rgba(173, 181, 189, 0.18)',
-    badgeColor: 'var(--mantine-color-gray-3)',
+    badgeBg: 'var(--mantine-color-gray-light)',
+    badgeColor: 'var(--mantine-color-gray-light-color)',
     dotColor: 'var(--mantine-color-gray-4)',
     stripeColor: 'var(--mantine-color-gray-5)',
   },
   'на согласовании': {
-    badgeBg: 'rgba(252, 196, 25, 0.2)',
-    badgeColor: 'var(--mantine-color-yellow-3)',
+    badgeBg: 'var(--mantine-color-yellow-light)',
+    badgeColor: 'var(--mantine-color-yellow-light-color)',
     dotColor: 'var(--mantine-color-yellow-4)',
     stripeColor: 'var(--mantine-color-yellow-5)',
   },
   'в работе': {
-    badgeBg: 'rgba(92, 124, 250, 0.2)',
-    badgeColor: 'var(--mantine-color-indigo-3)',
+    badgeBg: 'var(--mantine-color-indigo-light)',
+    badgeColor: 'var(--mantine-color-indigo-light-color)',
     dotColor: 'var(--mantine-color-indigo-4)',
     stripeColor: 'var(--mantine-color-indigo-5)',
   },
   приостановлен: {
-    badgeBg: 'rgba(250, 82, 82, 0.2)',
-    badgeColor: 'var(--mantine-color-red-3)',
+    badgeBg: 'var(--mantine-color-red-light)',
+    badgeColor: 'var(--mantine-color-red-light-color)',
     dotColor: 'var(--mantine-color-red-4)',
     stripeColor: 'var(--mantine-color-red-5)',
   },
   завершен: {
-    badgeBg: 'rgba(18, 184, 134, 0.2)',
-    badgeColor: 'var(--mantine-color-teal-3)',
+    badgeBg: 'var(--mantine-color-teal-light)',
+    badgeColor: 'var(--mantine-color-teal-light-color)',
     dotColor: 'var(--mantine-color-teal-4)',
     stripeColor: 'var(--mantine-color-teal-5)',
   },
@@ -214,16 +227,204 @@ const formatPeriod = (
   return '—';
 };
 
-const getSearchValue = (project: ProjectsProjectResponse) =>
-  [
-    project.name,
-    project.counterparty?.name,
-    project.status?.name,
-    formatPeriod(project.start_date, project.end_date),
-  ]
-    .filter((value): value is string => Boolean(value))
-    .join(' ')
-    .toLowerCase();
+type FolderCardTopProps = {
+  statusColor: string;
+  sideColor: string;
+};
+
+const FolderTabConnector = ({ color }: { color: string }) => (
+  <Box
+    component="svg"
+    width={FOLDER_TAB_CONNECTOR_WIDTH}
+    height={FOLDER_SIDE_HEIGHT}
+    viewBox="0 0 23.8486 15"
+    aria-hidden="true"
+    style={{
+      display: 'block',
+      flexShrink: 0,
+      left: 1,
+      position: 'relative',
+      transform: 'scaleX(-1)',
+      transformOrigin: 'center',
+    }}
+  >
+    <path
+      d="M0 0.0300909L2 0.0300945C2.23033 0.0300945 2.23033 0 8.23033 0C14.2303 0 17 5.02006 17 5.02006L23.8486 15L0 15V0.0300909Z"
+      fill={color}
+    />
+  </Box>
+);
+
+const CreateProjectTabConnector = ({
+  backgroundColor,
+  strokeColor,
+}: {
+  backgroundColor: string;
+  strokeColor: string;
+}) => (
+  <Box
+    component="svg"
+    width={FOLDER_TAB_CONNECTOR_WIDTH}
+    height={FOLDER_SIDE_HEIGHT}
+    viewBox="0 0 23.8486 15"
+    aria-hidden="true"
+    style={{
+      display: 'block',
+      flexShrink: 0,
+      position: 'relative',
+      transform: 'scaleX(-1)',
+      transformOrigin: 'center',
+    }}
+  >
+    <path
+      d="M0 0.0300909L2 0.0300945C2.23033 0.0300945 2.23033 0 8.23033 0C14.2303 0 17 5.02006 17 5.02006L23.8486 15L0 15V0.0300909Z"
+      fill={backgroundColor}
+    />
+    <path
+      d="M0 0.0300909L2 0.0300945C2.23033 0.0300945 2.23033 0 8.23033 0C14.2303 0 17 5.02006 17 5.02006L23.8486 15L0 15"
+      fill="none"
+      stroke={strokeColor}
+      strokeDasharray="2 2"
+      vectorEffect="non-scaling-stroke"
+    />
+  </Box>
+);
+
+const FolderCardTop = ({ statusColor, sideColor }: FolderCardTopProps) => {
+  return (
+    <Box
+      style={{
+        alignItems: 'flex-end',
+        display: 'flex',
+        height: FOLDER_SIDE_HEIGHT,
+        paddingRight: FOLDER_TOP_RIGHT_PADDING,
+        position: 'relative',
+        top: 1,
+        width: '100%',
+      }}
+    >
+      <Box
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexShrink: 0,
+          marginRight: -FOLDER_TOP_RIGHT_PADDING,
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          style={{
+            background: statusColor,
+            borderTopLeftRadius: 8,
+            height: FOLDER_STATUS_HEIGHT,
+            width: FOLDER_STATUS_WIDTH,
+          }}
+        />
+      </Box>
+      <Box
+        style={{
+          alignItems: 'center',
+          display: 'flex',
+          flex: '1 0 0',
+          marginRight: -FOLDER_TOP_RIGHT_PADDING,
+          minWidth: 0,
+          position: 'relative',
+        }}
+      >
+        <FolderTabConnector color={sideColor} />
+        <Box
+          style={{
+            background: sideColor,
+            borderTopRightRadius: 8,
+            flex: '1 0 0',
+            height: FOLDER_SIDE_HEIGHT,
+            minWidth: 0,
+          }}
+        />
+      </Box>
+    </Box>
+  );
+};
+
+const CreateProjectCardTop = ({
+  backgroundColor,
+  strokeColor,
+}: {
+  backgroundColor: string;
+  strokeColor: string;
+}) => (
+  <Box
+    style={{
+      alignItems: 'flex-end',
+      display: 'flex',
+      height: FOLDER_SIDE_HEIGHT,
+      marginBottom: -1,
+      paddingRight: FOLDER_TOP_RIGHT_PADDING,
+      position: 'relative',
+      width: '100%',
+    }}
+  >
+    <Box
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        flexShrink: 0,
+        marginRight: -FOLDER_TOP_RIGHT_PADDING,
+        overflow: 'hidden',
+      }}
+    >
+      <Box
+        style={{
+          border: `1px dashed ${strokeColor}`,
+          borderTopLeftRadius: 8,
+          boxSizing: 'border-box',
+          height: FOLDER_STATUS_HEIGHT,
+          width: FOLDER_STATUS_WIDTH,
+        }}
+      />
+    </Box>
+
+    <Box
+      style={{
+        alignItems: 'center',
+        display: 'flex',
+        flex: '1 0 0',
+        marginRight: -FOLDER_TOP_RIGHT_PADDING,
+        minWidth: 0,
+        paddingRight: CREATE_PROJECT_CONNECTOR_OVERLAP,
+        position: 'relative',
+      }}
+    >
+      <Box
+        style={{
+          display: 'flex',
+          flexShrink: 0,
+          marginRight: -CREATE_PROJECT_CONNECTOR_OVERLAP,
+        }}
+      >
+        <CreateProjectTabConnector
+          backgroundColor={backgroundColor}
+          strokeColor={strokeColor}
+        />
+      </Box>
+
+      <Box
+        style={{
+          background: backgroundColor,
+          borderBottom: `1px dashed ${strokeColor}`,
+          borderRight: `1px dashed ${strokeColor}`,
+          borderTop: `1px dashed ${strokeColor}`,
+          borderTopRightRadius: 8,
+          boxSizing: 'border-box',
+          flex: '1 0 0',
+          height: FOLDER_SIDE_HEIGHT,
+          marginRight: -CREATE_PROJECT_CONNECTOR_OVERLAP,
+          minWidth: 0,
+        }}
+      />
+    </Box>
+  </Box>
+);
 
 const ProjectsPage = () => {
   const navigate = useNavigate();
@@ -263,14 +464,18 @@ const ProjectsPage = () => {
     }
   }, [viewMode]);
 
+  const trimmedSearch = searchValue.trim();
+  const hasSearch = trimmedSearch.length > 0;
+
   const listParams = useMemo(
     () => ({
       limit: 100,
       offset: 0,
+      search: trimmedSearch || undefined,
       sort_by: sortBy,
       sort_dir: sortDir,
     }),
-    [sortBy, sortDir],
+    [sortBy, sortDir, trimmedSearch],
   );
 
   const { data, isLoading, isFetching, isError, error, refetch } =
@@ -281,15 +486,8 @@ const ProjectsPage = () => {
     });
 
   const projects = data?.projects ?? [];
-  const normalizedSearch = searchValue.trim().toLowerCase();
-  const filteredProjects =
-    normalizedSearch.length === 0
-      ? projects
-      : projects.filter((project) =>
-          getSearchValue(project).includes(normalizedSearch),
-        );
   const gridProjects = useMemo(() => {
-    const next = [...filteredProjects];
+    const next = [...projects];
     next.sort((left, right) => {
       const leftTs = left.created_at ? Date.parse(left.created_at) : NaN;
       const rightTs = right.created_at ? Date.parse(right.created_at) : NaN;
@@ -307,7 +505,7 @@ const ProjectsPage = () => {
     });
 
     return next;
-  }, [filteredProjects, gridSortNewestFirst]);
+  }, [projects, gridSortNewestFirst]);
 
   const invalidateProjects = () => {
     if (!workspaceId) return;
@@ -727,14 +925,9 @@ const ProjectsPage = () => {
           cursor: projectRoute ? 'pointer' : 'default',
         }}
       >
-        <Box
-          h={10}
-          w={200}
-          style={{
-            background: palette.stripeColor,
-            borderTopLeftRadius: 8,
-            borderTopRightRadius: 8,
-          }}
+        <FolderCardTop
+          statusColor={palette.stripeColor}
+          sideColor="var(--mantine-color-default)"
         />
         <Paper
           withBorder={false}
@@ -742,11 +935,11 @@ const ProjectsPage = () => {
           p={16}
           style={{
             background: 'var(--mantine-color-default)',
-            border: '1px solid var(--mantine-color-default-border)',
             borderBottomLeftRadius: 8,
             borderBottomRightRadius: 8,
-            borderTopRightRadius: 8,
             minHeight: 128,
+            position: 'relative',
+            zIndex: 3,
           }}
         >
           <Stack justify="space-between" h="100%" gap={16}>
@@ -827,25 +1020,21 @@ const ProjectsPage = () => {
         flexDirection: 'column',
       }}
     >
-      <Box
-        h={10}
-        w={200}
-        style={{
-          border: '1px dashed var(--mantine-color-gray-6)',
-          borderBottom: 0,
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
-        }}
+      <CreateProjectCardTop
+        backgroundColor="var(--app-page-bg)"
+        strokeColor="var(--mantine-color-gray-6)"
       />
 
       <UnstyledButton
         onClick={() => setCreateModalOpened(true)}
         style={{
           alignItems: 'center',
-          border: '1px dashed var(--mantine-color-gray-6)',
+          background: 'var(--app-page-bg)',
+          borderBottom: '1px dashed var(--mantine-color-gray-6)',
+          borderLeft: '1px dashed var(--mantine-color-gray-6)',
+          borderRight: '1px dashed var(--mantine-color-gray-6)',
           borderBottomLeftRadius: 8,
           borderBottomRightRadius: 8,
-          borderTopRightRadius: 8,
           color: 'var(--mantine-primary-color-filled)',
           display: 'flex',
           flexDirection: 'column',
@@ -952,14 +1141,14 @@ const ProjectsPage = () => {
               gap={2}
               p={2}
               style={{
-                background: 'var(--mantine-color-default)',
-                border: '1px solid var(--mantine-color-default-border)',
+                background: 'var(--mantine-color-gray-light)',
                 borderRadius: 4,
+                height: 32,
+                width: 62,
               }}
             >
               <ActionIcon
                 variant="transparent"
-                color="gray"
                 size={28}
                 aria-label="Карточки"
                 title="Карточки"
@@ -967,19 +1156,20 @@ const ProjectsPage = () => {
                 style={{
                   background:
                     viewMode === 'grid'
-                      ? 'var(--mantine-color-body)'
+                      ? 'var(--mantine-color-default)'
                       : 'transparent',
-                  border:
+                  boxShadow:
+                    viewMode === 'grid' ? 'var(--mantine-shadow-xs)' : 'none',
+                  color:
                     viewMode === 'grid'
-                      ? '1px solid var(--mantine-color-default-border)'
-                      : '1px solid transparent',
+                      ? 'var(--mantine-color-text)'
+                      : 'var(--mantine-color-gray-5)',
                 }}
               >
                 <IconLayoutGrid size={16} />
               </ActionIcon>
               <ActionIcon
                 variant="transparent"
-                color="gray"
                 size={28}
                 aria-label="Таблица"
                 title="Таблица"
@@ -987,12 +1177,14 @@ const ProjectsPage = () => {
                 style={{
                   background:
                     viewMode === 'table'
-                      ? 'var(--mantine-color-body)'
+                      ? 'var(--mantine-color-default)'
                       : 'transparent',
-                  border:
+                  boxShadow:
+                    viewMode === 'table' ? 'var(--mantine-shadow-xs)' : 'none',
+                  color:
                     viewMode === 'table'
-                      ? '1px solid var(--mantine-color-default-border)'
-                      : '1px solid transparent',
+                      ? 'var(--mantine-color-text)'
+                      : 'var(--mantine-color-gray-5)',
                 }}
               >
                 <IconListDetails size={16} />
@@ -1057,16 +1249,18 @@ const ProjectsPage = () => {
                               {column.label}
                             </Text>
                             <Group gap={6} wrap="nowrap">
-                              <ActionIcon
-                                variant="transparent"
-                                color="gray"
-                                size={16}
-                                aria-label={`Фильтр по колонке «${column.label}»`}
-                                title={`Фильтр по колонке «${column.label}»`}
-                                onClick={() => notifyListOnly('Фильтрация')}
-                              >
-                                <IconFilter size={14} />
-                              </ActionIcon>
+                              {column.filterable !== false && (
+                                <ActionIcon
+                                  variant="transparent"
+                                  color="gray"
+                                  size={16}
+                                  aria-label={`Фильтр по колонке «${column.label}»`}
+                                  title={`Фильтр по колонке «${column.label}»`}
+                                  onClick={() => notifyListOnly('Фильтрация')}
+                                >
+                                  <IconFilter size={14} />
+                                </ActionIcon>
+                              )}
                               {column.sortBy && (
                                 <SortIcon
                                   field={column.sortBy}
@@ -1082,20 +1276,20 @@ const ProjectsPage = () => {
                   </Table.Thead>
 
                   <Table.Tbody>
-                    {filteredProjects.length === 0 ? (
+                    {projects.length === 0 ? (
                       <Table.Tr>
                         <Table.Td colSpan={COLUMNS.length + 1}>
                           <Center py={36}>
                             <Text size="sm" c="dimmed">
-                              {projects.length === 0
-                                ? 'Проекты пока не созданы.'
-                                : 'По вашему запросу ничего не найдено.'}
+                              {hasSearch
+                                ? 'По вашему запросу ничего не найдено.'
+                                : 'Проекты пока не созданы.'}
                             </Text>
                           </Center>
                         </Table.Td>
                       </Table.Tr>
                     ) : (
-                      filteredProjects.map((project) => {
+                      projects.map((project) => {
                         const projectRoute = getProjectRoute(project);
                         return (
                           <Table.Tr
@@ -1143,7 +1337,7 @@ const ProjectsPage = () => {
               </Paper>
             ) : (
               <Stack gap={12}>
-                {gridProjects.length === 0 && normalizedSearch.length > 0 && (
+                {gridProjects.length === 0 && hasSearch && (
                   <Text size="sm" c="dimmed">
                     По вашему запросу ничего не найдено.
                   </Text>
@@ -1157,17 +1351,17 @@ const ProjectsPage = () => {
           </Box>
 
           <Box hiddenFrom="sm">
-            {filteredProjects.length === 0 ? (
+            {projects.length === 0 ? (
               <Center py={36}>
                 <Text size="sm" c="dimmed">
-                  {projects.length === 0
-                    ? 'Проекты пока не созданы.'
-                    : 'По вашему запросу ничего не найдено.'}
+                  {hasSearch
+                    ? 'По вашему запросу ничего не найдено.'
+                    : 'Проекты пока не созданы.'}
                 </Text>
               </Center>
             ) : (
               <Stack gap={8}>
-                {filteredProjects.map((project) => (
+                {projects.map((project) => (
                   <Paper
                     key={project.id ?? `${project.name}-${project.created_at}`}
                     radius="md"

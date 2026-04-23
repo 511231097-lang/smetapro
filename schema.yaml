@@ -391,6 +391,8 @@ definitions:
         $ref: '#/definitions/workspaces.MemberRoleResponse'
       workspace_description:
         type: string
+      workspace_id:
+        type: string
       workspace_name:
         type: string
     type: object
@@ -614,6 +616,8 @@ definitions:
         type: string
       logo_url:
         type: string
+      member_role:
+        $ref: '#/definitions/workspaces.MemberRoleResponse'
       members_count:
         type: integer
       name:
@@ -752,31 +756,6 @@ paths:
       security:
       - AccessCookieAuth: []
       summary: Logout from all sessions
-      tags:
-      - Auth
-  /auth/me:
-    get:
-      consumes:
-      - application/json
-      description: Returns current authenticated user profile.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/auth.SuccessResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/tools.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/tools.ErrorResponse'
-      security:
-      - AccessCookieAuth: []
-      summary: Get current user
       tags:
       - Auth
   /auth/refresh:
@@ -2278,6 +2257,22 @@ paths:
         in: query
         name: sort_dir
         type: string
+      - description: Filter by project start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: Filter by project end date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Comma-separated project status ids
+        in: query
+        name: status_id
+        type: string
+      - description: Search by project name or client name
+        in: query
+        name: search
+        type: string
       produces:
       - application/json
       responses:
@@ -2398,6 +2393,53 @@ paths:
       security:
       - AccessCookieAuth: []
       summary: Delete workspace project
+      tags:
+      - Projects
+    get:
+      consumes:
+      - application/json
+      description: Returns workspace project by identifier.
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/projects.SingleProjectResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/tools.ErrorResponse'
+      security:
+      - AccessCookieAuth: []
+      summary: Get workspace project
       tags:
       - Projects
     patch:

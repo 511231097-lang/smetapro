@@ -19,6 +19,7 @@ type MemberRole = {
 };
 
 type WorkspaceMember = {
+  avatar_url?: string;
   created_at?: string;
   email?: string;
   id?: string;
@@ -239,20 +240,12 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
       return json(200, { types: state.counterpartyTypes });
     }
 
-    if (url.pathname === '/api/v1/auth/me' && method === 'GET') {
-      if (state.user) {
-        return json(200, { user: state.user });
-      }
-      return json(401, { error: 'Not authenticated' });
-    }
-
     if (url.pathname === '/api/v1/profile' && method === 'GET') {
       if (state.user) {
         return json(200, { user: state.user });
       }
       return json(401, { error: 'Not authenticated' });
     }
-
     if (url.pathname === '/api/v1/profile' && method === 'PATCH') {
       if (!state.user) {
         return json(401, { error: 'Not authenticated' });
@@ -586,10 +579,20 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
           const sortBy = url.searchParams.get('sort_by');
           const sortDir =
             url.searchParams.get('sort_dir') === 'desc' ? 'desc' : 'asc';
+          const search = url.searchParams.get('search')?.trim().toLowerCase();
           const projects = [...(state.projectsByWorkspace[workspaceId] ?? [])];
 
+          const filteredProjects =
+            search && search.length > 0
+              ? projects.filter((project) =>
+                  [project.name, project.counterparty?.name]
+                    .filter((value): value is string => Boolean(value))
+                    .some((value) => value.toLowerCase().includes(search)),
+                )
+              : projects;
+
           if (sortBy) {
-            projects.sort((a, b) => {
+            filteredProjects.sort((a, b) => {
               const av = String(
                 (a as Record<string, unknown>)[sortBy] ?? '',
               ).toLowerCase();
@@ -605,8 +608,8 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
           return json(200, {
             limit: 100,
             offset: 0,
-            total: projects.length,
-            projects,
+            total: filteredProjects.length,
+            projects: filteredProjects,
           });
         }
 
@@ -696,6 +699,18 @@ const setupApiMock = async (page: Page, options: MockOptions = {}) => {
       if (tail.length === 2 && tail[0] === 'projects') {
         const projectId = tail[1];
         ensureWorkspaceDefaults(workspaceId);
+
+        if (method === 'GET') {
+          const project = (state.projectsByWorkspace[workspaceId] ?? []).find(
+            (item) => item.id === projectId,
+          );
+
+          if (!project) {
+            return json(404, { error: 'Project not found' });
+          }
+
+          return json(200, { project });
+        }
 
         if (method === 'DELETE') {
           state.projectsByWorkspace[workspaceId] = (

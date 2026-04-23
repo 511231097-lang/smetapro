@@ -23,4 +23,20 @@ sort_by?: string;
  * Sort direction: asc, desc
  */
 sort_dir?: string;
+/**
+ * Filter by project start date (YYYY-MM-DD)
+ */
+start_date?: string;
+/**
+ * Filter by project end date (YYYY-MM-DD)
+ */
+end_date?: string;
+/**
+ * Comma-separated project status ids
+ */
+status_id?: string;
+/**
+ * Search by project name or client name
+ */
+search?: string;
 };

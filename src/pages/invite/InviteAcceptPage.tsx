@@ -1,23 +1,20 @@
 import {
-  AppShell,
   Avatar,
   Box,
   Button,
-  Card,
   Center,
   Group,
   Loader,
+  Paper,
   Stack,
   Text,
   Title,
-  useComputedColorScheme,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconCheck } from '@tabler/icons-react';
-import { useEffect, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { wsInitials } from '../../layouts/components/protected-shell/constants';
-import ProtectedHeader from '../../layouts/components/protected-shell/ProtectedHeader';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import type { WorkspacesListResponse } from '../../shared/api/generated/schemas/workspacesListResponse';
 import {
@@ -69,10 +66,12 @@ const formatMembersLabel = (count?: number) => {
 
 const InviteAcceptPage = () => {
   const { token = '' } = useParams<{ token: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const { primaryColor } = usePrimaryColor();
-  const computedColorScheme = useComputedColorScheme('light');
-  const isDark = computedColorScheme === 'dark';
+  const inviteRouteState = location.state as {
+    autoAcceptInvite?: boolean;
+  } | null;
 
   const { data: userData } = useGetProfile({});
   const { data: workspacesData, isLoading: isWorkspacesLoading } =
@@ -88,6 +87,9 @@ const InviteAcceptPage = () => {
   } = useGetInviteToken(token, {
     query: { enabled: !!token, retry: false },
   });
+  const [autoJoinMode, setAutoJoinMode] = useState<
+    'off' | 'queued' | 'running' | 'failed'
+  >(() => (inviteRouteState?.autoAcceptInvite ? 'queued' : 'off'));
 
   const { mutate: join, isPending: isJoining } = usePostInviteToken({
     mutation: {
@@ -119,6 +121,8 @@ const InviteAcceptPage = () => {
                     created_at: now,
                     created_by: userData?.user?.id,
                     id: workspaceId,
+                    logo_url: invite?.logo_url,
+                    members_count: invite?.member_count,
                     name: workspaceNameForCache,
                     updated_at: now,
                   },
@@ -137,6 +141,9 @@ const InviteAcceptPage = () => {
         navigate(resolveFallbackRoute(), { replace: true });
       },
       onError: (error) => {
+        setAutoJoinMode((current) =>
+          current === 'running' ? 'failed' : current,
+        );
         notifications.show({
           color: 'red',
           title: 'Ошибка',
@@ -147,6 +154,7 @@ const InviteAcceptPage = () => {
   });
 
   const invite = inviteData?.invite;
+  const isAuthenticated = Boolean(userData?.user);
   const workspaceName = invite?.workspace_name ?? '—';
   const membersLabel = useMemo(
     () => formatMembersLabel(invite?.member_count),
@@ -157,8 +165,6 @@ const InviteAcceptPage = () => {
     [invite],
   );
 
-  const email = userData?.user?.email ?? '';
-  const initials = email.slice(0, 2).toUpperCase() || 'U';
   const isFallbackRouteLoading =
     Boolean(userData) && isWorkspacesLoading && workspaceList.length === 0;
 
@@ -181,29 +187,12 @@ const InviteAcceptPage = () => {
   const navigateToFallbackRoute = () =>
     navigate(resolveFallbackRoute(), { replace: true });
 
-  const handleGoToProfile = () => {
-    const workspaceId = resolveFallbackWorkspaceId();
-    if (!workspaceId) {
-      navigate(ROUTES.ROOT);
-      return;
-    }
-
-    navigate(buildRoute(ROUTES.PROFILE_COMMON, { workspaceId }));
-  };
-
-  const handleLogout = () => {
-    const workspaceId = resolveFallbackWorkspaceId();
-    if (!workspaceId) {
-      navigate(ROUTES.ROOT);
-      return;
-    }
-
-    navigate(buildRoute(ROUTES.LOGOUT, { workspaceId }));
-  };
-
-  const workspacePanelBackground = isDark ? '#3b414b' : '#f1f3f5';
-  const workspaceNameColor = isDark ? '#f8f9fa' : '#000000';
-  const workspaceMembersColor = isDark ? '#adb5bd' : '#868e96';
+  const workspacePanelBackground = 'var(--mantine-color-gray-1)';
+  const cardBackground = 'var(--mantine-color-white)';
+  const titleColor = 'var(--mantine-color-black)';
+  const textColor = 'var(--mantine-color-gray-9)';
+  const workspaceNameColor = 'var(--mantine-color-black)';
+  const workspaceMembersColor = 'var(--mantine-color-dimmed)';
 
   useEffect(() => {
     if (!existingWorkspaceId) return;
@@ -217,156 +206,196 @@ const InviteAcceptPage = () => {
     );
   }, [existingWorkspaceId, isLoading, navigate]);
 
-  return (
-    <AppShell header={{ height: 59 }}>
-      <ProtectedHeader
-        email={email}
-        initials={initials}
-        activeWorkspace={workspaceList[0]}
-        workspaceList={workspaceList}
-        onOpenMobileMenu={() => {}}
-        onWorkspaceSelect={() => {}}
-        onGoToProfile={handleGoToProfile}
-        onLogout={handleLogout}
-        hideWorkspaceMenu
-        hideMobileMenuButton
-      />
+  useEffect(() => {
+    if (autoJoinMode !== 'queued') return;
+    if (!isAuthenticated || !invite || !token) return;
+    if (isLoading || existingWorkspaceId) return;
 
-      <AppShell.Main
+    setAutoJoinMode('running');
+    join({ token });
+  }, [
+    autoJoinMode,
+    existingWorkspaceId,
+    invite,
+    isAuthenticated,
+    isLoading,
+    join,
+    token,
+  ]);
+
+  return (
+    <Box
+      style={{
+        backgroundColor: 'var(--mantine-color-body)',
+        minHeight: '100vh',
+      }}
+    >
+      <Center
         style={{
-          backgroundColor: 'var(--mantine-color-body)',
+          minHeight: '100vh',
+          padding:
+            'var(--mantine-spacing-xl) var(--mantine-spacing-md) var(--mantine-spacing-md)',
         }}
       >
-        <Center
+        <Paper
+          radius="md"
+          p={0}
           style={{
-            minHeight: 'calc(100vh - 59px)',
-            padding:
-              'var(--mantine-spacing-xl) var(--mantine-spacing-md) var(--mantine-spacing-md)',
+            background: cardBackground,
+            maxWidth: 528,
+            width: '100%',
           }}
         >
-          <Card
-            withBorder
-            radius="md"
-            style={{ width: '100%', maxWidth: 528 }}
-            padding={0}
-          >
-            {isLoading && (
-              <Center p={48}>
-                <Loader />
-              </Center>
-            )}
+          {isLoading && (
+            <Center p={48}>
+              <Loader />
+            </Center>
+          )}
 
-            {!isLoading && isError && (
-              <Box p={16}>
-                <Stack gap={16}>
-                  <Title
-                    order={3}
-                    style={{
-                      fontSize: 24,
-                      lineHeight: '32px',
-                      fontWeight: 700,
-                    }}
-                  >
-                    Ссылка-приглашение устарела
-                  </Title>
-
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      lineHeight: '20px',
-                      fontWeight: 400,
-                    }}
-                  >
-                    Ссылка-приглашение в компанию устарела. Запросите у
-                    администратора компании новую ссылку-приглашение.
-                  </Text>
-
-                  <Group justify="flex-end">
-                    <Button
-                      variant="default"
-                      radius={4}
-                      style={{ height: 32, minWidth: 120 }}
-                      styles={{
-                        label: {
-                          fontSize: 14,
-                          lineHeight: '20px',
-                          fontWeight: 400,
-                        },
-                      }}
-                      disabled={isFallbackRouteLoading}
-                      onClick={navigateToFallbackRoute}
-                    >
-                      Хорошо
-                    </Button>
-                  </Group>
-                </Stack>
-              </Box>
-            )}
-
-            {!isLoading && !isError && invite && !existingWorkspaceId && (
-              <Stack gap={16} p={16}>
+          {!isLoading && isError && (
+            <Box p={32}>
+              <Stack gap={16}>
                 <Title
                   order={3}
-                  style={{ fontSize: 24, lineHeight: '32px', fontWeight: 700 }}
-                >
-                  Вас пригласили в пространство
-                </Title>
-
-                <Box
                   style={{
-                    backgroundColor: workspacePanelBackground,
-                    borderRadius: 8,
-                    padding: 12,
+                    color: titleColor,
+                    fontSize: 24,
+                    lineHeight: '32px',
+                    fontWeight: 700,
                   }}
                 >
-                  <Group justify="space-between" wrap="nowrap" gap={12}>
-                    <Group wrap="nowrap" gap={16}>
-                      <Avatar
-                        size={40}
-                        radius={8}
-                        color={primaryColor}
-                        variant="filled"
-                        style={{ fontSize: 16, fontWeight: 700 }}
-                      >
-                        {wsInitials(workspaceName)}
-                      </Avatar>
-                      <Text
-                        style={{
-                          fontSize: 20,
-                          lineHeight: '24px',
-                          fontWeight: 700,
-                          color: workspaceNameColor,
-                        }}
-                        truncate
-                      >
-                        {workspaceName}
-                      </Text>
-                    </Group>
-
-                    {membersLabel && (
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          lineHeight: '16px',
-                          fontWeight: 700,
-                          color: workspaceMembersColor,
-                        }}
-                        ta="right"
-                      >
-                        {membersLabel}
-                      </Text>
-                    )}
-                  </Group>
-                </Box>
+                  Ссылка-приглашение устарела
+                </Title>
 
                 <Text
-                  ta="center"
-                  style={{ fontSize: 14, lineHeight: '20px', fontWeight: 400 }}
+                  style={{
+                    color: textColor,
+                    fontSize: 14,
+                    lineHeight: '20px',
+                    fontWeight: 400,
+                  }}
                 >
-                  Подтвердите приглашение в пространство «{workspaceName}» или
-                  {'\u00A0'}отклоните его.
+                  Ссылка-приглашение в компанию устарела. Запросите у
+                  администратора компании новую ссылку-приглашение.
                 </Text>
 
+                <Group justify="flex-end">
+                  <Button
+                    variant="default"
+                    radius={4}
+                    style={{ height: 32, minWidth: 120 }}
+                    styles={{
+                      label: {
+                        fontSize: 14,
+                        lineHeight: '20px',
+                        fontWeight: 400,
+                      },
+                    }}
+                    disabled={isFallbackRouteLoading}
+                    onClick={navigateToFallbackRoute}
+                  >
+                    Хорошо
+                  </Button>
+                </Group>
+              </Stack>
+            </Box>
+          )}
+
+          {!isLoading && !isError && invite && !existingWorkspaceId && (
+            <Stack gap={16} p={32}>
+              <Title
+                order={3}
+                style={{
+                  color: titleColor,
+                  fontSize: 24,
+                  lineHeight: '32px',
+                  fontWeight: 700,
+                }}
+              >
+                Вас пригласили в пространство
+              </Title>
+
+              <Box
+                style={{
+                  backgroundColor: workspacePanelBackground,
+                  borderRadius: 8,
+                  padding: 12,
+                }}
+              >
+                <Group justify="space-between" wrap="nowrap" gap={12}>
+                  <Group wrap="nowrap" gap={16} style={{ minWidth: 0 }}>
+                    <Avatar
+                      size={40}
+                      radius={8}
+                      color={primaryColor}
+                      variant="filled"
+                      src={invite.logo_url ?? undefined}
+                      style={{ fontSize: 16, fontWeight: 700, flexShrink: 0 }}
+                    >
+                      {wsInitials(workspaceName)}
+                    </Avatar>
+                    <Text
+                      style={{
+                        color: workspaceNameColor,
+                        fontSize: 20,
+                        fontWeight: 700,
+                        lineHeight: '24px',
+                      }}
+                      truncate
+                    >
+                      {workspaceName}
+                    </Text>
+                  </Group>
+
+                  {membersLabel && (
+                    <Text
+                      style={{
+                        color: workspaceMembersColor,
+                        flexShrink: 0,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        lineHeight: '16px',
+                      }}
+                      ta="right"
+                    >
+                      {membersLabel}
+                    </Text>
+                  )}
+                </Group>
+              </Box>
+
+              <Text
+                ta="center"
+                style={{
+                  color: textColor,
+                  fontSize: 14,
+                  lineHeight: '20px',
+                  fontWeight: 400,
+                }}
+              >
+                {isAuthenticated
+                  ? `Подтвердите приглашение в пространство «${workspaceName}» или отклоните его.`
+                  : `Для того чтобы принять приглашение от «${workspaceName}», вам необходимо войти либо зарегистрироваться в «Сметчик ПРО»`}
+              </Text>
+
+              {isAuthenticated && autoJoinMode === 'running' ? (
+                <Center py={8}>
+                  <Stack gap={12} align="center">
+                    <Loader color={primaryColor} size="sm" />
+                    <Text
+                      ta="center"
+                      style={{
+                        color: textColor,
+                        fontSize: 14,
+                        lineHeight: '20px',
+                        fontWeight: 400,
+                      }}
+                    >
+                      Подключаем вас к пространству...
+                    </Text>
+                  </Stack>
+                </Center>
+              ) : isAuthenticated ? (
                 <Group grow wrap="nowrap" gap={16}>
                   <Button
                     variant="default"
@@ -403,12 +432,49 @@ const InviteAcceptPage = () => {
                     Принять приглашение
                   </Button>
                 </Group>
-              </Stack>
-            )}
-          </Card>
-        </Center>
-      </AppShell.Main>
-    </AppShell>
+              ) : (
+                <Group grow wrap="nowrap" gap={16}>
+                  <Button
+                    component={Link}
+                    to={ROUTES.LOGIN}
+                    state={{ autoAcceptInvite: true, from: location }}
+                    radius={4}
+                    style={{ height: 32 }}
+                    styles={{
+                      label: {
+                        fontSize: 14,
+                        fontWeight: 700,
+                        lineHeight: '20px',
+                      },
+                    }}
+                  >
+                    Войти
+                  </Button>
+                  <Button
+                    component={Link}
+                    to={ROUTES.REGISTER}
+                    state={{ autoAcceptInvite: true, from: location }}
+                    variant="outline"
+                    color={primaryColor}
+                    radius={4}
+                    style={{ height: 32 }}
+                    styles={{
+                      label: {
+                        fontSize: 14,
+                        fontWeight: 700,
+                        lineHeight: '20px',
+                      },
+                    }}
+                  >
+                    Зарегистрироваться
+                  </Button>
+                </Group>
+              )}
+            </Stack>
+          )}
+        </Paper>
+      </Center>
+    </Box>
   );
 };
 

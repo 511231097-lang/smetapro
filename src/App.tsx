@@ -38,12 +38,12 @@ const App = () => {
 
         <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
       </Route>
+      <Route path={ROUTES.INVITE_ACCEPT} element={<InviteAcceptPage />} />
       <Route element={<RequireAuth />}>
         <Route
           path={ROUTES.WORKSPACE_CREATE}
           element={<CreateWorkspacePage />}
         />
-        <Route path={ROUTES.INVITE_ACCEPT} element={<InviteAcceptPage />} />
       </Route>
 
       <Route path="/:workspaceId" element={<ProtectedLayout />}>

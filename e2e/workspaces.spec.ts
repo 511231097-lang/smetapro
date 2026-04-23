@@ -136,3 +136,64 @@ test('workspace members tab shows empty state', async ({ page }) => {
     page.getByRole('table').getByText('Сотрудников пока нет'),
   ).toBeVisible();
 });
+
+test('workspace members tab renders member avatars when avatar_url is present', async ({
+  page,
+}) => {
+  const workspace = {
+    id: 'fffffff1-ffff-4fff-8fff-fffffffffff1',
+    name: 'Офис с аватарами',
+    created_by: mockUser.id,
+    created_at: '2024-01-01T00:00:00.000Z',
+    updated_at: '2024-01-01T00:00:00.000Z',
+  };
+  const avatarUrl = 'https://example.com/member-avatar.png';
+
+  await setupApiMock(page, {
+    initialUser: mockUser,
+    membersByWorkspace: {
+      [workspace.id]: [
+        {
+          avatar_url: avatarUrl,
+          email: 'member@example.com',
+          id: 'member-1',
+          name: 'Анна',
+          role: {
+            code: 'employee',
+            id: 2,
+            name: 'Сотрудник',
+          },
+          surname: 'Иванова',
+          user_id: 'user-2',
+          workspace_id: workspace.id,
+        },
+      ],
+    },
+    rolesByWorkspace: {
+      [workspace.id]: [
+        {
+          code: 'owner',
+          description: 'Полный доступ',
+          id: 1,
+          is_system: true,
+          name: 'Владелец',
+        },
+        {
+          code: 'employee',
+          description: 'Обычный доступ',
+          id: 2,
+          is_system: false,
+          name: 'Сотрудник',
+        },
+      ],
+    },
+    workspaces: [workspace],
+  });
+
+  await page.goto(`/${workspace.id}/workspace/members`);
+
+  await expect(
+    page.getByRole('heading', { name: 'Настройки пространства' }),
+  ).toBeVisible();
+  await expect(page.locator(`img[src="${avatarUrl}"]`).first()).toBeVisible();
+});

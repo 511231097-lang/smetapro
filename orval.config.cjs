@@ -5,7 +5,7 @@ const resolveFromRoot = (...segments) => path.resolve(__dirname, ...segments);
 
 module.exports = defineConfig({
   smetchik: {
-    input: resolveFromRoot('schema.yaml'),
+    input: process.env.ORVAL_INPUT || resolveFromRoot('schema.yaml'),
     output: {
       baseUrl: '/api/v1',
       target: resolveFromRoot('src/shared/api/generated/smetchik.ts'),

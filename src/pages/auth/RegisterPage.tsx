@@ -21,7 +21,7 @@ import {
   IconPhone,
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { usePrimaryColor } from '../../providers/PrimaryColorProvider';
 import {
   usePostAuthRegister,
@@ -91,9 +91,10 @@ interface RegisterData {
 
 interface FormStepProps {
   onSuccess: (data: RegisterData) => void;
+  redirectState?: unknown;
 }
 
-const FormStep = ({ onSuccess }: FormStepProps) => {
+const FormStep = ({ onSuccess, redirectState }: FormStepProps) => {
   const form = useForm({
     initialValues: { phone: '', email: '', password: '' },
     validate: {
@@ -195,7 +196,12 @@ const FormStep = ({ onSuccess }: FormStepProps) => {
 
           <Group gap={4} justify="center">
             <Text size="sm">Уже есть аккаунт?</Text>
-            <Anchor component={Link} size="sm" to={ROUTES.LOGIN}>
+            <Anchor
+              component={Link}
+              size="sm"
+              to={ROUTES.LOGIN}
+              state={redirectState}
+            >
               Войти
             </Anchor>
           </Group>
@@ -219,11 +225,18 @@ const FormStep = ({ onSuccess }: FormStepProps) => {
 // ── Шаг 2: Подтверждение кода ────────────────────────────────────────────────
 
 interface VerifyStepProps {
+  autoAcceptInvite: boolean;
   email: string;
+  redirectTo: string;
   onBack: () => void;
 }
 
-const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
+const VerifyStep = ({
+  autoAcceptInvite,
+  email,
+  onBack,
+  redirectTo,
+}: VerifyStepProps) => {
   const navigate = useNavigate();
   const { primaryColor } = usePrimaryColor();
   const [seconds, setSeconds] = useState(RESEND_TIMEOUT);
@@ -246,7 +259,10 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
           title: 'Регистрация завершена',
           message: 'Добро пожаловать в личный кабинет.',
         });
-        navigate(ROUTES.ROOT, { replace: true });
+        navigate(redirectTo, {
+          replace: true,
+          state: autoAcceptInvite ? { autoAcceptInvite: true } : undefined,
+        });
       },
       onError: (error) => {
         setPinValue('');
@@ -356,8 +372,15 @@ const VerifyStep = ({ email, onBack }: VerifyStepProps) => {
 // ── Страница ─────────────────────────────────────────────────────────────────
 
 const RegisterPage = () => {
+  const location = useLocation();
+  const authState = location.state as {
+    autoAcceptInvite?: boolean;
+    from?: { pathname?: string };
+  } | null;
   const [step, setStep] = useState<'form' | 'verify'>('form');
   const [email, setEmail] = useState('');
+  const redirectTo = authState?.from?.pathname ?? ROUTES.ROOT;
+  const autoAcceptInvite = authState?.autoAcceptInvite ?? false;
 
   const handleFormSuccess = (data: RegisterData) => {
     setEmail(data.email);
@@ -366,9 +389,19 @@ const RegisterPage = () => {
 
   return (
     <AuthPageLayout>
-      {step === 'form' && <FormStep onSuccess={handleFormSuccess} />}
+      {step === 'form' && (
+        <FormStep
+          onSuccess={handleFormSuccess}
+          redirectState={location.state}
+        />
+      )}
       {step === 'verify' && (
-        <VerifyStep email={email} onBack={() => setStep('form')} />
+        <VerifyStep
+          autoAcceptInvite={autoAcceptInvite}
+          email={email}
+          redirectTo={redirectTo}
+          onBack={() => setStep('form')}
+        />
       )}
     </AuthPageLayout>
   );

@@ -5,6 +5,7 @@
  * HTTP API сервиса smethick-pro.
  * OpenAPI spec version: 1.0
  */
+import type { WorkspacesMemberRoleResponse } from './workspacesMemberRoleResponse';
 
 export interface WorkspacesWorkspaceResponse {
   created_at?: string;
@@ -12,6 +13,7 @@ export interface WorkspacesWorkspaceResponse {
   description?: string;
   id?: string;
   logo_url?: string;
+  member_role?: WorkspacesMemberRoleResponse;
   members_count?: number;
   name?: string;
   updated_at?: string;
